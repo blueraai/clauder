@@ -4,6 +4,11 @@
 
 > Safer rules so Claude Code does not accidentally set the world on fire trying to help 🔥
 
+> [!WARNING]
+> While `clauder` help setting generic guardrails, these are **insufficient to autonomously ensure correctness and safety**. `clauder` is meant as a safety net and assumes  co-supervision with a human in the loop.
+
+**Bluera Inc.** https://bluera.ai
+
 ## Overview
 
 This repository contains a base Claude Code configuration that provides safety mechanisms, logging, and best practices for AI-assisted development. It includes file protection, command validation, audio feedback, and automated documentation enforcement.
