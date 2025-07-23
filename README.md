@@ -42,7 +42,7 @@ clauder_activate
 # clauder_activate ./project_path
 ```
 
-> **Activation needs to be re-run on any `clauder` update if and where you wish to propagate them.**
+> ☕ **Activation needs to be re-run on any `clauder` update** if and where you wish to propagate them.
 
 This will copy the `.claude` configuration to your project.
 
