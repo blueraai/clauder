@@ -231,7 +231,7 @@ clauder/
 - **Safety reminders**: Important security considerations
 
 > [!NOTE]
-> Rules can never be enforced, they are used to stir the AI in a desired direction.
+> Rules can never be enforced, they are used to steer the AI in a desired direction.
 
 ### Scripts Overview
 
