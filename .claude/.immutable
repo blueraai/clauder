@@ -1,0 +1,7 @@
+.claude/.immutable
+.claude/.ignore
+.claude/settings.json
+.claude/commands
+.clause/scripts
+.claude/preferences.json
+.claude/rules.md

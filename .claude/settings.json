@@ -1,0 +1,259 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write|mcp|Bash|Read|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/check-ignore-patterns.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write|mcp|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/check-immutable-patterns.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/prevent-unsafe-commands.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__supabase",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/require-human-approval.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__stripe",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/require-human-approval.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__github",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/require-human-approval.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__cloudflare",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/require-human-approval.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__consult7",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/require-human-approval.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/log-bash-commands.py"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/log-mcp-commands.py"
+          }
+        ]
+      }
+    ],
+    "Notification": [],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/check-required-tools.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/git-checkpoint.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/no-secrets-prompted.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/prevent-learning-secrets.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/audio-summary.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/enforce-completion-checks.py"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [],
+    "PreCompact": []
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(say:*)",
+      "Bash(ls:*)",
+      "Bash(pwd:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(secret)",
+      "Read(private)",
+      "Read(dist)",
+      "Read(build)",
+      "Read(env)",
+      "Read(.env.local)",
+      "Read(.env.example)",
+      "Read(.env.dev)",
+      "Read(.env.development)",
+      "Read(.env.stage)",
+      "Read(.env.staging)",
+      "Read(.env.sandbox)",
+      "Read(.env.preprod)",
+      "Read(.env.prod)",
+      "Read(.env.production)",
+      "Read(**/secret/**)",
+      "Read(**/private/**)",
+      "Read(**/dist/**)",
+      "Read(**/build/**)",
+      "Bash(chmod:*)",
+      "Bash(chown:*)",
+      "Bash(chgrp:*)",
+      "Bash(chattr:*)",
+      "Bash(lsattr:*)",
+      "Bash(rm:*)",
+      "Bash(unlink:*)",
+      "Bash(shred:*)",
+      "Bash(git reset:*)",
+      "Bash(git revert:*)",
+      "Bash(git branch -d:*)",
+      "Bash(git branch -D:*)",
+      "Bash(git rebase:*)",
+      "Bash(git push:*)",
+      "Bash(git clean:*)",
+      "Bash(git gc --prune:*)",
+      "Bash(dd:*)",
+      "Bash(format:*)",
+      "Bash(fdisk:*)",
+      "Bash(parted:*)",
+      "Bash(mkfs:*)",
+      "Bash(kill -9:*)",
+      "Bash(killall:*)",
+      "Bash(pkill:*)",
+      "Bash(service stop:*)",
+      "Bash(systemctl stop:*)",
+      "Bash(systemctl disable:*)",
+      "Bash(apt remove:*)",
+      "Bash(apt purge:*)",
+      "Bash(yum remove:*)",
+      "Bash(brew uninstall:*)",
+      "Bash(drop database:*)",
+      "Bash(drop table:*)",
+      "Bash(truncate table:*)",
+      "Bash(delete from:*)",
+      "Bash(drop policy:*)",
+      "Bash(drop role:*)",
+      "Bash(drop user:*)",
+      "Bash(drop index:*)",
+      "Bash(drop view:*)",
+      "Bash(drop function:*)",
+      "Bash(drop procedure:*)",
+      "Bash(drop trigger:*)",
+      "Bash(drop constraint:*)",
+      "Bash(drop sequence:*)",
+      "Bash(drop type:*)",
+      "Bash(drop schema:*)",
+      "Bash(drop extension:*)",
+      "Bash(exec:*)",
+      "Bash(execute:*)",
+      "Bash(source:*)",
+      "Bash(cat .env:*)",
+      "Bash(cat .env.*:*)",
+      "Bash(less .env:*)",
+      "Bash(less .env.*:*)",
+      "Bash(more .env:*)",
+      "Bash(more .env.*:*)",
+      "Bash(head .env:*)",
+      "Bash(head .env.*:*)",
+      "Bash(tail .env:*)",
+      "Bash(tail .env.*:*)",
+      "Bash(strings .env:*)",
+      "Bash(strings .env.*:*)",
+      "Bash(hexdump .env:*)",
+      "Bash(hexdump .env.*:*)",
+      "Bash(xxd .env:*)",
+      "Bash(xxd .env.*:*)",
+      "Bash(cat .ssh/:*)",
+      "Bash(cat id_rsa:*)",
+      "Bash(cat id_ed25519:*)",
+      "Bash(cat .pem:*)",
+      "Bash(cat .key:*)",
+      "Bash(cat config.*:*)",
+      "Bash(cat .config:*)",
+      "Bash(netstat -a:*)",
+      "Bash(ss -a:*)",
+      "Bash(ifconfig:*)",
+      "Bash(ps -ef:*)",
+      "Bash(ps -e:*)",
+      "Bash(mv /:*)",
+      "Bash(cp /:*)",
+      "Bash(ln -s /:*)",
+      "Bash(userdel:*)",
+      "Bash(groupdel:*)",
+      "Bash(passwd:*)",
+      "Bash(crontab -r:*)",
+      "Bash(crontab -l:*)"
+    ]
+  }
+}
