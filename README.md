@@ -5,7 +5,7 @@
 > Safer rules so Claude Code does not accidentally set the world on fire trying to help 🔥
 
 > [!WARNING]
-> While `clauder` help setting generic guardrails, these are **insufficient to autonomously ensure correctness and safety**. `clauder` is solely meant as a safety net and tooling package, and *assumes co-supervision by a human in the loop*.
+> While `clauder` helps setting generic guardrails, these are **insufficient to autonomously ensure correctness and safety**. `clauder` is solely meant as a safety net and tooling package, and *assumes co-supervision by a human in the loop*.
 
 **Bluera Inc.** https://bluera.ai
 
@@ -22,7 +22,7 @@ This repository contains a base Claude Code configuration that provides safety m
 git clone <repository-url>
 cd clauder
 
-# Install (must be ran in the `clauder` dir)
+# Install (must be run in the `clauder` dir)
 source ./clauder_install.sh
 ```
 
@@ -42,7 +42,7 @@ activate_clauder
 # activate_clauder ./project_path
 ```
 
-> Activation needs to be re-ran on any `clauder` update if and where you wish to propagate them.
+> Activation needs to be re-run on any `clauder` update if and where you wish to propagate them.
 
 This will copy the `.claude` configuration to your project.
 
@@ -52,7 +52,7 @@ Clauder's configuration will automatically:
 - Protect sensitive files and directories
 - Log all actions
 - Enforce documentation updates
-- Provides general guidelines/rules to Claude (never enforced, but does help stirring it - Do not solely rely on instructions for policing or workflows)
+- Provides general guidelines/rules to Claude (never enforced, but does help steering it - Do not solely rely on instructions for policing or workflows)
 - Provide audio feedback on completion (optional, supports mac, linux experimental)
 
 #### How to start a Claude session
@@ -62,9 +62,9 @@ Clauder's configuration will automatically:
 >
 > If secrets have been indexed or read by an AI such as Claude, you should consider removing them from the project, invalidating them and renewing them. Production secrets should be stored in a secure vault, unreadable by AI. Keeping secrets out of the working directory prevents auto-indexing, but does not prevent Claude from finding ways to access them through running commands or calling tools. Clauder will try to prevent leaking secrets, potentially destructive, or unrecoverable actions, by detecting unsafe actions and requesting a Human in the loop, but none of it is bulletproof.
 >
-> **Please make sure to supervise your AI's action as you grant it access to sensitive or critical systems. It cannot be trusted and will inadvertedly make unrecoverable mistakes, which may critically impair the company and its production services. Backup your systems, and sandbox as much as possible through restrictive AI-level access control.** You are responsible for your AI's actions, as you are when using any other tool, or when managing a team.
+> **Please make sure to supervise your AI's actions as you grant it access to sensitive or critical systems. It cannot be trusted and will inadvertently make unrecoverable mistakes, which may critically impair the company and its production services. Backup your systems, and sandbox as much as possible through restrictive AI-level access control.** You are responsible for your AI's actions, as you are when using any other tool, or when managing a team.
 
-Once you familiarize yourself with the above, you may start a new Claude Code session, with Clauder security checks, using:
+Once you familiarize yourself with the above, you may start a new Claude Code session with Clauder security checks using:
 
 ```bash
 clauder # a safer way to start 'claude' to prevent exposing secrets
@@ -251,7 +251,7 @@ clauder/
 #### **`clauder_install.sh`**
 - **Shell detection**: Automatically detects zsh/bash configuration
 - **Alias management**: Creates and manages shell aliases
-   * ie. `clauder_activate` and `clauder_security_check`
+   * i.e. `clauder_activate` and `clauder_security_check`
 - **Auto-sourcing**: Sources configuration after changes
 - **Backup creation**: Creates backups before modifications
 
@@ -331,7 +331,7 @@ cat .claude/.exclude_security_checks
 
 > Hooks documentation: https://docs.anthropic.com/en/docs/claude-code/hooks 
 >
-> **Tips:** Hooks are dedupped and ran in parallel. They rely on strict interpretation from the console output for decision making. Make sure never to print anything other than the expected specifications for Claude Code to parse it correctly, any offset will cause Claude Code to ommit the decision entirely. Beware of infinite loop, particularly when blocking a 'Stop' event to inject an extra step, as the 'Stop' event will retrigger once that step completes. By default, Claude Code will continue unless set to 'False'. A 'block' decision only blocks a given interaction with a 'reason', at which point Claude Code may decide to take a different action or find a way to bypass it. Use `claude --debug` to enable debug logs when working on hooks, as they are hidden by default. When developping, never test `Clauder` changes on a real project as bugs may have irreparable consequences - use a test project instead.
+> **Tips:** Hooks are dedupped and run in parallel. They rely on strict interpretation from the console output for decision making. Make sure never to print anything other than the expected specifications for Claude Code to parse it correctly, any offset will cause Claude Code to omit the decision entirely. Beware of infinite loop, particularly when blocking a 'Stop' event to inject an extra step, as the 'Stop' event will retrigger once that step completes. By default, Claude Code will continue unless set to 'False'. A 'block' decision only blocks a given interaction with a 'reason', at which point Claude Code may decide to take a different action or find a way to bypass it. Use `claude --debug` to enable debug logs when working on hooks, as they are hidden by default. When developing, never test `Clauder` changes on a real project as bugs may have irreparable consequences - use a test project instead.
 
 ## License
 
