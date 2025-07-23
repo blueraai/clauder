@@ -182,6 +182,8 @@ clauder/
 │   ├── .immutable                        # Files that should never be modified
 │   ├── .exclude_security_checks          # Security check exclusions
 │   ├── commands/                         # Custom command definitions
+│   │   ├── consult.md                    # Consult command for external AI assistance
+│   │   └── rules.md                      # Rules enforcement command
 │   ├── logs/                             # Generated logs (created at runtime)
 │   │   ├── bash-logs.txt                 # Bash command history
 │   │   └── mcp-logs.txt                  # MCP tool call history
