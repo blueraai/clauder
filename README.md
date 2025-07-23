@@ -22,7 +22,7 @@ This repository contains a base Claude Code configuration that provides safety m
 git clone <repository-url>
 cd clauder
 
-# Install (must be run in the `clauder` dir)
+# Install (must be run from the `clauder` dir)
 source ./clauder_install.sh
 ```
 
