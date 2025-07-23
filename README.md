@@ -5,7 +5,7 @@
 > Safer rules so Claude Code does not accidentally set the world on fire trying to help 🔥
 
 > [!WARNING]
-> While `clauder` help setting generic guardrails, these are **insufficient to autonomously ensure correctness and safety**. `clauder` is meant as a safety net and assumes  co-supervision with a human in the loop.
+> While `clauder` help setting generic guardrails, these are **insufficient to autonomously ensure correctness and safety**. `clauder` is solely meant as a safety net and tooling package, and *assumes co-supervision by a human in the loop*.
 
 **Bluera Inc.** https://bluera.ai
 
