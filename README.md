@@ -36,10 +36,10 @@ source ./clauder_install.sh
 Run in your project directory:
 
 ```bash
-activate_clauder
+clauder_activate
 
 # or you may activate it from anywhere else by providing a path to the project
-# activate_clauder ./project_path
+# clauder_activate ./project_path
 ```
 
 > Activation needs to be re-run on any `clauder` update if and where you wish to propagate them.
