@@ -25,10 +25,6 @@ VALIDATION_RULES = [
         "git reset can cause data loss. Request a human to run this command, clearly highlighting risks.",
     ),
     (
-        r"\bgit\s+revert\b",
-        "git revert creates new commits. Request a human to run this command, clearly highlighting risks.",
-    ),
-    (
         r"\bgit\s+branch\s+[-\w]*\s*-[dD]\b",
         "git branch -d/-D can delete branches. Request a human to run this command, clearly highlighting risks.",
     ),

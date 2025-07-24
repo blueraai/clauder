@@ -176,7 +176,6 @@
       "Bash(unlink:*)",
       "Bash(shred:*)",
       "Bash(git reset:*)",
-      "Bash(git revert:*)",
       "Bash(git branch -d:*)",
       "Bash(git branch -D:*)",
       "Bash(git rebase:*)",
