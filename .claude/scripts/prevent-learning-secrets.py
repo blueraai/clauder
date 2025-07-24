@@ -159,6 +159,29 @@ class ProjectSafetyChecker:
         
         return found_indicators
     
+    def _is_false_positive_key(self, line: str) -> bool:
+        """Check if a line with 'key*=' pattern is a false positive (keyframe, :key=, etc.)."""
+        # Convert to lowercase for case-insensitive matching
+        line_lower = line.lower()
+        
+        # Check for common false positives
+        false_positives = [
+            'keyframe',
+            ':key=',
+            'v-bind:key=',
+            '@keyframes',
+            'animation-keyframe',
+            'transition-keyframe',
+            'keyframe-animation',
+            'keyframe-transition'
+        ]
+        
+        for false_positive in false_positives:
+            if false_positive in line_lower:
+                return True
+        
+        return False
+
     def check_file_contents(self, project_path: Path) -> List[Tuple[str, str, int]]:
         """Check file contents for obvious secret patterns."""
         suspicious_files = []
@@ -196,6 +219,10 @@ class ProjectSafetyChecker:
                 for line_num, line in enumerate(lines, 1):
                     for pattern in secret_patterns:
                         if re.search(pattern, line, re.IGNORECASE):
+                            # Check if this is a false positive for key patterns
+                            if pattern == r'key\s*=\s*["\'][^"\']+["\']' and self._is_false_positive_key(line):
+                                continue
+                            
                             relative_path = str(file_path.relative_to(project_path))
                             suspicious_files.append((relative_path, pattern, line_num))
                             break

@@ -49,8 +49,13 @@ check_patterns() {
     python3 "$python_script" "$project_dir" --standalone --json
     exit_code=$?
     
-    # Only return exit code if it's not 0 (error or unsafe)
-    if [[ $exit_code -ne 0 ]]; then
+    # Handle exit codes 1 and 2 by killing current command but not crashing terminal
+    if [[ $exit_code -eq 1 || $exit_code -eq 2 ]]; then
+        # Kill the current process group (current command) but not the terminal
+        kill -TERM 0 2>/dev/null || true
+        return $exit_code
+    elif [[ $exit_code -ne 0 ]]; then
+        # For other non-zero exit codes, just return them normally
         return $exit_code
     fi
 }
@@ -66,7 +71,8 @@ show_usage() {
     echo ""
     echo "Exit codes:"
     echo "  0 - Project is safe for indexing"
-    echo "  1 - Project is NOT safe for indexing"
+    echo "  1 - Project is NOT safe for indexing (kills current command)"
+    echo "  2 - Security violation detected (kills current command)"
     echo ""
     echo "Examples:"
     echo "  $0                    # Check current directory"
@@ -77,16 +83,37 @@ show_usage() {
 safe_exit() {
     local exit_code=$1
     if [[ "$INTERACTIVE" == "true" ]]; then
-        return $exit_code
+        # For exit codes 1 and 2, return "Aborting.." instead of the exit code
+        if [[ $exit_code -eq 1 || $exit_code -eq 2 ]]; then
+            echo "Aborting.."
+            return 0
+        else
+            return $exit_code
+        fi
     else
-        exit $exit_code
+        # For exit codes 1 and 2, kill the current command but don't crash terminal
+        if [[ $exit_code -eq 1 || $exit_code -eq 2 ]]; then
+            echo "Aborting.."
+            # Kill the current process group (current command) but not the terminal
+            kill -TERM 0 2>/dev/null || true
+            exit $exit_code
+        else
+            exit $exit_code
+        fi
     fi
 }
 
-# Function to exit with error (always crashes on failure)
+# Function to exit with error (kills current command for codes 1/2, otherwise crashes)
 crash_on_failure() {
     local exit_code=$1
-    exit $exit_code
+    # For exit codes 1 and 2, kill the current command but don't crash terminal
+    if [[ $exit_code -eq 1 || $exit_code -eq 2 ]]; then
+        # Kill the current process group (current command) but not the terminal
+        kill -TERM 0 2>/dev/null || true
+        exit $exit_code
+    else
+        exit $exit_code
+    fi
 }
 
 # Main script logic
