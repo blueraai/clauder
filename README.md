@@ -124,8 +124,8 @@ This will define the mandatory guidelines for Claude Code.
 - **Repository validation**: Ensures `.git/` directory exists before operations
 
 #### **Documentation Enforcement**
-- **HISTORY.md updates**: Automatically enforces change tracking
-- **SPECIFICATIONS.md updates**: Enforces specification documentation
+- **HISTORY.md updates**: Automatically enforces change tracking, **if `HISTORY.md` exists at root level**
+- **SPECIFICATIONS.md updates**: Enforces specification documentation, **if `SPECIFICATIONS.md` exists at root level**
 - **Completion checks**: Validates documentation before session end
 
 ### 🎵 Audio Feedback
@@ -252,8 +252,8 @@ clauder/
 
 #### **`clauder_install.sh`**
 - **Shell detection**: Automatically detects zsh/bash configuration
-- **Alias management**: Creates and manages shell aliases
-   * i.e. `clauder_activate` and `clauder_security_check`
+- **Alias management**: Creates and manages shell aliases and variables
+   * i.e. `clauder`, `clauder_activate`, `clauder_security_check`, and required configurations
 - **Auto-sourcing**: Sources configuration after changes
 - **Backup creation**: Creates backups before modifications
 
