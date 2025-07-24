@@ -19,3 +19,6 @@ README
 dist/
 build/
 node_modules/
+package-lock.json
+src-tauri/
+.cursor/
