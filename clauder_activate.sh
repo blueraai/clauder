@@ -58,6 +58,60 @@ check_current_directory() {
     fi
 }
 
+# Function to create backup of existing .claude directory
+create_backup() {
+    local target_claude="$1"
+    local target_project="$2"
+    
+    if [ ! -d "$target_claude" ]; then
+        return 0  # No existing .claude directory to backup
+    fi
+    
+    # Create .claude-backup directory if it doesn't exist
+    local backup_dir="$target_project/.claude-backup"
+    if [ ! -d "$backup_dir" ]; then
+        mkdir -p "$backup_dir"
+    fi
+    
+    # Generate timestamp in lowercase-dashed format (including seconds)
+    local timestamp=$(date +%Y-%m-%d-%H-%M-%S | tr '[:upper:]' '[:lower:]')
+    local backup_name="$backup_dir/$timestamp"
+    
+    echo "Creating backup of existing .claude directory..."
+    echo "Backup location: $backup_name"
+    
+    # Copy existing .claude directory to backup
+    if cp -r "$target_claude" "$backup_name" 2>/dev/null; then
+        echo "✓ Backup created successfully"
+        
+        # Clean up old backups (keep only 10 most recent)
+        cleanup_old_backups "$backup_dir"
+    else
+        echo "✗ Failed to create backup"
+        return 1
+    fi
+    
+    return 0
+}
+
+# Function to clean up old backups (keep only 10 most recent)
+cleanup_old_backups() {
+    local backup_dir="$1"
+    
+    # Get list of backup directories sorted by modification time (newest first)
+    local backups=($(find "$backup_dir" -maxdepth 1 -type d -name "20*" -printf "%T@ %p\n" | sort -nr | cut -d' ' -f2-))
+    
+    # Remove backups beyond the 10th one
+    if [ ${#backups[@]} -gt 10 ]; then
+        echo "Cleaning up old backups (keeping 10 most recent)..."
+        for ((i=10; i<${#backups[@]}; i++)); do
+            local old_backup="${backups[$i]}"
+            echo "Removing old backup: $(basename "$old_backup")"
+            rm -rf "$old_backup"
+        done
+    fi
+}
+
 # Function to check for existing .claude files that would be overwritten
 check_existing_files() {
     local source_claude="$1"
@@ -123,6 +177,9 @@ copy_claude_folder() {
     check_directory "$target_project"
     
     # Note: Even if target is current directory, we still check and replace files as needed
+    
+    # Create backup of existing .claude directory if it exists
+    create_backup "$target_claude" "$target_project"
     
     # Check for existing files and prompt for approval
     check_existing_files "$source_claude" "$target_claude"
