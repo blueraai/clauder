@@ -58,6 +58,19 @@ check_current_directory() {
     fi
 }
 
+# Function to check if we're trying to activate in the clauder directory itself
+check_clauder_directory_activation() {
+    local target_project="$1"
+    local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
+    
+    # Check if target project is the clauder directory itself
+    if [ "$(realpath "$target_project")" = "$(realpath "$clauder_dir")" ]; then
+        echo "Error: Cannot activate clauder in the clauder directory itself."
+        echo "Please run clauder_activate from a different project directory."
+        safe_exit 1
+    fi
+}
+
 # Function to create backup of existing .claude directory
 create_backup() {
     local target_claude="$1"
@@ -280,6 +293,9 @@ main() {
     
     # Get the target project path (default to current directory if not provided)
     target_path="${1:-.}"
+    
+    # Check if we're trying to activate in the clauder directory itself
+    check_clauder_directory_activation "$target_path"
     
     # Copy the .claude folder
     copy_claude_folder "$target_path"
