@@ -547,12 +547,15 @@ Examples:
                 for file_path, finding_type, line_num in results['suspicious_contents']
             ]
             
+            print(' ')
+            print('\033[90m* Debug information: \033[0m')
             output = {
                 'safe': is_safe,
                 'project_directory': str(project_path.resolve()),
                 'results': json_results
             }
-            print(json.dumps(output, indent=2))
+            print('\033[90m' + json.dumps(output, indent=2) + '\033[0m')
+            print(' ')
         
         sys.exit(0 if is_safe else 2)
         
