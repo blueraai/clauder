@@ -9,6 +9,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+DARK_GRAY='\033[90m'
 NC='\033[0m' # No Color
 
 # Function to print colored output
@@ -134,6 +135,10 @@ prompt_for_update() {
 main() {
     local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
     local current_dir="$(pwd)"
+    
+    # Display directory information
+    print_status $DARK_GRAY "Clauder directory: $clauder_dir"
+    print_status $DARK_GRAY "Project directory: $current_dir"
     
     # Check for updates
     if check_for_updates "$clauder_dir" "$current_dir"; then
