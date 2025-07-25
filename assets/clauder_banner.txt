@@ -15,7 +15,5 @@
 Repository: https://github.com/blueraai/clauder
 Learn More: https://bluera.ai 
 
-Proceeding with security scanning..
-
 --
 

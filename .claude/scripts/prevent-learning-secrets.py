@@ -399,6 +399,12 @@ class ProjectSafetyChecker:
         # Use the standalone parameter passed to the method
         is_standalone = standalone
         
+        if is_standalone:
+            print(' ')
+            print_status(Colors.BLUE, "Checking project safety for indexing..")
+            print_status(Colors.GRAY, f"Project directory: {project_path.resolve()}")
+            print(' ')
+        
         if self.exclusion_patterns and is_standalone:
             print_status(Colors.GRAY, f"* Excluding {len(self.exclusion_patterns)} patterns from security checks")
             for pattern in self.exclusion_patterns:
