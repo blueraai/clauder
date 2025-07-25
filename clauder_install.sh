@@ -56,7 +56,7 @@ create_aliases() {
     # Create backup of config file
     local backup_file="${config_file}.backup.$(date +%Y%m%d_%H%M%S)"
     cp "$config_file" "$backup_file"
-    print_status $BLUE "📋 Created backup: $backup_file"
+    print_status $NC "📋 Created backup: $backup_file"
     
     # Remove existing clauder aliases and CLAUDER_DIR export if they exist
     local temp_file=$(mktemp)
@@ -75,7 +75,7 @@ EOF
     # Replace original file
     mv "$temp_file" "$config_file"
     
-    print_status $BLUE "✅ Added clauder aliases to $config_file"
+    print_status $NC "✅ Added clauder aliases to $config_file"
     print_status $DARK_GRAY "   export CLAUDER_DIR='$project_abs_path'"
     print_status $DARK_GRAY "   alias clauder_activate='source $activate_script'"
     print_status $DARK_GRAY "   alias clauder_security_check='source $security_script'"
@@ -132,7 +132,7 @@ main() {
         exit 1
     fi
     
-    print_status $YELLOW "🔍 Detecting shell configuration files..."
+    print_status $BLUE "🔍 Detecting shell configuration files..."
     
     # Detect all shell configuration files
     local config_files=($(detect_shell_configs))
@@ -143,19 +143,19 @@ main() {
         exit 1
     fi
     
-    print_status $BLUE "📁 Found ${#config_files[@]} configuration file(s):"
+    print_status $NC "📁 Found ${#config_files[@]} configuration file(s):"
     for config_file in "${config_files[@]}"; do
         print_status $DARK_GRAY "   - $config_file"
     done
     
     # Create aliases in all config files
-    print_status $YELLOW "🔧 Creating clauder aliases in all configuration files..."
+    print_status $BLUE "🔧 Creating clauder aliases in all configuration files..."
     local success_count=0
     for config_file in "${config_files[@]}"; do
-        print_status $BLUE "Processing: $config_file"
+        print_status $NC "Processing: $config_file"
         if create_aliases "$config_file" "$project_dir"; then
             ((success_count++))
-            print_status $BLUE "✅ Successfully processed $config_file"
+            print_status $NC "✅ Successfully processed $config_file"
         else
             print_status $RED "❌ Failed to process $config_file"
         fi
@@ -166,7 +166,7 @@ main() {
         exit 1
     fi
     
-    print_status $BLUE "✅ Successfully created aliases in $success_count configuration file(s)"
+    print_status $NC "✅ Successfully created aliases in $success_count configuration file(s)"
     
     # Source the current shell's configuration
     local current_shell=$(basename "$SHELL")
@@ -183,9 +183,9 @@ main() {
     fi
     
     if [[ -n "$current_config" ]]; then
-        print_status $YELLOW "🔄 Attempting to source $current_config..."
+        print_status $BLUE "🔄 Attempting to source $current_config..."
         if source_config "$current_config" 2>/dev/null; then
-            print_status $BLUE "✅ Configuration sourced successfully"
+            print_status $NC "✅ Configuration sourced successfully"
         else
             print_status $YELLOW "⚠️  Could not source configuration automatically. Please restart your shell or manually source one of the configuration files"
         fi
@@ -194,7 +194,7 @@ main() {
     fi
     
     print_status $GREEN "> Clauder aliases successfully installed and activated."
-    print_status $YELLOW "You can now use:"
+    print_status $BLUE "You can now use:"
     print_status $DARK_GRAY "  clauder_activate [project_path]        # Activate clauder in a project (default: current directory if not provided)"
     print_status $DARK_GRAY "  clauder_security_check [project_path]  # Check project security (default: current directory if not provided)"
     print_status $DARK_GRAY "  clauder                                # Start Claude Code with security checks"
