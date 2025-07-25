@@ -8,8 +8,11 @@ import sys
 import argparse
 import fnmatch
 import json
+import re
+import math
 from pathlib import Path
 from typing import List, Tuple
+from collections import Counter
 
 class Colors:
     """ANSI color codes for terminal output."""
@@ -182,23 +185,158 @@ class ProjectSafetyChecker:
         
         return False
 
-    def check_file_contents(self, project_path: Path) -> List[Tuple[str, str, int]]:
-        """Check file contents for obvious secret patterns."""
-        suspicious_files = []
+    def _calculate_entropy(self, text: str) -> float:
+        """Calculate Shannon entropy of a string."""
+        if not text:
+            return 0.0
         
-        # Common secret patterns in file contents
-        secret_patterns = [
-            r'password\s*=\s*["\'][^"\']+["\']',
-            r'key\s*=\s*["\'][^"\']+["\']',
-            r'token\s*=\s*["\'][^"\']+["\']',
-            r'secret\s*=\s*["\'][^"\']+["\']',
-            r'private\s*=\s*["\'][^"\']+["\']',
-            r'privk\s*=\s*["\'][^"\']+["\']',
-            r'sk-[a-zA-Z0-9]{20,}',  # OpenAI API key pattern
-            r'[a-zA-Z0-9]{32,}',     # Generic long strings
+        # Count character frequencies
+        char_counts = Counter(text)
+        length = len(text)
+        
+        # Calculate entropy
+        entropy = 0.0
+        for count in char_counts.values():
+            probability = count / length
+            entropy -= probability * math.log2(probability)
+        
+        return entropy
+
+    def _is_high_entropy(self, text: str, min_length: int = 16, min_entropy: float = 3.5) -> bool:
+        """Check if a string has high entropy (indicating it might be a secret)."""
+        if len(text) < min_length:
+            return False
+        
+        # Calculate entropy
+        entropy = self._calculate_entropy(text)
+        
+        # Check if entropy is above threshold
+        if entropy >= min_entropy:
+            # Additional checks to reduce false positives
+            # Skip if it's mostly repeated characters or simple patterns
+            if len(set(text)) < len(text) * 0.3:  # Less than 30% unique characters
+                return False
+            
+            # Skip if it's a simple repeating pattern
+            if len(text) >= 4:
+                for i in range(1, len(text) // 2 + 1):
+                    if text[:i] * (len(text) // i) == text[:len(text) // i * i]:
+                        return False
+            
+            return True
+        
+        # Also check for character type diversity like in no-secrets-prompted.py
+        if len(text) > 20:
+            # If the text contains spaces, it's likely natural language, not a secret
+            if ' ' in text:
+                return False
+                
+            # Count character types
+            has_upper = bool(re.search(r'[A-Z]', text))
+            has_lower = bool(re.search(r'[a-z]', text))
+            has_digit = bool(re.search(r'\d', text))
+            has_special = bool(re.search(r'[^A-Za-z0-9]', text))
+            
+            # If it has multiple character types and is long, it might be a secret
+            char_types = sum([has_upper, has_lower, has_digit, has_special])
+            if (char_types >= 3 and len(text) > 75) or (char_types >= 2 and len(text) >= 40):
+                return True
+        
+        return False
+
+    def _extract_potential_secrets(self, text: str) -> List[str]:
+        """Extract potential secret strings from text based on common patterns."""
+        secrets = []
+        
+        # Common key prefixes and patterns
+        key_patterns = [
+            # API Keys
+            r'sk-[a-zA-Z0-9]{20,}',  # OpenAI
+            r'pk_[a-zA-Z0-9]{20,}',  # Stripe
+            r'AKIA[a-zA-Z0-9]{16,}',  # AWS Access Key
+            r'ASIA[a-zA-Z0-9]{16,}',  # AWS Temporary Access Key
+            r'ghp_[a-zA-Z0-9]{36}',  # GitHub Personal Access Token
+            r'gho_[a-zA-Z0-9]{36}',  # GitHub OAuth Token
+            r'ghu_[a-zA-Z0-9]{36}',  # GitHub User-to-Server Token
+            r'ghs_[a-zA-Z0-9]{36}',  # GitHub Server-to-Server Token
+            r'ghr_[a-zA-Z0-9]{36}',  # GitHub Refresh Token
+            r'xoxb-[a-zA-Z0-9-]+',   # Slack Bot Token
+            r'xoxp-[a-zA-Z0-9-]+',   # Slack User Token
+            r'xoxa-[a-zA-Z0-9-]+',   # Slack App Token
+            r'xoxr-[a-zA-Z0-9-]+',   # Slack Config Token
+            r'AIza[a-zA-Z0-9]{35}',  # Google API Key
+            r'ya29\.[a-zA-Z0-9_-]+', # Google OAuth Token
+            r'1//[a-zA-Z0-9_-]+',    # Google OAuth Refresh Token
+            r'[0-9]+-[0-9A-Za-z_]{32}\.apps\.googleusercontent\.com',  # Google OAuth Client ID
+            r'[0-9]{12}:aws:iam::[0-9]{12}:user/[a-zA-Z0-9_-]+',  # AWS ARN
+            r'arn:aws:iam::[0-9]{12}:role/[a-zA-Z0-9_-]+',  # AWS Role ARN
+            
+            # JWT Tokens
+            r'eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+',
+            
+            # SSH Keys
+            r'ssh-rsa\s+[a-zA-Z0-9+/]+[=]*\s+[^@\s]+@[^@\s]+',
+            r'ssh-ed25519\s+[a-zA-Z0-9+/]+[=]*\s+[^@\s]+@[^@\s]+',
+            r'ssh-dss\s+[a-zA-Z0-9+/]+[=]*\s+[^@\s]+@[^@\s]+',
+            
+            # PGP Keys
+            r'-----BEGIN PGP PRIVATE KEY BLOCK-----',
+            r'-----BEGIN PGP PUBLIC KEY BLOCK-----',
+            r'-----BEGIN PGP MESSAGE-----',
+            r'-----BEGIN RSA PRIVATE KEY-----',
+            r'-----BEGIN PRIVATE KEY-----',
+            r'-----BEGIN PUBLIC KEY-----',
+            r'-----BEGIN CERTIFICATE-----',
+            
+            # Generic high-entropy strings (75+ chars)
+            r'[a-zA-Z0-9+/]{75,}={0,2}',  # Base64-like
+            r'[a-f0-9]{75,}',             # Hex strings
+            r'[A-Z0-9]{75,}',             # Uppercase alphanumeric
         ]
         
-        import re
+        for pattern in key_patterns:
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            secrets.extend(matches)
+        
+        return secrets
+
+    def _check_line_for_secrets(self, line: str) -> List[Tuple[str, str]]:
+        """Check a single line for potential secrets."""
+        findings = []
+        
+        # Extract potential secrets using pattern matching
+        potential_secrets = self._extract_potential_secrets(line)
+        
+        for secret in potential_secrets:
+            # Skip if it's a false positive
+            if self._is_false_positive_key(line) and 'key' in line.lower():
+                continue
+            
+            # Check if the secret has high entropy
+            if self._is_high_entropy(secret):
+                findings.append(('high_entropy_secret', secret))
+            else:
+                # Even if not high entropy, certain patterns are always suspicious
+                if any(pattern in secret.lower() for pattern in ['sk-', 'pk_', 'ghp_', 'gho_', 'ghu_', 'ghs_', 'ghr_', 'xoxb-', 'xoxp-', 'xoxa-', 'xoxr-', 'AIza', 'ya29.', '1//', 'AKIA', 'ASIA']):
+                    findings.append(('known_key_pattern', secret))
+        
+        # Also check for assignment patterns with high entropy values
+        assignment_patterns = [
+            r'(?:password|key|token|secret|private|privk|api_key|apikey)\s*[=:]\s*["\']([^"\']+)["\']',
+            r'(?:password|key|token|secret|private|privk|api_key|apikey)\s*[=:]\s*([a-zA-Z0-9+/_-]{32,})',
+        ]
+        
+        for pattern in assignment_patterns:
+            matches = re.findall(pattern, line, re.IGNORECASE)
+            for match in matches:
+                if self._is_high_entropy(match):
+                    findings.append(('assignment_high_entropy', match))
+        
+        return findings
+
+    def check_file_contents(self, project_path: Path) -> List[Tuple[str, str, int]]:
+        """Check file contents for high entropy strings and common key patterns."""
+        suspicious_files = []
         
         for file_path in project_path.rglob('*'):
             if not file_path.is_file():
@@ -217,15 +355,13 @@ class ProjectSafetyChecker:
                     lines = f.readlines()
                     
                 for line_num, line in enumerate(lines, 1):
-                    for pattern in secret_patterns:
-                        if re.search(pattern, line, re.IGNORECASE):
-                            # Check if this is a false positive for key patterns
-                            if pattern == r'key\s*=\s*["\'][^"\']+["\']' and self._is_false_positive_key(line):
-                                continue
-                            
-                            relative_path = str(file_path.relative_to(project_path))
-                            suspicious_files.append((relative_path, pattern, line_num))
-                            break
+                    # Check line for secrets using new detection methods
+                    findings = self._check_line_for_secrets(line)
+                    
+                    for finding_type, secret_value in findings:
+                        relative_path = str(file_path.relative_to(project_path))
+                        # Don't show the actual secret value, just the detection type
+                        suspicious_files.append((relative_path, finding_type, line_num))
                         
             except (UnicodeDecodeError, PermissionError, OSError):
                 continue
@@ -296,12 +432,13 @@ class ProjectSafetyChecker:
         # Check file contents
         results['suspicious_contents'] = self.check_file_contents(project_path)
         if is_standalone:
-            for file_path, pattern, line_num in results['suspicious_contents']:
-                print_status(Colors.RED, f"🔍 [Security] Suspicious potential secret found in: {file_path} (line {line_num})")
+            for file_path, finding_type, line_num in results['suspicious_contents']:
+                print_status(Colors.RED, f"🔍 [Security] Potential secret detected ({finding_type}) in: {file_path} (line {line_num})")
         
         # Determine if project is safe
         is_safe = (len(results['exact_matches']) == 0 and 
-                  len(results['pattern_matches']) == 0)
+                  len(results['pattern_matches']) == 0 and
+                  len(results['suspicious_contents']) == 0)
         
         if is_standalone:
             if is_safe:
@@ -313,7 +450,7 @@ class ProjectSafetyChecker:
                 if results['secret_indicators']:
                     print_status(Colors.YELLOW, "[Security] Note: Additional potential secret indicators found")
                 if results['suspicious_contents']:
-                    print_status(Colors.YELLOW, "[Security] Note: Files with suspicious content patterns found")
+                    print_status(Colors.YELLOW, "[Security] Note: Files with potential secrets detected")
         
         return is_safe, results
 
@@ -375,10 +512,10 @@ Examples:
             else:
                 output = {
                     "continue": False,
-                    "stopReason": "Security policy violation. Project is not safe for indexing. Found sensitive information in files/directories that should be excluded. If secrets have been indexed or read by an AI, you should consider removing them from the project, invalidating them and renewing them. Opening an AI session without interacting is sufficient to index secrets. Secrets must not be stored in the project itself. Production secrets should be stored in a secure vault, unreadable by AI.",
+                    "stopReason": "Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded. If secrets have been indexed or read by an AI, you should consider removing them from the project, invalidating them and renewing them. Opening an AI session without interacting is sufficient to index secrets. Secrets must not be stored in the project itself. Production secrets should be stored in a secure vault, unreadable by AI.",
                     "suppressOutput": True,
                     "decision": "block",
-                    "reason": "Security policy violation. Project is not safe for indexing. Found sensitive information in files/directories that should be excluded."
+                    "reason": "Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded."
                 }
             print(json.dumps(output))
             
@@ -406,8 +543,8 @@ Examples:
             
             # Convert suspicious_contents tuples
             json_results['suspicious_contents'] = [
-                {'file': file_path, 'pattern': pattern, 'line': line_num}
-                for file_path, pattern, line_num in results['suspicious_contents']
+                {'file': file_path, 'finding_type': finding_type, 'line': line_num, 'severity': 'high'}
+                for file_path, finding_type, line_num in results['suspicious_contents']
             ]
             
             output = {
