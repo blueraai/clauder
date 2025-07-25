@@ -60,7 +60,7 @@ create_aliases() {
     
     # Remove existing clauder aliases and CLAUDER_DIR export if they exist
     local temp_file=$(mktemp)
-    grep -v "alias clauder_\|alias clauder=\|export CLAUDER_DIR\|# Clauder project aliases" "$config_file" > "$temp_file"
+    grep -v "clauder_footer()\|alias clauder_\|alias clauder=\|export CLAUDER_DIR\|# Clauder project aliases" "$config_file" > "$temp_file"
     
     # Add new aliases and environment variable
     cat >> "$temp_file" << EOF
@@ -68,7 +68,8 @@ create_aliases() {
 export CLAUDER_DIR="$project_abs_path"
 alias clauder_activate='source "$activate_script"'
 alias clauder_security_check='source "$security_script"'
-alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && source "$project_abs_path/clauder_update_check.sh" && clauder_security_check && echo -e "\$(cat "$project_abs_path/assets/clauder_footer.txt")" && claude'
+clauder_footer() { echo -e "\$(cat "$project_abs_path/assets/clauder_footer.txt")"; }
+alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && source "$project_abs_path/clauder_update_check.sh" && clauder_security_check && clauder_footer && claude'
 EOF
     
     # Replace original file
@@ -78,7 +79,8 @@ EOF
     print_status $DARK_GRAY "   export CLAUDER_DIR='$project_abs_path'"
     print_status $DARK_GRAY "   alias clauder_activate='source $activate_script'"
     print_status $DARK_GRAY "   alias clauder_security_check='source $security_script'"
-    print_status $DARK_GRAY "   alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && source "$project_abs_path/clauder_update_check.sh" && clauder_security_check && echo -e "\$(cat "$project_abs_path/assets/clauder_footer.txt")" && claude'"
+    print_status $DARK_GRAY "   clauder_footer() { echo -e "\$(cat "$project_abs_path/assets/clauder_footer.txt")"; }"
+    print_status $DARK_GRAY "   alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && source "$project_abs_path/clauder_update_check.sh" && clauder_security_check && clauder_footer && claude'"
     
     return 0
 }
