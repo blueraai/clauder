@@ -33,9 +33,11 @@ check_git_repo() {
 check_for_updates() {
     local clauder_dir="$1"
     local original_dir="$2"
+    local update_needed_var="$3"  # Variable name to set
     
     if ! check_git_repo "$clauder_dir"; then
         print_status $YELLOW "⚠️  Clauder directory is not a git repository. Skipping update check."
+        eval "$update_needed_var=false"
         return 0
     fi
     
@@ -52,6 +54,7 @@ check_for_updates() {
     git fetch origin main > /dev/null 2>&1 || {
         print_status $RED "❌ Failed to fetch updates from remote repository"
         cd "$original_dir"
+        eval "$update_needed_var=false"
         return 0
     }
     
@@ -64,11 +67,13 @@ check_for_updates() {
         print_status $BLUE "Local:  $(git rev-parse --short HEAD)"
         print_status $BLUE "Remote: $(git rev-parse --short origin/main)"
         cd "$original_dir"
+        eval "$update_needed_var=true"
         return 0
     else
         print_status $GREEN "✅ Clauder is up to date"
         print_status $DARK_GRAY "Current commit: $(git rev-parse --short HEAD)"
         cd "$original_dir"
+        eval "$update_needed_var=false"
         return 0
     fi
 }
@@ -166,8 +171,12 @@ main() {
     local original_dir="$(pwd)"
     local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
     
-    # Check for updates
-    if check_for_updates "$clauder_dir" "$original_dir"; then
+    # Check for updates and get the result
+    local update_needed=false
+    check_for_updates "$clauder_dir" "$original_dir" "update_needed"
+    
+    # Only prompt for update if an update is actually needed
+    if [ "$update_needed" = true ]; then
         prompt_for_update "$clauder_dir" "$original_dir"
     fi
 }
