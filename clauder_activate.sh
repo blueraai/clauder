@@ -63,10 +63,28 @@ check_clauder_directory_activation() {
     local target_project="$1"
     local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
     
+    # Get absolute paths for comparison
+    local target_abs_path=$(realpath "$target_project")
+    local clauder_abs_path=$(realpath "$clauder_dir")
+    
     # Check if target project is the clauder directory itself
-    if [ "$(realpath "$target_project")" = "$(realpath "$clauder_dir")" ]; then
+    if [ "$target_abs_path" = "$clauder_abs_path" ]; then
         echo "Error: Cannot activate clauder in the clauder directory itself."
         echo "Please run clauder_activate from a different project directory."
+        echo "Target: $target_abs_path"
+        echo "Clauder: $clauder_abs_path"
+        safe_exit 1
+    fi
+    
+    # Also check if we're currently in the clauder directory
+    local current_dir=$(pwd)
+    local current_abs_path=$(realpath "$current_dir")
+    
+    if [ "$current_abs_path" = "$clauder_abs_path" ]; then
+        echo "Error: Cannot run clauder_activate from within the clauder directory."
+        echo "Please navigate to a different project directory first."
+        echo "Current: $current_abs_path"
+        echo "Clauder: $clauder_abs_path"
         safe_exit 1
     fi
 }

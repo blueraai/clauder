@@ -113,7 +113,8 @@ perform_update() {
             print_status $YELLOW "🔧 Activating clauder in current directory..."
             # Ensure we're in the original directory where the user ran the command
             cd "$current_dir"
-            clauder_activate || {
+            # Pass the current directory explicitly to avoid confusion
+            clauder_activate "$current_dir" || {
                 print_status $RED "❌ Failed to activate clauder"
                 return 0
             }
