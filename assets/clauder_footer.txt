@@ -3,6 +3,6 @@
 
 🔥 Report issues: https://github.com/blueraai/clauder/issues/
 
-⚠️  ** IMPORTANT ** Remember to run '/rules' as your first message in the chat below.
+\033[1;33m⚠️  ** IMPORTANT ** Remember to run '/rules' as your first message in the chat below.\033[0m
 
 
