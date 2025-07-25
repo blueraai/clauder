@@ -19,7 +19,7 @@ class Colors:
     RED = '\033[0;31m'
     GREEN = '\033[0;32m'
     YELLOW = '\033[1;33m'
-    BLUE = '\033[0;32m'
+    BLUE = '\033[0;34m'
     GRAY = '\033[0;90m'
     NC = '\033[0m'  # No Color
 
@@ -448,7 +448,7 @@ class ProjectSafetyChecker:
         
         if is_standalone:
             if is_safe:
-                print_status(Colors.BLUE, "• No exposed secrets detected. Proceeding..")
+                print_status(Colors.GREEN, "• No exposed secrets detected. Proceeding..")
             else:
                 print_status(Colors.RED, "🚨 [Security] Project is not safe for indexing. Aborting..")
                 print_status(Colors.RED, "Found sensitive information in files/directories that should be excluded. If secrets have been indexed or read by an AI, you should consider removing them from the project, invalidating them and renewing them. Opening an AI session without interacting is sufficient to index secrets. Secrets must not be stored in the project itself. Production secrets should be stored in a secure vault, unreadable by AI.")

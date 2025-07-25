@@ -99,7 +99,8 @@ cleanup_old_backups() {
     local backup_dir="$1"
     
     # Get list of backup directories sorted by modification time (newest first)
-    local backups=($(find "$backup_dir" -maxdepth 1 -type d -name "20*" -printf "%T@ %p\n" | sort -nr | cut -d' ' -f2-))
+    # Use macOS compatible find command
+    local backups=($(find "$backup_dir" -maxdepth 1 -type d -name "20*" -exec stat -f "%m %N" {} \; | sort -nr | cut -d' ' -f2-))
     
     # Remove backups beyond the 10th one
     if [ ${#backups[@]} -gt 10 ]; then
@@ -193,7 +194,8 @@ copy_claude_folder() {
     # Check if target project exists
     check_directory "$target_project"
     
-    # Note: Even if target is current directory, we still check and replace files as needed
+    # Change to target project directory for backup operations
+    cd "$target_project"
     
     # Check if target .claude directory exists
     if [ ! -d "$target_claude" ]; then
@@ -232,8 +234,8 @@ copy_claude_folder() {
             mkdir -p "$target_dir"
         fi
         
-        # Copy the file
-        if cp "$source_file" "$target_file" 2>/dev/null; then
+        # Copy the file (force overwrite)
+        if cp -f "$source_file" "$target_file" 2>/dev/null; then
             successful_copies+=("$relative_path")
         else
             failed_copies+=("$relative_path")
