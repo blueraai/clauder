@@ -31,6 +31,7 @@ check_git_repo() {
 # Function to check for updates
 check_for_updates() {
     local clauder_dir="$1"
+    local current_dir="$2"
     
     if ! check_git_repo "$clauder_dir"; then
         print_status $YELLOW "⚠️  Clauder directory is not a git repository. Skipping update check."
@@ -44,6 +45,7 @@ check_for_updates() {
     print_status $BLUE "🔍 Checking for updates..."
     git fetch origin main > /dev/null 2>&1 || {
         print_status $RED "❌ Failed to fetch updates from remote repository"
+        cd "$current_dir"
         return 1
     }
     
@@ -55,9 +57,11 @@ check_for_updates() {
         print_status $YELLOW "🔄 Update available for clauder!"
         print_status $BLUE "Local:  $(git rev-parse --short HEAD)"
         print_status $BLUE "Remote: $(git rev-parse --short origin/main)"
+        cd "$current_dir"
         return 0
     else
         print_status $GREEN "✅ Clauder is up to date"
+        cd "$current_dir"
         return 1
     fi
 }
@@ -132,7 +136,7 @@ main() {
     local current_dir="$(pwd)"
     
     # Check for updates
-    if check_for_updates "$clauder_dir"; then
+    if check_for_updates "$clauder_dir" "$current_dir"; then
         prompt_for_update "$clauder_dir" "$current_dir"
     fi
 }
