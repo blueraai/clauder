@@ -68,7 +68,7 @@ create_aliases() {
 export CLAUDER_DIR="$project_abs_path"
 alias clauder_activate='source "$activate_script"'
 alias clauder_security_check='source "$security_script"'
-clauder_footer() { echo -e "\$(cat "$project_abs_path/assets/clauder_footer.txt")"; }
+clauder_footer() { local footer_content="\$(cat "$project_abs_path/assets/clauder_footer.txt")"; echo -e "\$footer_content"; }
 alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && source "$project_abs_path/clauder_update_check.sh" && clauder_security_check && clauder_footer && claude'
 EOF
     
@@ -79,7 +79,7 @@ EOF
     print_status $DARK_GRAY "   export CLAUDER_DIR='$project_abs_path'"
     print_status $DARK_GRAY "   alias clauder_activate='source $activate_script'"
     print_status $DARK_GRAY "   alias clauder_security_check='source $security_script'"
-    print_status $DARK_GRAY "   clauder_footer() { echo -e "\$(cat "$project_abs_path/assets/clauder_footer.txt")"; }"
+    print_status $DARK_GRAY "   clauder_footer() { local footer_content=\"\$(cat "$project_abs_path/assets/clauder_footer.txt")\"; echo -e \"\$footer_content\"; }"
     print_status $DARK_GRAY "   alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && source "$project_abs_path/clauder_update_check.sh" && clauder_security_check && clauder_footer && claude'"
     
     return 0
