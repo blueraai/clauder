@@ -170,9 +170,16 @@ This will define the mandatory guidelines for Claude Code.
 ```
 clauder/
 ├── README.md                             # This file - project documentation
+├── CODE_OF_CONDUCT.md                    # Community guidelines and behavior standards
+├── LICENSE                               # Apache 2.0 license file
+├── SECURITY.md                           # Security policy and vulnerability reporting
 ├── clauder_activate.sh                   # Project activation script
 ├── clauder_install.sh                    # Installation script
 ├── clauder_security_check.sh             # Security validation script
+├── clauder_update_check.sh               # Update checking and management script
+├── assets/                               # Externalized assets and messages
+│   ├── clauder_banner.txt                # ASCII art banner displayed before clauder
+│   └── clauder_footer.txt                # Footer message with links and reminders
 ├── .claude/                              # Claude configuration directory
 │   ├── settings.json                     # Main Claude settings and hooks
 │   ├── preferences.json                  # User preferences (audio, etc.)
@@ -256,6 +263,13 @@ clauder/
    * i.e. `clauder`, `clauder_activate`, `clauder_security_check`, and required configurations
 - **Auto-sourcing**: Sources configuration after changes
 - **Backup creation**: Creates backups before modifications
+
+#### **`clauder_update_check.sh`**
+- **Update detection**: Checks for available clauder updates via git
+- **User prompting**: Asks for user approval before updating
+- **Automatic reinstallation**: Reinstalls clauder after updates
+- **Optional activation**: Prompts user to activate updated version in current project
+- **Directory management**: Ensures proper directory context throughout update process
 
 ## Security Best Practices
 
