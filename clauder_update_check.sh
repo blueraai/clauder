@@ -25,7 +25,7 @@ check_git_repo() {
     if [[ -d "$dir/.git" ]]; then
         return 0
     else
-        return 1
+        return 0
     fi
 }
 
@@ -36,7 +36,7 @@ check_for_updates() {
     
     if ! check_git_repo "$clauder_dir"; then
         print_status $YELLOW "⚠️  Clauder directory is not a git repository. Skipping update check."
-        return 1
+        return 0
     fi
     
     # Change to clauder directory
@@ -52,7 +52,7 @@ check_for_updates() {
     git fetch origin main > /dev/null 2>&1 || {
         print_status $RED "❌ Failed to fetch updates from remote repository"
         cd "$current_dir"
-        return 1
+        return 0
     }
     
     # Check if local is behind remote
@@ -69,7 +69,7 @@ check_for_updates() {
         print_status $GREEN "✅ Clauder is up to date"
         print_status $DARK_GRAY "Current commit: $(git rev-parse --short HEAD)"
         cd "$current_dir"
-        return 1
+        return 0
     fi
 }
 
@@ -86,7 +86,7 @@ perform_update() {
     # Pull latest changes
     git pull origin main || {
         print_status $RED "❌ Failed to pull latest changes"
-        return 1
+        return 0
     }
     
     print_status $GREEN "✅ Successfully pulled latest changes"
@@ -95,7 +95,7 @@ perform_update() {
     print_status $YELLOW "🔧 Reinstalling clauder..."
     source ./clauder_install.sh || {
         print_status $RED "❌ Failed to reinstall clauder"
-        return 1
+        return 0
     }
     
     print_status $GREEN "✅ Clauder reinstalled successfully"
@@ -105,7 +105,7 @@ perform_update() {
     print_status $YELLOW "🔧 Activating clauder in current directory..."
     clauder_activate || {
         print_status $RED "❌ Failed to activate clauder"
-        return 1
+        return 0
     }
     
     print_status $GREEN "✅ Clauder updated and activated successfully!"
@@ -128,11 +128,11 @@ prompt_for_update() {
             ;;
         [nN]|[nN][oO])
             print_status $BLUE "Skipping update. Continuing with current version..."
-            return 1
+            return 0
             ;;
         *)
             print_status $RED "Invalid response. Skipping update."
-            return 1
+            return 0
             ;;
     esac
 }
