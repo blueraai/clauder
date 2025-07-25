@@ -19,9 +19,9 @@ safe_exit() {
 
 # Function to display usage
 usage() {
-    echo "Usage: source activate.sh [target_project_path]"
-    echo "Example: source activate.sh ./my-project"
-    echo "Example: source activate.sh                    # Use current directory"
+    echo "Usage: clauder_activate [target_project_path]"
+    echo "Example: clauder_activate ./my-project"
+    echo "Example: clauder_activate                    # Use current directory"
     echo ""
     echo "Arguments:"
     echo "  target_project_path    Directory to activate (default: current directory)"
@@ -29,7 +29,7 @@ usage() {
     echo "Options:"
     echo "  -h, --help     Show this help message"
     echo "  -v, --version  Show version information"
-    safe_exit 1
+    safe_exit 0
 }
 
 # Function to display version
@@ -103,12 +103,29 @@ cleanup_old_backups() {
     
     # Remove backups beyond the 10th one
     if [ ${#backups[@]} -gt 10 ]; then
-        echo "Cleaning up old backups (keeping 10 most recent)..."
+        local backups_to_remove=()
         for ((i=10; i<${#backups[@]}; i++)); do
-            local old_backup="${backups[$i]}"
-            echo "Removing old backup: $(basename "$old_backup")"
-            rm -rf "$old_backup"
+            backups_to_remove+=("$(basename "${backups[$i]}")")
         done
+        
+        echo "Found ${#backups_to_remove[@]} old backup(s) to remove (keeping 10 most recent):"
+        printf '  %s\n' "${backups_to_remove[@]}"
+        echo ""
+        echo -n "Do you want to remove these old backups? (y/N): "
+        read -r reply
+        echo
+        
+        if [[ $reply =~ ^[Yy]$ ]]; then
+            echo "Removing old backups..."
+            for ((i=10; i<${#backups[@]}; i++)); do
+                local old_backup="${backups[$i]}"
+                echo "Removing: $(basename "$old_backup")"
+                rm -rf "$old_backup"
+            done
+            echo "✓ Old backups removed successfully"
+        else
+            echo "Skipping cleanup of old backups"
+        fi
     fi
 }
 
@@ -138,10 +155,10 @@ check_existing_files() {
     fi
     
     if [ ${#files_to_overwrite[@]} -gt 0 ]; then
-        echo "Warning: The following files will be overwritten:"
+        echo "Warning: The following files will be backed up and overwritten:"
         printf '  %s\n' "${files_to_overwrite[@]}"
         echo ""
-        echo -n "Do you want to replace these existing files? (y/N): "
+        echo -n "Do you want to backup and replace these existing files? (y/N): "
         read -r reply
         echo
         if [[ ! $reply =~ ^[Yy]$ ]]; then
@@ -178,19 +195,20 @@ copy_claude_folder() {
     
     # Note: Even if target is current directory, we still check and replace files as needed
     
-    # Create backup of existing .claude directory if it exists
-    create_backup "$target_claude" "$target_project"
-    
-    # Check for existing files and prompt for approval
-    check_existing_files "$source_claude" "$target_claude"
-    if [ $? -ne 0 ]; then
-        return 0
-    fi
-    
-    # Create target .claude directory if it doesn't exist
+    # Check if target .claude directory exists
     if [ ! -d "$target_claude" ]; then
+        # Create target .claude directory if it doesn't exist
         echo "Creating .claude directory in $target_project..."
         mkdir -p "$target_claude"
+    else
+        # Backup existing .claude directory and check for existing files
+        create_backup "$target_claude" "$target_project"
+        
+        # Check for existing files and prompt for approval
+        check_existing_files "$source_claude" "$target_claude"
+        if [ $? -ne 0 ]; then
+            return 0
+        fi
     fi
     
     # Copy all files from source .claude to target .claude
