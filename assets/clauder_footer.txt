@@ -8,7 +8,7 @@
 
 \033[1;33m⚠️  IMPORTANT\033[0m
 
-\033[1;33m* Remember to run '/rules' as your first message in the chat below.\033[0m 
+\033[1;33m→ Remember to run '/rules' as your first message in the chat below.\033[0m 
 
 
 
