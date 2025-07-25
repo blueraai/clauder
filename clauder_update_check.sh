@@ -83,7 +83,7 @@ perform_update() {
     local clauder_dir="$1"
     local original_dir="$2"
     
-    print_status $YELLOW "🔄 Updating clauder..."
+    print_status $BLUE "🔄 Updating clauder..."
     
     # Change to clauder directory
     cd "$clauder_dir"
@@ -97,7 +97,7 @@ perform_update() {
     print_status $GREEN "✅ Successfully pulled latest changes"
     
     # Reinstall clauder
-    print_status $YELLOW "🔧 Reinstalling clauder..."
+    print_status $BLUE "🔧 Reinstalling clauder..."
     source ./clauder_install.sh || {
         print_status $RED "❌ Failed to reinstall clauder"
         return 0
@@ -115,7 +115,7 @@ perform_update() {
     
     case "$activate_response" in
         [yY]|[yY][eE][sS])
-            print_status $YELLOW "🔧 Activating clauder in current directory..."
+            print_status $BLUE "🔧 Activating clauder in current directory..."
             # Ensure we're in the original directory where the user ran the command
             cd "$original_dir"
             # Pass the original directory explicitly to avoid confusion
