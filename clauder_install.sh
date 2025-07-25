@@ -195,7 +195,7 @@ main() {
     print_status $YELLOW "You can now use:"
     print_status $DARK_GRAY "  clauder_activate [project_path]        # Activate clauder in a project (default: current directory if not provided)"
     print_status $DARK_GRAY "  clauder_security_check [project_path]  # Check project security (default: current directory if not provided)"
-    print_status $DARK_GRAY "  clauder                                # Start Claude Codewith security check"
+    print_status $DARK_GRAY "  clauder                                # Start Claude Code with security checks"
 }
 
 # Run main function with all arguments
