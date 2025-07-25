@@ -1,4 +1,4 @@
-![clauder](https://fasplnlepuuumfjocrsu.supabase.co/storage/v1/object/public/web-assets//clauder.png)
+![clauder](https://fasplnlepuuumfjocrsu.supabase.co/storage/v1/object/public/web-assets//clauder-character.png)
 
 ## `> CLAUDER` - a safer base configuration for Claude Code
 
