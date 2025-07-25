@@ -5,3 +5,4 @@
 .clause/scripts
 .claude/preferences.json
 .claude/rules.md
+.claude-backup/
