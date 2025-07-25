@@ -44,6 +44,11 @@ check_for_updates() {
     
     # Fetch latest changes
     print_status $BLUE "🔍 Checking for updates..."
+    
+    # Display directory information after the checking message
+    print_status $DARK_GRAY "Clauder directory: $clauder_dir"
+    print_status $DARK_GRAY "Project directory: $current_dir"
+    
     git fetch origin main > /dev/null 2>&1 || {
         print_status $RED "❌ Failed to fetch updates from remote repository"
         cd "$current_dir"
@@ -62,6 +67,7 @@ check_for_updates() {
         return 0
     else
         print_status $GREEN "✅ Clauder is up to date"
+        print_status $DARK_GRAY "Current commit: $(git rev-parse --short HEAD)"
         cd "$current_dir"
         return 1
     fi
@@ -135,10 +141,6 @@ prompt_for_update() {
 main() {
     local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
     local current_dir="$(pwd)"
-    
-    # Display directory information
-    print_status $DARK_GRAY "Clauder directory: $clauder_dir"
-    print_status $DARK_GRAY "Project directory: $current_dir"
     
     # Check for updates
     if check_for_updates "$clauder_dir" "$current_dir"; then
