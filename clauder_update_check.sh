@@ -32,7 +32,7 @@ check_git_repo() {
 # Function to check for updates
 check_for_updates() {
     local clauder_dir="$1"
-    local current_dir="$2"
+    local original_dir="$2"
     
     if ! check_git_repo "$clauder_dir"; then
         print_status $YELLOW "⚠️  Clauder directory is not a git repository. Skipping update check."
@@ -47,11 +47,11 @@ check_for_updates() {
     
     # Display directory information after the checking message
     print_status $DARK_GRAY "Clauder directory: $clauder_dir"
-    print_status $DARK_GRAY "Project directory: $current_dir"
+    print_status $DARK_GRAY "Project directory: $original_dir"
     
     git fetch origin main > /dev/null 2>&1 || {
         print_status $RED "❌ Failed to fetch updates from remote repository"
-        cd "$current_dir"
+        cd "$original_dir"
         return 0
     }
     
@@ -63,12 +63,12 @@ check_for_updates() {
         print_status $YELLOW "🔄 Update available for clauder!"
         print_status $BLUE "Local:  $(git rev-parse --short HEAD)"
         print_status $BLUE "Remote: $(git rev-parse --short origin/main)"
-        cd "$current_dir"
+        cd "$original_dir"
         return 0
     else
         print_status $GREEN "✅ Clauder is up to date"
         print_status $DARK_GRAY "Current commit: $(git rev-parse --short HEAD)"
-        cd "$current_dir"
+        cd "$original_dir"
         return 0
     fi
 }
@@ -76,7 +76,7 @@ check_for_updates() {
 # Function to perform update
 perform_update() {
     local clauder_dir="$1"
-    local current_dir="$2"
+    local original_dir="$2"
     
     print_status $YELLOW "🔄 Updating clauder..."
     
@@ -101,7 +101,7 @@ perform_update() {
     print_status $GREEN "✅ Clauder reinstalled successfully"
     
     # Return to original directory
-    cd "$current_dir"
+    cd "$original_dir"
     
     # Ask for user approval before activating
     echo
@@ -112,9 +112,9 @@ perform_update() {
         [yY]|[yY][eE][sS])
             print_status $YELLOW "🔧 Activating clauder in current directory..."
             # Ensure we're in the original directory where the user ran the command
-            cd "$current_dir"
-            # Pass the current directory explicitly to avoid confusion
-            clauder_activate "$current_dir" || {
+            cd "$original_dir"
+            # Pass the original directory explicitly to avoid confusion
+            clauder_activate "$original_dir" || {
                 print_status $RED "❌ Failed to activate clauder"
                 return 0
             }
@@ -138,7 +138,7 @@ perform_update() {
 # Function to prompt user for update
 prompt_for_update() {
     local clauder_dir="$1"
-    local current_dir="$2"
+    local original_dir="$2"
     
     echo
     print_status $YELLOW "Would you like to update clauder? (y/n)"
@@ -146,7 +146,7 @@ prompt_for_update() {
     
     case "$response" in
         [yY]|[yY][eE][sS])
-            perform_update "$clauder_dir" "$current_dir"
+            perform_update "$clauder_dir" "$original_dir"
             return 0
             ;;
         [nN]|[nN][oO])
@@ -162,12 +162,13 @@ prompt_for_update() {
 
 # Main function
 main() {
+    # Capture the original directory BEFORE any changes
+    local original_dir="$(pwd)"
     local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
-    local current_dir="$(pwd)"
     
     # Check for updates
-    if check_for_updates "$clauder_dir" "$current_dir"; then
-        prompt_for_update "$clauder_dir" "$current_dir"
+    if check_for_updates "$clauder_dir" "$original_dir"; then
+        prompt_for_update "$clauder_dir" "$original_dir"
     fi
 }
 
