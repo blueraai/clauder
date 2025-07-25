@@ -100,15 +100,35 @@ perform_update() {
     
     print_status $GREEN "✅ Clauder reinstalled successfully"
     
-    # Return to original directory and activate
+    # Return to original directory
     cd "$current_dir"
-    print_status $YELLOW "🔧 Activating clauder in current directory..."
-    clauder_activate || {
-        print_status $RED "❌ Failed to activate clauder"
-        return 0
-    }
     
-    print_status $GREEN "✅ Clauder updated and activated successfully!"
+    # Ask for user approval before activating
+    echo
+    print_status $YELLOW "Would you like to activate the latest version of clauder in the current project? (y/n)"
+    read -r activate_response
+    
+    case "$activate_response" in
+        [yY]|[yY][eE][sS])
+            print_status $YELLOW "🔧 Activating clauder in current directory..."
+            clauder_activate || {
+                print_status $RED "❌ Failed to activate clauder"
+                return 0
+            }
+            print_status $GREEN "✅ Clauder updated and activated successfully!"
+            ;;
+        [nN]|[nN][oO])
+            print_status $BLUE "Skipping activation."
+            print_status $YELLOW "⚠️  Clauder was updated but the latest version was not applied to this project."
+            print_status $BLUE "You can re-run 'clauder_activate' to apply the latest changes."
+            ;;
+        *)
+            print_status $RED "Invalid response. Skipping activation."
+            print_status $YELLOW "⚠️  Clauder was updated but the latest version was not applied to this project."
+            print_status $BLUE "You can re-run 'clauder_activate' to apply the latest changes."
+            ;;
+    esac
+    
     return 0
 }
 
