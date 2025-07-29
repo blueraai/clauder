@@ -128,6 +128,8 @@ or using the `/spawn` command explicitly.
 
 The resulting agent instructions will be define in `.claude/agents/<agent-name>.md`. You may review, and edit this file to further refine your new sub-agent. You may dismiss a sub-agent at any time, by deleting `.claude/agents/<agent-name>.md`.
 
+**New agents become available/unavailable on start of a new Claude Code session**. Creating or deleting an agent will not apply to current sessions. Start a new `clauder` session to use your newly created agent.
+
 ## Features
 
 > [!IMPORTANT]
@@ -316,6 +318,15 @@ Clauder dependencies and recommended MCP servers.
 ## Troubleshooting
 
 ### **Common Issues**
+
+**New agent not found**
+```bash
+# New agents become available/unavailable on start of a new Claude Code session.
+# Creating or deleting an agent will not apply to current sessions. 
+# Start a new session to use your newly created agent.
+
+clauder
+```
 
 **Missing required tools**
 ```bash
