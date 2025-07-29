@@ -2,7 +2,7 @@
 import json
 import re
 import sys
-import trace_decision
+from .utils.trace_decision import log_decision
 
 # Define validation rules as a list of (regex pattern, message) tuples
 VALIDATION_RULES = [
@@ -408,6 +408,6 @@ if issues:
         "decision": "block",
         "reason": f"Unsafe command blocked, requires Human approval: {'; '.join(issues)}"
     }
-    trace_decision.log_decision(output, operation_type="unsafe_command_decision")
+    log_decision(output, operation_type="unsafe_command_decision")
     print(json.dumps(output))
     sys.exit(2)

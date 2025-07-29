@@ -3,7 +3,7 @@ import json
 import sys
 import subprocess
 import os
-import trace_decision
+from .utils.trace_decision import log_decision
 
 # Helper function to check if file should be ignored
 def should_ignore_file(file_path):
@@ -67,7 +67,7 @@ try:
                     "decision": "block",
                     "reason": f"Changes detected but {', '.join(missing_updates)} not updated. You MUST update these files before proceeding. HISTORY.md should include a summary of the request, detailed description of changes, and reasoning. SPECIFICATIONS.md should reflect all latest specifications."
                 }
-                trace_decision.log_decision(output, operation_type="documentation_updates_decision")
+                log_decision(output, operation_type="documentation_updates_decision")
                 print(json.dumps(output))
                 sys.exit(2)
         
@@ -79,7 +79,7 @@ try:
             "decision": "block",
             "reason": "Uncommitted changes detected. Please commit your changes with '[claude] <summary>' format before proceeding, including a meaningful summary and an extensive description of the changes."
         }
-        trace_decision.log_decision(output, operation_type="commit_required_decision")
+        log_decision(output, operation_type="commit_required_decision")
         print(json.dumps(output))
         sys.exit(2)
     

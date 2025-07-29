@@ -8,7 +8,7 @@ import subprocess
 import sys
 import os
 import json
-import trace_decision
+from .utils.trace_decision import log_decision
 
 def main():
     """Main function to check required tools."""
@@ -38,7 +38,7 @@ def main():
                 "decision": "block",
                 "reason": f"Missing required tools: {missing_tools_str}"
             }
-            trace_decision.log_decision(output, operation_type="required_tools_decision")
+            log_decision(output, operation_type="required_tools_decision")
             print(json.dumps(output))
             sys.exit(2)
         
@@ -54,7 +54,7 @@ def main():
             "decision": "block",
             "reason": f"Error in check-required-tools: {e}"
         }
-        trace_decision.log_decision(output, operation_type="required_tools_error_decision")
+        log_decision(output, operation_type="required_tools_error_decision")
         print(json.dumps(output))
         sys.exit(2)
 

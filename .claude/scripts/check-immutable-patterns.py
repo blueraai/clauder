@@ -8,7 +8,7 @@ import json
 import sys
 import os
 import fnmatch
-import trace_decision
+from .utils.trace_decision import log_decision
 
 
 def main():
@@ -44,7 +44,7 @@ def main():
                 "decision": "block",
                 "reason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {path})"
             }
-            trace_decision.log_decision(output, operation_type="immutable_patterns_decision")
+            log_decision(output, operation_type="immutable_patterns_decision")
             print(json.dumps(output))
             sys.exit(2)
         
@@ -62,7 +62,7 @@ def main():
                                 "decision": "block",
                                 "reason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {line})"
                             }
-                            trace_decision.log_decision(output, operation_type="immutable_file_decision")
+                            log_decision(output, operation_type="immutable_file_decision")
                             print(json.dumps(output))
                             sys.exit(2)
         
@@ -80,7 +80,7 @@ def main():
                                 "decision": "block",
                                 "reason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {line})"
                             }
-                            trace_decision.log_decision(output, operation_type="env_variable_decision")
+                            log_decision(output, operation_type="env_variable_decision")
                             print(json.dumps(output))
                             sys.exit(2)
         
