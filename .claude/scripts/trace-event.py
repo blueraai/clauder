@@ -47,7 +47,7 @@ def log_to_database(db_path, data):
     cursor = conn.cursor()
     
     # Extract operation type if available in the data
-    operation_type = data.get('operation', data.get('type', 'unknown'))
+    operation_type = data.get('hook_event_name', data.get('type', 'unknown'))
     
     # Insert the trace data
     cursor.execute('''
