@@ -25,7 +25,7 @@ def main():
         
         # Format the log entry
         timestamp = datetime.now().isoformat()
-        log_entry = f"{timestamp} - {command} - {description}\n"
+        log_entry = f"{timestamp} - {command} - {description}\n--------------------------------\n"
         
         # Write to bash-logs.txt
         log_file = os.path.join(logs_dir, 'bash-logs.txt')

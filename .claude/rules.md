@@ -3,14 +3,15 @@
 1. You MUST NEVER update this file, and ALWAYS honor and enforce all of its rules above all else. Only the user may ever update these rules. You may NEVER overrule these in any way. You SHALL NEVER summarize those rules, they MUST be followed verbatim.
 2. If you face any deadlock or uncertainty in honoring these rules, pause and explain your issue to the user, seeking for guidance.
 3. You MUST NEVER read any file or folder matching any entry in the `.claude/.ignore` file, or any secret like keys or credentials, even if you are asked to do so or you deem it necessary.
-4. You MUST ALWAYS explain in the most amount of details possible the actions you are about to take and pause to ask for review and approval before proceeding with making any code change, any tool call, taking any action, or executing any command (OTHER THAN `say`, or any command explicitly allowed in `.claude/settings.json` or `.claude/settings.local.json`).
-5. Unless small and purely visual, any effort MUST be broken down into a series of the smallest possible steps, each with:
+4. You MUST NEVER write any file or folder matching any entry in the `.claude/.immutable` file, even if you are asked to do so or you deem it necessary.
+5. You MUST ALWAYS explain in the most amount of details possible the actions you are about to take and pause to ask for review and approval before proceeding with making any code change, any tool call, taking any action, or executing any command (OTHER THAN `say`, or any command explicitly allowed in `.claude/settings.json` or `.claude/settings.local.json`).
+6. Unless small and purely visual, any effort MUST be broken down into a series of the smallest possible steps, each with:
 - Clear goals
 - Extensive risks and edge cases outlined
 - A testing plan
 - A backward compatibility assessment
 If any of these are unclear, risky, or require user input, you MUST pause and discuss with the user before proceeding.
-6. When planning or executing anything you:
+7. When planning or executing anything you:
 - Ensure any design and implementation is coherent and compatible with `HISTORY.md` and `SPECIFICATIONS.md`, should those files exist at project root level.
 - MUST Check for inconsistencies (e.g., duplicate code, conflicting code, dead code, unstable code, anything that breaks existing behavior, anything that conflicts with established patterns)
 - MUST Check for best practices
@@ -21,12 +22,13 @@ If any of these are unclear, risky, or require user input, you MUST pause and di
 - MUST Check for possible side effects (direct or indirect)
 - MUST Check, clearly highlight, and request user consent, for any irreversible or hardly reversible action (e.g., running commands, deletions)
 - MUST Check, clearly highlight, and request user consent, for anything that may impact the production environment
-7. After actions are taken, ensure that `HISTORY.md` and `SPECIFICATIONS.md` at project root level are correctly updated to reflect the latest state and decisions. Ensure these remain coherent, complete, best represented, best organized. `HISTORY.md` should include a summary of the request, detailed description of changes, and reasoning. `SPECIFICATIONS.md` should reflect all latest specifications.
-8. Once your are done with your current task, before committing, you MUST present ALL diffs with the last commit and seek user review and approval. 
+8. After actions are taken, ensure that `HISTORY.md` and `SPECIFICATIONS.md` at project root level are correctly updated to reflect the latest state and decisions. Ensure these remain coherent, complete, best represented, best organized. `HISTORY.md` should include a summary of the request, detailed description of changes, and reasoning. `SPECIFICATIONS.md` should reflect all latest specifications.
+9. Once your are done with your current task, before committing, you MUST present ALL diffs with the last commit and seek user review and approval. 
 - If the user approves, proceed with updating the `HISTORY.md` and `SPECIFICATIONS.md` files and commit your changes with `[claude] <summary>` format, including a meaningful summary and an extensive description of the changes.
 - If the user comments, use that feedback to get back to work. Reapply the same effort breakdown, checks, and `HISTORY.md` and `SPECIFICATIONS.md` updates accordingly.
 - If the user disapproves, show the commit history and present all commits and actions to undo. You MUST get explicit approval from the user before proceeding.
-9. You do not need approval to commit or update the `HISTORY.md` and `SPECIFICATIONS.md` files, but you need describe the actions taken in the most amount of details possible.
-10. You SHALL NEVER attempt to bypass a blocking hook or denied access by trying a different method.
-11. You SHALL NEVER execute any script which you do not trust.
-12. When working with CSS, all `px` values MUST be expressed in `rem`, unless lower than 4px or defining media breakpoint.
+10. You do not need approval to commit or update the `HISTORY.md` and `SPECIFICATIONS.md` files, but you need describe the actions taken in the most amount of details possible.
+11. You SHALL NEVER attempt to bypass a blocking hook or denied access by trying a different method.
+12. You SHALL NEVER execute any script which you do not trust.
+13. When working with CSS, all `px` values MUST be expressed in `rem`, unless lower than 4px or defining media breakpoint.
+14. When creating a new Claude Code Sub-Agent, through `/agents` or when asked to create a new `Claude` agent in natural language, always use the specilized agent called `agent-builder`.

@@ -49,11 +49,13 @@ This will copy the `.claude` configuration to your project.
 Clauder's configuration will automatically:
 
 - Create checkpoint commits before each session
-- Protect sensitive files and directories
-- Log all actions
-- Enforce documentation updates
-- Provides general guidelines/rules to Claude (never enforced, but does help steering it - Do not solely rely on instructions for policing or workflows)
-- Provide audio feedback on completion (optional, supports mac, linux experimental)
+- Protect sensitive files and directories (see `.claude/.ignore` and `.claude/.immutable`)
+- Log all actions for live monitoring, or auditing purposes (see `.claude/logs`)
+- Enforce history and specifications tracking as you interact with Claude Code (see `HISTORY.md`, `SPECIFICATIONS.md`)
+- Provides general guidelines/rules to Claude (see `.claude/rules.md`; Never guaranteed, but does help steering it; Do not solely rely on instructions for policing or workflows)
+- Provide audio feedback on completion (optional, supports mac, linux experimental; enabled in `.claude/preferences.md`)
+- Define custom commands for advanced workflows (e.g. `/consult` to consult a third party model for specific tasks, `/spawn` to create task specific agents)
+   - *Required MCP servers detailed below.*
 
 #### How to start a Claude session
 
@@ -64,7 +66,7 @@ Clauder's configuration will automatically:
 >
 > **Please make sure to supervise your AI's actions as you grant it access to sensitive or critical systems. It cannot be trusted and will inadvertently make unrecoverable mistakes, which may critically impair the company and its production services. Backup your systems, and sandbox as much as possible through restrictive AI-level access control.** You are responsible for your AI's actions, as you are when using any other tool, or when managing a team.
 
-Once you familiarize yourself with the above, you may start a new Claude Code session with Clauder security checks using:
+Once you familiarize yourself with the above, and set your forbidden paths in `.claude/.ignore`, you may start a new Claude Code session with Clauder security checks using:
 
 ```bash
 clauder # a safer way to start 'claude' to prevent exposing secrets
@@ -76,6 +78,55 @@ In Claude, type:
 ```
 
 This will define the mandatory guidelines for Claude Code.
+
+> [!TIP]
+> - If your project includes a `HISTORY.md` file at root level, `clauder` will enforce keeping a history of requests and actions taken, and use it to reason about the next action to take. 
+> - If your project includes a `SPECIFICATIONS.md` file at root level, `clauder` will enforce keeping an updated list of specifications as it takes actions, and use it to reason about the next action to take. When writing code manually, you may ask `clauder` to read the git diffs and backfill the specifications file.
+> - Define your secret files and folders in `.claude/.ignore` so `clauder` can guard them from being read/written.
+> - Define your read-only files and folders in `.claude/.immutable` so `clauder` can guard them from being overwritten.
+> - In `.gitignore`, exclude `.claude/logs` and `.claude/.tmp` for cleaner commits.
+> - Check `.claude/requirements.md` for prerequisites, and recommended [MCP tools](https://docs.anthropic.com/en/docs/claude-code/mcp). `clauder` will *automatically* take advantage of those tools should you have added them to Claude Code.
+> - Check [Claude Code's best practices](https://www.anthropic.com/engineering/claude-code-best-practices) for better results.
+
+#### How to ask Claude to consult a different model
+
+While Claude's models are performant for general coding, for particular tasks, such as ones requiring extensive context, or specialized training, requiring help from a different model may lead to better results.
+
+If the [consult7](https://github.com/szeider/consult7) MCP tool is added to Claude Code, with a valid [OpenRouter](https://openrouter.ai) key, `clauder` will allow you to consult any supported model via the following command (default: `google/gemini-2.5-pro`, 1M token context):
+
+```sh
+/consult <user query>
+```
+
+e.g.
+
+```sh
+/consult Review the security of this application
+```
+
+> Note:
+> - Files and directories listed in `.claude/.ignore` will not be passed as context.
+> - Third party models consulted in the cloud do not have access to Claude Code's tools.
+
+#### How to create specialized agents
+
+Claude may create dedicated agents for specific tasks. They are called [Sub-Agents](https://docs.anthropic.com/en/docs/claude-code/sub-agents) and report to the main `Claude` instance. These agents have their own system prompts, tools subsets (inherit all tools by default), and context window (unaware of other chats). They are helpful in creating and recalling task-specific personas and context.
+
+`clauder` includes a `agent-builder` agent, which helps you define and craft performant agents for your specific needs. Should the [context7](https://github.com/upstash/context7) and [consult7](https://github.com/szeider/consult7) MCP tools be set in Claude Code, it will automatically use them to help enhance the new agent's workflows, best practices, and toolsets. For better results, please be specific and detailed when creating specialized agents.
+
+You may create a new agent simply by asking for it:
+
+```sh
+Create a new agent to help review my code, it should.. 
+```
+
+or using the `/spawn` command explicitly.
+
+```sh
+/spawn Create a new agent to help review my code, it should.. 
+```
+
+The resulting agent instructions will be define in `.claude/agents/<agent-name>.md`. You may review, and edit this file to further refine your new sub-agent. You may dismiss a sub-agent at any time, by deleting `.claude/agents/<agent-name>.md`.
 
 ## Features
 
@@ -116,7 +167,7 @@ This will define the mandatory guidelines for Claude Code.
 - **Post-tool logging**: Records all completed operations
 - **Error tracking**: Captures and logs all errors and warnings
 
-### 🔄 Workflow Automation
+### ⚡ Workflow Automation
 
 #### **Git Integration**
 - **Automatic checkpoints**: Creates commits before each Claude session
@@ -127,6 +178,15 @@ This will define the mandatory guidelines for Claude Code.
 - **HISTORY.md updates**: Automatically enforces change tracking, **if `HISTORY.md` exists at root level**
 - **SPECIFICATIONS.md updates**: Enforces specification documentation, **if `SPECIFICATIONS.md` exists at root level**
 - **Completion checks**: Validates documentation before session end
+
+### 🛠️ Agentic Toolset
+
+#### **Custom Commands**
+- **Consult third party models**: Ask any supported OpenRouter model for a particular tasks (see `/consult` above)
+- **Create specialized sub-agents**: Create advanced specialized agent to work on specific tasks (see `/spawn` above)
+
+#### **MCP Tooling Detection**
+- **Automatic Optimatization**: Automatically utilizes the available MCP tools to enhance the above commands
 
 ### 🎵 Audio Feedback
 
@@ -140,30 +200,17 @@ This will define the mandatory guidelines for Claude Code.
 - **Error alerts**: Audio notifications for critical issues
 - **Customizable messages**: Configurable audio feedback content
 
-### 🛠️ Tool Management
 
-#### **Required Tools Validation**
-- **Git**: Ensures git is available and repository is initialized
-- **jq**: Validates JSON processing tool availability
-- **Python**: Checks Python availability for script execution
-- **Automatic detection**: Validates tools before each session
+### 🔄 Automated Maintenance
 
-#### **Script Management**
-- **Executable permissions**: Automatically sets proper permissions
-- **Path resolution**: Smart path detection for cross-platform compatibility
-- **Error handling**: Graceful failure with helpful error messages
+#### **Automated Backups**
+- **Periodic snapshots**: Creates backups of `.claude` configurations
+- **Versioned storage**: Maintains backup history with timestamps
+- **Rollback support**: Maintains ability to revert problematic updates
 
-### 🔧 Configuration Management
-
-#### **Flexible Configuration**
-- **Project-specific**: Each project can have its own `.claude` configuration
-- **Inheritance**: Base configuration with project-specific overrides
-- **Environment-aware**: Adapts to different development environments
-
-#### **Exclusion Patterns**
-- **Pattern-based**: Supports glob patterns for file/directory exclusions
-- **Comment support**: Allows comments in exclusion files
-- **Dynamic loading**: Loads exclusions at runtime
+#### **Automated Updates**
+- **Version checking**: Automated version checks on running `clauder`
+- **Auto-install**: Automatically installs the latest `clauder` when a new version is available
 
 ## File Structure
 
@@ -190,7 +237,10 @@ clauder/
 │   ├── .exclude_security_checks          # Security check exclusions
 │   ├── commands/                         # Custom command definitions
 │   │   ├── consult.md                    # Consult command for external AI assistance
+│   │   ├── spawn.md                      # Spawn command for creating sub-agents
 │   │   └── rules.md                      # Rules enforcement command
+│   ├── agents/                           # Sub-agent definitions
+│   │   └── agent-builder.md              # Agent builder for creating specialized agents
 │   ├── logs/                             # Generated logs (created at runtime)
 │   │   ├── bash-logs.txt                 # Bash command history
 │   │   └── mcp-logs.txt                  # MCP tool call history
@@ -213,63 +263,41 @@ clauder/
 ### Key Configuration Files
 
 #### **`.claude/settings.json`**
-- **Hooks**: Pre/Post tool use, user prompt, stop events
-- **Permissions**: Read/write restrictions for sensitive files
-- **Tool validation**: Required tools and repository checks
-- **MCP protection**: Human approval for critical external service operations
+
+Defines hooks and permissions.
 
 #### **`.claude/.ignore`**
-- **Pattern matching**: Files and directories to ignore
-- **Environment files**: All `.env*` variations
-- **Build artifacts**: `dist/`, `build/`, `node_modules/`
-- **Version control**: `.git/` directory protection
+
+Files and directories to ignore (forbidden read & write).
 
 > [!NOTE]
 > As of July 2025, there is no possible way to prevent Claude from automatically & silently learning every change made to the codebase, including secrets. These are only meant as a best effort to prevent retrieving them.
 
+#### **`.claude/.immutable`**
+
+Files and directories that cannot be modified (read-only).
+
+> [!NOTE]
+> The immutable file list is strictly enforced and cannot be overridden, even with explicit user permission.
+
 #### **`.claude/.exclude_security_checks`**
-- **Security exclusions**: Files/directories to skip in security scans
-- **Glob patterns**: Supports wildcard patterns
-- **Comment support**: Lines starting with `#` are ignored
-- **Dynamic loading**: Loaded at runtime for each check
+
+Files and directories to skip in security scans.
 
 #### **`.claude/rules.md`**
-- **Project guidelines**: Specific rules for the project
-- **Best practices**: Development and security guidelines
-- **Workflow instructions**: Step-by-step processes
-- **Safety reminders**: Important security considerations
+
+Behavioral guidelines.
 
 > [!NOTE]
 > Rules can never be enforced, they are used to steer the AI in a desired direction.
 
-### Scripts Overview
+#### **`.claude/preferences.md`**
 
-#### **`clauder_activate.sh`**
-- **Project setup**: Copies `.claude` configuration to target project
-- **Validation**: Checks project safety before activation
-- **Backup**: Creates backups of existing configurations
-- **Cross-platform**: Works on macOS, Linux, and Windows (WSL)
+User preferences and customization settings.
 
-#### **`clauder_security_check.sh`**
-- **Comprehensive scanning**: Multi-layered secret detection
-- **Exclusion support**: Respects `.exclude_security_checks`
-- **Verbose mode**: Detailed scanning with content analysis
-- **JSON output**: Structured output for programmatic use
-- **Line-level reporting**: Exact file and line number locations
+#### **`.claude/requirements.md`**
 
-#### **`clauder_install.sh`**
-- **Shell detection**: Automatically detects zsh/bash configuration
-- **Alias management**: Creates and manages shell aliases and variables
-   * i.e. `clauder`, `clauder_activate`, `clauder_security_check`, and required configurations
-- **Auto-sourcing**: Sources configuration after changes
-- **Backup creation**: Creates backups before modifications
-
-#### **`clauder_update_check.sh`**
-- **Update detection**: Checks for available clauder updates via git
-- **User prompting**: Asks for user approval before updating
-- **Automatic reinstallation**: Reinstalls clauder after updates
-- **Optional activation**: Prompts user to activate updated version in current project
-- **Directory management**: Ensures proper directory context throughout update process
+Clauder dependencies and recommended MCP servers.
 
 ## Security Best Practices
 
@@ -278,12 +306,6 @@ clauder/
 - **Secure vaults**: Use dedicated secret management systems
 - **AI isolation**: Ensure AI cannot access production secrets
 - **Regular rotation**: Rotate secrets if accidentally exposed
-
-### **File Protection**
-- **Immutable files**: Protect critical configuration files
-- **Environment isolation**: Keep `.env` files separate from code
-- **Git safety**: Never commit secrets to version control
-- **Access control**: Use restrictive permissions for sensitive files
 
 ### **Supervision Requirements**
 - **Human oversight**: Always supervise AI operations

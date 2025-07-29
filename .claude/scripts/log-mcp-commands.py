@@ -22,7 +22,7 @@ def main():
         
         # Format the log entry with timestamp
         timestamp = datetime.now().isoformat()
-        log_entry = f"{timestamp} - {json.dumps(data)}\n"
+        log_entry = f"{timestamp} - {json.dumps(data)}\n--------------------------------\n"
         
         # Write to mcp-logs.txt
         log_file = os.path.join(logs_dir, 'mcp-logs.txt')
