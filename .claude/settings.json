@@ -2,6 +2,15 @@
   "hooks": {
     "PreToolUse": [
       {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/trace.py"
+          }
+        ]
+      },
+      {
         "matcher": "Edit|MultiEdit|Write|mcp|Bash|Read|Grep",
         "hooks": [
           {
@@ -76,6 +85,15 @@
     ],
     "PostToolUse": [
       {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/trace.py"
+          }
+        ]
+      },
+      {
         "matcher": "Bash",
         "hooks": [
           {
@@ -94,11 +112,25 @@
         ]
       }
     ],
-    "Notification": [],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/trace.py"
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "matcher": "",
         "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/trace.py"
+          },
           {
             "type": "command",
             "command": "python3 .claude/scripts/check-required-tools.py"
@@ -124,6 +156,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "python3 .claude/scripts/trace.py"
+          },
+          {
+            "type": "command",
             "command": "python3 .claude/scripts/audio-summary.py"
           },
           {
@@ -133,8 +169,28 @@
         ]
       }
     ],
-    "SubagentStop": [],
-    "PreCompact": []
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/trace.py"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/trace.py"
+          }
+        ]
+      }
+    ]
   },
   "permissions": {
     "allow": [
