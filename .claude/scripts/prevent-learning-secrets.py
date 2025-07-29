@@ -13,7 +13,7 @@ import math
 from pathlib import Path
 from typing import List, Tuple
 from collections import Counter
-from .utils.trace_decision import log_decision
+from utils.trace_decision import log_decision
 
 class Colors:
     """ANSI color codes for terminal output."""

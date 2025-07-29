@@ -3,7 +3,7 @@ import json
 import sys
 import subprocess
 import os
-from .utils.trace_decision import log_decision
+from utils.trace_decision import log_decision
 
 # Helper function to check if file should be ignored
 def should_ignore_file(file_path):

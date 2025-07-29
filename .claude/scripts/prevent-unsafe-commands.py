@@ -2,7 +2,7 @@
 import json
 import re
 import sys
-from .utils.trace_decision import log_decision
+from utils.trace_decision import log_decision
 
 # Define validation rules as a list of (regex pattern, message) tuples
 VALIDATION_RULES = [

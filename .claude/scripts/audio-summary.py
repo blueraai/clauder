@@ -5,7 +5,7 @@ import os
 import subprocess
 import platform
 import time
-from .utils.trace_decision import log_decision
+from utils.trace_decision import log_decision
 
 def check_command_available(command):
     """Check if a command is available in the system PATH."""

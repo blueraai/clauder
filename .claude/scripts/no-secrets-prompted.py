@@ -3,7 +3,7 @@ import json
 import sys
 import re
 import base64
-from .utils.trace_decision import log_decision
+from utils.trace_decision import log_decision
 
 def is_likely_secret(text):
     """Check if text looks like a secret based on various heuristics."""

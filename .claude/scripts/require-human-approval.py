@@ -2,7 +2,7 @@
 import json
 import sys
 import os
-from .utils.trace_decision import log_decision
+from utils.trace_decision import log_decision
 
 # ANSI color codes
 YELLOW = '\033[93m'

@@ -8,7 +8,7 @@ import json
 import sys
 import os
 import fnmatch
-from .utils.trace_decision import log_decision
+from utils.trace_decision import log_decision
 
 
 def main():

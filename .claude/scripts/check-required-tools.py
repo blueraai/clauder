@@ -8,7 +8,7 @@ import subprocess
 import sys
 import os
 import json
-from .utils.trace_decision import log_decision
+from utils.trace_decision import log_decision
 
 def main():
     """Main function to check required tools."""
