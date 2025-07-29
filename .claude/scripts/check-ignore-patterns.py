@@ -8,7 +8,7 @@ import json
 import sys
 import os
 import fnmatch
-from .trace_decision import log_decision
+import trace_decision
 
 
 def main():
@@ -41,7 +41,7 @@ def main():
                     "decision": "block",
                     "reason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {pattern})"
                 }
-                log_decision(output, operation_type="ignore_patterns_decision")
+                trace_decision.log_decision(output, operation_type="ignore_patterns_decision")
                 print(json.dumps(output))
                 sys.exit(2)
         
@@ -59,7 +59,7 @@ def main():
                                 "decision": "block",
                                 "reason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {line})"
                             }
-                            log_decision(output, operation_type="claudeignore_decision")
+                            trace_decision.log_decision(output, operation_type="claudeignore_decision")
                             print(json.dumps(output))
                             sys.exit(2)
         

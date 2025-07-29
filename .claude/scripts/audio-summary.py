@@ -5,7 +5,7 @@ import os
 import subprocess
 import platform
 import time
-from .trace_decision import log_decision
+import trace_decision
 
 def check_command_available(command):
     """Check if a command is available in the system PATH."""
@@ -120,7 +120,7 @@ def main():
         "decision": "block",
         "reason": "Audio summary required. You must now verbally report to the user that you've completed the task. Briefly describe what you just did in less than 20 words, then use the say command to speak, such as 'say \"[your description]\"'. Just run the say command directly, don't create any files or scripts."
     }
-    log_decision(output, operation_type="audio_summary_decision")
+    trace_decision.log_decision(output, operation_type="audio_summary_decision")
     print(json.dumps(output))
     sys.exit(2)
 
