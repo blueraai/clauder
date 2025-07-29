@@ -2,7 +2,8 @@
 .claude/.ignore
 .claude/settings.json
 .claude/commands
-.clause/scripts
+.claude/scripts
 .claude/preferences.json
 .claude/rules.md
 .claude-backup/
+.claude/logs

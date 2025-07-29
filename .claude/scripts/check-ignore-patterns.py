@@ -31,16 +31,17 @@ def main():
         env_path = '.env'
         
         # Check if path contains any ignore patterns
-        if any(pattern in path for pattern in ignore_patterns):
-            output = {
-                "continue": False,
-                "stopReason": f"Security policy violation. Attempted to access sensitive file. (file: {path})",
-                "suppressOutput": False,
-                "decision": "block",
-                "reason": f"Security policy violation. Attempted to access sensitive file. (file: {path})"
-            }
-            print(json.dumps(output))
-            sys.exit(2)
+        for pattern in ignore_patterns:
+            if pattern in path:
+                output = {
+                    "continue": False,
+                    "stopReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {pattern})",
+                    "suppressOutput": False,
+                    "decision": "block",
+                    "reason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {pattern})"
+                }
+                print(json.dumps(output))
+                sys.exit(2)
         
         # Check claudeignore file if it exists
         if os.path.exists(claudeignore_path):
@@ -51,11 +52,12 @@ def main():
                         if fnmatch.fnmatch(path, line):
                             output = {
                                 "continue": False,
-                                "stopReason": f"Security policy violation. Attempted to access sensitive file. (file: {line})",
+                                "stopReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {line})",
                                 "suppressOutput": False,
                                 "decision": "block",
-                                "reason": f"Security policy violation. Attempted to access sensitive file. (file: {line})"
+                                "reason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {line})"
                             }
+                            print(json.dumps(output))
                             sys.exit(2)
         
         # Check if command contains environment variables from .env
@@ -67,10 +69,10 @@ def main():
                         if env_var in command:
                             output = {
                                 "continue": False,
-                                "stopReason": f"Security policy violation. Attempted to access sensitive file. (file: {line})",
+                                "stopReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, env_var: {env_var})",
                                 "suppressOutput": False,
                                 "decision": "block",
-                                "reason": f"Security policy violation. Attempted to access sensitive file. (file: {line})"
+                                "reason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, env_var: {env_var})"
                             }
                             print(json.dumps(output))
                             sys.exit(2)
