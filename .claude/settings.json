@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace.py"
+            "command": "python3 .claude/scripts/trace-event.py"
           }
         ]
       },
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace.py"
+            "command": "python3 .claude/scripts/trace-event.py"
           }
         ]
       },
@@ -118,7 +118,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace.py"
+            "command": "python3 .claude/scripts/trace-event.py"
           }
         ]
       }
@@ -129,7 +129,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace.py"
+            "command": "python3 .claude/scripts/trace-event.py"
           },
           {
             "type": "command",
@@ -156,7 +156,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace.py"
+            "command": "python3 .claude/scripts/trace-event.py"
           },
           {
             "type": "command",
@@ -175,7 +175,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace.py"
+            "command": "python3 .claude/scripts/trace-event.py"
           }
         ]
       }
@@ -186,7 +186,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace.py"
+            "command": "python3 .claude/scripts/trace-event.py"
           }
         ]
       }

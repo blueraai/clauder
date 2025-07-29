@@ -13,6 +13,7 @@ import math
 from pathlib import Path
 from typing import List, Tuple
 from collections import Counter
+from .trace_decision import log_decision
 
 class Colors:
     """ANSI color codes for terminal output."""
@@ -523,6 +524,7 @@ Examples:
                     "decision": "block",
                     "reason": "Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded."
                 }
+                log_decision(output, operation_type="prevent_learning_secrets_decision")
             print(json.dumps(output))
             
         elif args.json:

@@ -3,6 +3,7 @@ import json
 import sys
 import re
 import base64
+from .trace_decision import log_decision
 
 def is_likely_secret(text):
     """Check if text looks like a secret based on various heuristics."""
@@ -171,6 +172,7 @@ if found_secret:
         "decision": "block",
         "reason": f"Security policy violation: Quoted content contains potential secrets. Pattern triggered: {pattern_name} (starts with: {preview}). Please rephrase your request without sensitive information."
     }
+    log_decision(output, operation_type="quoted_secrets_decision")
     print(json.dumps(output))
     sys.exit(2)
 
@@ -188,6 +190,7 @@ for word in words:
             "decision": "block",
             "reason": f"Security policy violation: Prompt contains potential secret values. Pattern triggered: {pattern_name} (starts with: {preview}). Please rephrase your request without sensitive information."
         }
+        log_decision(output, operation_type="word_secrets_decision")
         print(json.dumps(output))
         sys.exit(2)
 

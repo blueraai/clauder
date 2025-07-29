@@ -2,6 +2,7 @@
 import json
 import sys
 import os
+from .trace_decision import log_decision
 
 # ANSI color codes
 YELLOW = '\033[93m'
@@ -33,5 +34,6 @@ output = {
     "decision": "block",
     "reason": "This action requires human approval. YOU MUST REQUEST EXPLICIT HUMAN APPROVAL for the tool and input before proceeding, stating 'Risk detected. This action may be destructive beyond recovery, or may have significant consequences. <your reasoning>'. DO NOT PROCEED UNTIL YOU HAVE RECEIVED EXPLICIT HUMAN APPROVAL."
 }
+log_decision(output, operation_type="human_approval_decision")
 print(json.dumps(output))
 sys.exit(2)
