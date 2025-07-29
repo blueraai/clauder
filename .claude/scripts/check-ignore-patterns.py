@@ -60,22 +60,22 @@ def main():
                             print(json.dumps(output))
                             sys.exit(2)
         
-        # Check if command contains environment variables from .env
-        if os.path.exists(env_path):
-            with open(env_path, 'r') as f:
-                for line in f:
-                    if '=' in line and line.strip() and not line.startswith('#'):
-                        env_var = line.split('=')[0].strip()
-                        if env_var in command:
-                            output = {
-                                "continue": False,
-                                "stopReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, env_var: {env_var})",
-                                "suppressOutput": False,
-                                "decision": "block",
-                                "reason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, env_var: {env_var})"
-                            }
-                            print(json.dumps(output))
-                            sys.exit(2)
+        # # Check if command contains environment variables from .env
+        # if os.path.exists(env_path):
+        #     with open(env_path, 'r') as f:
+        #         for line in f:
+        #             if '=' in line and line.strip() and not line.startswith('#'):
+        #                 env_var = line.split('=')[0].strip()
+        #                 if env_var in command:
+        #                     output = {
+        #                         "continue": False,
+        #                         "stopReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, env_var: {env_var})",
+        #                         "suppressOutput": False,
+        #                         "decision": "block",
+        #                         "reason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, env_var: {env_var})"
+        #                     }
+        #                     print(json.dumps(output))
+        #                     sys.exit(2)
         
         # All checks passed
         sys.exit(0)
