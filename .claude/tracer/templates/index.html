@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Trace Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #2d2d44;
+        }
+
+        .header h1 {
+            color: #64ffda;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #2d2d44;
+        }
+
+        .stat-card h3 {
+            color: #64ffda;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .controls {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #2d2d44;
+        }
+
+        .controls button {
+            background: #64ffda;
+            color: #0f0f23;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .controls button:hover {
+            background: #4cd6b3;
+        }
+
+        .controls button:disabled {
+            background: #2d2d44;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .events-container {
+            background: #1a1a2e;
+            border-radius: 10px;
+            border: 1px solid #2d2d44;
+            overflow: hidden;
+        }
+
+        .events-header {
+            background: #2d2d44;
+            padding: 15px 20px;
+            border-bottom: 1px solid #3d3d54;
+        }
+
+        .events-header h2 {
+            color: #64ffda;
+            font-size: 1.2em;
+        }
+
+        .events-list {
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .event-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #2d2d44;
+            transition: background-color 0.2s;
+        }
+
+        .event-item:hover {
+            background: #2a2a3e;
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .event-id {
+            color: #64ffda;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .event-type {
+            background: #4cd6b3;
+            color: #0f0f23;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .event-timestamp {
+            color: #888;
+            font-size: 0.9em;
+            font-family: monospace;
+        }
+
+        .event-data {
+            background: #0f0f23;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #2d2d44;
+        }
+
+        .status {
+            padding: 10px 20px;
+            background: #2d2d44;
+            border-top: 1px solid #3d3d54;
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .status.connected {
+            color: #4cd6b3;
+        }
+
+        .status.disconnected {
+            color: #ff6b6b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .new-event {
+            animation: highlight 2s ease-out;
+        }
+
+        @keyframes highlight {
+            0% { background: #4cd6b3; }
+            100% { background: transparent; }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2d2d44;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3d3d54;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Claude Trace Viewer</h1>
+            <p>Real-time monitoring of Claude operations and tool usage</p>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <h3>Total Events</h3>
+                <div class="value" id="total-events">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Last Event</h3>
+                <div class="value" id="last-event">None</div>
+            </div>
+            <div class="stat-card">
+                <h3>Database Status</h3>
+                <div class="value" id="connection-status">Connecting...</div>
+            </div>
+            <div class="stat-card">
+                <h3>Table Status</h3>
+                <div class="value" id="table-status">Checking...</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="clear-btn" onclick="clearEvents()">Clear Events</button>
+            <button id="refresh-btn" onclick="loadEvents()">Refresh</button>
+            <button id="auto-scroll-btn" onclick="toggleAutoScroll()">Auto-scroll: ON</button>
+        </div>
+
+        <div class="events-container">
+            <div class="events-header">
+                <h2>📊 Trace Events</h2>
+            </div>
+            <div class="events-list" id="events-list">
+                <div class="loading">Loading events...</div>
+            </div>
+            <div class="status" id="status">Connecting to event stream...</div>
+        </div>
+    </div>
+
+    <script>
+        let events = [];
+        let autoScroll = true;
+        let eventSource = null;
+        let lastEventId = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadEvents();
+            startEventStream();
+        });
+
+        function loadStats() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('total-events').textContent = data.total_events;
+                    document.getElementById('last-event').textContent = 
+                        data.last_event ? `${data.last_event.operation_type} (${data.last_event.timestamp})` : 'None';
+                    
+                    // Update database status
+                    if (!data.db_exists) {
+                        document.getElementById('connection-status').textContent = 'No Database';
+                        document.getElementById('connection-status').style.color = '#ff6b6b';
+                    } else {
+                        document.getElementById('connection-status').textContent = 'Connected';
+                        document.getElementById('connection-status').style.color = '#4cd6b3';
+                    }
+                    
+                    // Update table status
+                    if (!data.table_exists) {
+                        document.getElementById('table-status').textContent = 'No Table';
+                        document.getElementById('table-status').style.color = '#ffa500';
+                    } else {
+                        document.getElementById('table-status').textContent = 'Ready';
+                        document.getElementById('table-status').style.color = '#4cd6b3';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading stats:', error);
+                    document.getElementById('connection-status').textContent = 'Error';
+                    document.getElementById('connection-status').style.color = '#ff6b6b';
+                    document.getElementById('table-status').textContent = 'Error';
+                    document.getElementById('table-status').style.color = '#ff6b6b';
+                });
+        }
+
+        function loadEvents() {
+            fetch('/api/events?limit=100')
+                .then(response => response.json())
+                .then(data => {
+                    events = data;
+                    renderEvents();
+                    if (data.length > 0) {
+                        lastEventId = Math.max(...data.map(e => e.id));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading events:', error);
+                    document.getElementById('events-list').innerHTML = 
+                        '<div class="no-events">Error loading events</div>';
+                });
+        }
+
+        function startEventStream() {
+            if (eventSource) {
+                eventSource.close();
+            }
+
+            eventSource = new EventSource('/api/stream');
+            
+            eventSource.onopen = function() {
+                document.getElementById('status').textContent = 'Connected to live stream';
+                document.getElementById('status').className = 'status connected';
+            };
+
+            eventSource.onmessage = function(event) {
+                const newEvent = JSON.parse(event.data);
+                
+                // Handle status and error messages
+                if (newEvent.type === 'status' || newEvent.type === 'error') {
+                    // Update status display
+                    const statusElement = document.getElementById('status');
+                    statusElement.textContent = newEvent.message;
+                    statusElement.className = `status ${newEvent.type}`;
+                    
+                    // Refresh stats to update database/table status
+                    loadStats();
+                    return;
+                }
+                
+                // Handle regular events
+                events.unshift(newEvent);
+                
+                // Keep only last 100 events
+                if (events.length > 100) {
+                    events = events.slice(0, 100);
+                }
+                
+                renderEvents();
+                loadStats();
+                
+                // Highlight new event
+                const firstEvent = document.querySelector('.event-item');
+                if (firstEvent) {
+                    firstEvent.classList.add('new-event');
+                    setTimeout(() => firstEvent.classList.remove('new-event'), 2000);
+                }
+            };
+
+            eventSource.onerror = function() {
+                document.getElementById('status').textContent = 'Connection lost. Reconnecting...';
+                document.getElementById('status').className = 'status disconnected';
+                setTimeout(startEventStream, 5000);
+            };
+        }
+
+        function renderEvents() {
+            const container = document.getElementById('events-list');
+            
+            if (events.length === 0) {
+                container.innerHTML = '<div class="no-events">No events found</div>';
+                return;
+            }
+
+            container.innerHTML = events.map(event => `
+                <div class="event-item">
+                    <div class="event-header">
+                        <span class="event-id">#${event.id}</span>
+                        <span class="event-type">${event.operation_type}</span>
+                        <span class="event-timestamp">${event.timestamp}</span>
+                    </div>
+                    <div class="event-data">${JSON.stringify(event.data, null, 2)}</div>
+                </div>
+            `).join('');
+
+            if (autoScroll) {
+                container.scrollTop = 0;
+            }
+        }
+
+        function clearEvents() {
+            events = [];
+            renderEvents();
+        }
+
+        function toggleAutoScroll() {
+            autoScroll = !autoScroll;
+            const btn = document.getElementById('auto-scroll-btn');
+            btn.textContent = `Auto-scroll: ${autoScroll ? 'ON' : 'OFF'}`;
+        }
+
+        // Refresh stats every 10 seconds
+        setInterval(loadStats, 10000);
+    </script>
+</body>
+</html> 

@@ -69,7 +69,7 @@ export CLAUDER_DIR="$project_abs_path"
 alias clauder_activate='source "$activate_script"'
 alias clauder_security_check='source "$security_script"'
 clauder_footer() { local footer_content="\$(cat "$project_abs_path/assets/clauder_footer.txt")"; echo -e "\$footer_content"; }
-alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && source "$project_abs_path/clauder_update_check.sh" && clauder_security_check && clauder_footer && claude'
+alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && source "$project_abs_path/clauder_update_check.sh" && clauder_security_check && clauder_footer && if [[ "\$1" == "--trace" ]]; then shift; "$project_abs_path/clauder_trace.sh" & sleep 2; fi && claude "\$@"'
 EOF
     
     # Replace original file
