@@ -130,6 +130,42 @@ The resulting agent instructions will be define in `.claude/agents/<agent-name>.
 
 **New agents become available/unavailable on start of a new Claude Code session**. Creating or deleting an agent will not apply to current sessions. Start a new `clauder` session to use your newly created agent.
 
+#### How to trace & audit Claude
+
+Every event and automated `clauder` intervention is locally logged in a SQLite database for auditing and live monitoring Claude.
+
+That database is available at `.claude/logs/trace.sqlite`, once the first event has been logged.
+
+Additionally, all `bash` commands ran and MCP tool calls are duplicated as text logs for easy inspection at `.claude/logs/bash-logs.txt` and `.claude/logs/mcp-logs.txt`.
+
+##### Real-time monitoring with Clauder Tracer
+
+You may use or build any monitoring app you'd like to inspect that SQLite database. For convenience, a lightweight tracer app is also shipped with `clauder`.
+
+You may run the tracer app in a parallel termimal at any time, new events will be live streamed to it:
+
+###### Install
+
+```bash
+# install (using conda, in project directory)
+conda create -n clauder_trace python=3.11 -y && conda activate clauder_trace && pip install -r ./.claude/tracer/requirements.txt
+
+# install (without conda, in project directory)
+pip install -r ./.claude/tracer/requirements.txt
+```
+
+###### Run
+
+```bash
+# run (using conda, in project directory)
+conda activate clauder_trace && clauder_trace
+
+# run (without conda, in project directory)
+clauder_trace
+```
+
+Access the tracer app at `http://localhost:4441` in your browser.
+
 ## Features
 
 > [!IMPORTANT]
@@ -159,10 +195,10 @@ The resulting agent instructions will be define in `.claude/agents/<agent-name>.
 ### 📊 Logging & Monitoring
 
 #### **Comprehensive Logging**
-- **Bash command logging**: All shell commands logged to `~/.claude/bash-logs.txt`
-- **MCP operation logging**: All MCP tool calls logged to `~/.claude/mcp-logs.txt`
-- **Audit trail**: Complete history of all operations for security review
-- **Structured logging**: JSON format for programmatic analysis
+- **Bash command logging**: All shell commands logged to `.claude/logs/bash-logs.txt`
+- **MCP operation logging**: All MCP tool calls logged to `.claude/logs/mcp-logs.txt`
+- **Audit trail**: Complete history of all operations for security review in local SQLite database at `.claude/logs/trace.sqlite`
+- **Tracer app**: A lightweight web app can be ran in parallel to audit and monitor Claude (see `clauder_trace`)
 
 #### **Real-time Monitoring**
 - **Pre-tool validation**: Validates operations before execution
@@ -245,8 +281,14 @@ clauder/
 │   │   └── agent-builder.md              # Agent builder for creating specialized agents
 │   ├── logs/                             # Generated logs (created at runtime)
 │   │   ├── bash-logs.txt                 # Bash command history
-│   │   └── mcp-logs.txt                  # MCP tool call history
+│   │   ├── mcp-logs.txt                  # MCP tool call history
+│   │   └── trace.sqlite                  # SQLite database for trace events
 │   ├── .tmp/                             # Temporary files (created at runtime)
+│   ├── tracer/                           # Trace viewer web application
+│   │   ├── app.py                        # Flask web server for trace viewer
+│   │   ├── requirements.txt              # Python dependencies for tracer
+│   │   └── templates/                    # HTML templates
+│   │       └── index.html                # Main trace viewer interface
 │   └── scripts/                          # Python and shell scripts
 │       ├── check-ignore-patterns.py      # Pre-tool use ignore pattern checker
 │       ├── check-immutable-patterns.py   # Pre-tool use immutable pattern checker
@@ -259,7 +301,10 @@ clauder/
 │       ├── require-human-approval.py     # Human approval for sensitive operations
 │       ├── no-secrets-prompted.py        # Prompt validation for secrets
 │       ├── enforce-completion-checks.py  # Documentation enforcement
-│       └── audio-summary.py              # Audio feedback script
+│       ├── audio-summary.py              # Audio feedback script
+│       ├── trace-event.py                # General event logging script
+│       └── utils/                        # Utility modules
+│           └── trace_decision.py         # Trace decision logging module
 ```
 
 ### Key Configuration Files
@@ -318,6 +363,14 @@ Clauder dependencies and recommended MCP servers.
 ## Troubleshooting
 
 ### **Common Issues**
+
+**Clauder crashes my terminal**
+```bash
+# Clauder will exit for safety purposes when detecting potential secrets, so they do not get indexed by Claude.
+# For details about problematic files, run:
+
+clauder_security_check & echo done
+```
 
 **New agent not found**
 ```bash
