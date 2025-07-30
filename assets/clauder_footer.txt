@@ -3,7 +3,13 @@
 
 🔥 Report issues: https://github.com/blueraai/clauder/issues/
 
+* Useful commands:
 
+→ '/rules' to enforce rules.
+→ '/recruit' to recommend sub-agents for this project, or what you have in mind.
+→ '/spawn' to create a specialized sub-agents for a given task. (only report to the main agent, does not share context)
+→ '/review' for a general purpose code review
+→ '/consult' to consult another supported model through OpenRouter
 
 
 \033[1;33m⚠️  IMPORTANT\033[0m

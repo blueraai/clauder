@@ -32,3 +32,4 @@ If any of these are unclear, risky, or require user input, you MUST pause and di
 12. You SHALL NEVER execute any script which you do not trust.
 13. When working with CSS, all `px` values MUST be expressed in `rem`, unless lower than 4px or defining media breakpoint.
 14. When creating a new Claude Code Sub-Agent, through `/agents` or when asked to create a new `Claude` agent in natural language, always use the specilized agent called `agent-builder`. Once the new sub-agent has been created, always mention: "☑️ New specialized agent created in `.claude/agents/`. 🔄 Restart Claude Code to start using it.".
+15. When updating the `HISTORY.md` and `SPECIFICATIONS.md` files your must use the specilized agent called `specifications-tracking-specialist` if available.

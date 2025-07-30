@@ -88,6 +88,22 @@ This will define the mandatory guidelines for Claude Code.
 > - Check `.claude/requirements.md` for prerequisites, and recommended [MCP tools](https://docs.anthropic.com/en/docs/claude-code/mcp). `clauder` will *automatically* take advantage of those tools should you have added them to Claude Code.
 > - Check [Claude Code's best practices](https://www.anthropic.com/engineering/claude-code-best-practices) for better results.
 
+#### How to ask Claude to for a general review
+
+You may ask for a general purpose code review using:
+
+```sh
+/review
+```
+
+or about something specific:
+
+```sh
+/review Assess the responsiveness of this application
+```
+
+> Create custom commands or sub-agents for project specic-reviews.
+
 #### How to ask Claude to consult a different model
 
 While Claude's models are performant for general coding, for particular tasks, such as ones requiring extensive context, or specialized training, requiring help from a different model may lead to better results.
@@ -129,6 +145,22 @@ or using the `/spawn` command explicitly.
 The resulting agent instructions will be define in `.claude/agents/<agent-name>.md`. You may review, and edit this file to further refine your new sub-agent. You may dismiss a sub-agent at any time, by deleting `.claude/agents/<agent-name>.md`.
 
 **New agents become available/unavailable on start of a new Claude Code session**. Creating or deleting an agent will not apply to current sessions. Start a new `clauder` session to use your newly created agent.
+
+##### Looking to recruit new sub agents?
+
+`clauder` includes a command to recommend sub-agents for your project.
+
+You may ask for general project-specific recommendations using:
+
+```sh
+/recruit
+```
+
+or about something specific:
+
+```sh
+/recruit I want to make this web app..
+```
 
 #### How to trace & audit Claude
 
@@ -229,6 +261,9 @@ Access the tracer app at `http://localhost:4441` in your browser.
 #### **Custom Commands**
 - **Consult third party models**: Ask any supported OpenRouter model for a particular tasks (see `/consult` above)
 - **Create specialized sub-agents**: Create advanced specialized agent to work on specific tasks (see `/spawn` above)
+- **Code review**: Request a comprehensive code review of the project or specific files (see `/review` above)
+- **Sub-agent recruitment**: Get recommendations for specialized sub-agents based on project needs (see `/recruit` above)
+
 
 #### **MCP Tooling Detection**
 - **Automatic Optimatization**: Automatically utilizes the available MCP tools to enhance the above commands
