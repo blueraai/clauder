@@ -224,8 +224,8 @@
         }
 
         .events-container {
-            border: 1px solid #333;
-            background: #001100;
+            border: 1px solid var(--border-primary);
+            background: var(--bg-secondary);
             display: flex;
             flex-direction: column;
             height: calc(100vh - 300px);
@@ -233,9 +233,9 @@
         }
 
         .events-header {
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-primary);
             padding: 6px 8px;
-            background: #002200;
+            background: var(--bg-tertiary);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -243,13 +243,13 @@
         }
 
         .events-header h2 {
-            color: #00ff00;
+            color: var(--text-secondary);
             font-size: 0.9em;
             font-weight: normal;
         }
 
         .events-header .event-count {
-            color: #888;
+            color: var(--text-tertiary);
             font-size: 0.8em;
         }
 
@@ -273,16 +273,7 @@
             cursor: not-allowed;
         }
 
-        .events-header h2 {
-            color: #00ff00;
-            font-size: 0.9em;
-            font-weight: normal;
-        }
 
-        .events-header .event-count {
-            color: #888;
-            font-size: 0.8em;
-        }
 
         .events-list {
             flex: 1;
@@ -557,8 +548,113 @@
         let currentLimit = 100;
         let hasMoreEvents = false;
 
+        // Theme support
+        const themes = {
+            green: {
+                '--bg-primary': '#0a0a0a',
+                '--bg-secondary': '#001100',
+                '--bg-tertiary': '#002200',
+                '--bg-quaternary': '#000000',
+                '--text-primary': '#ffffff',
+                '--text-secondary': '#00ff00',
+                '--text-tertiary': '#888',
+                '--text-success': '#00ff00',
+                '--text-error': '#ff0000',
+                '--text-warning': '#ffaa00',
+                '--border-primary': '#333',
+                '--border-secondary': '#002200',
+                '--border-warning': '#ffaa00',
+                '--border-error': '#ff0000',
+                '--button-hover-bg': '#00ff00',
+                '--button-hover-text': '#001100',
+                '--button-disabled-bg': '#001100',
+                '--button-disabled-text': '#004400',
+                '--button-disabled-border': '#004400'
+            },
+            gray: {
+                '--bg-primary': '#0a0a0a',
+                '--bg-secondary': '#1a1a1a',
+                '--bg-tertiary': '#2a2a2a',
+                '--bg-quaternary': '#000000',
+                '--text-primary': '#ffffff',
+                '--text-secondary': '#cccccc',
+                '--text-tertiary': '#888',
+                '--text-success': '#44ff44',
+                '--text-error': '#ff6666',
+                '--text-warning': '#ffaa44',
+                '--border-primary': '#444',
+                '--border-secondary': '#2a2a2a',
+                '--border-warning': '#ffaa44',
+                '--border-error': '#ff6666',
+                '--button-hover-bg': '#cccccc',
+                '--button-hover-text': '#1a1a1a',
+                '--button-disabled-bg': '#1a1a1a',
+                '--button-disabled-text': '#444',
+                '--button-disabled-border': '#444'
+            },
+            blue: {
+                '--bg-primary': '#0a0a0a',
+                '--bg-secondary': '#001122',
+                '--bg-tertiary': '#002244',
+                '--bg-quaternary': '#000000',
+                '--text-primary': '#ffffff',
+                '--text-secondary': '#66aaff',
+                '--text-tertiary': '#888',
+                '--text-success': '#44ff44',
+                '--text-error': '#ff6666',
+                '--text-warning': '#ff8844',
+                '--border-primary': '#333',
+                '--border-secondary': '#002244',
+                '--border-warning': '#ff8844',
+                '--border-error': '#ff6666',
+                '--button-hover-bg': '#66aaff',
+                '--button-hover-text': '#001122',
+                '--button-disabled-bg': '#001122',
+                '--button-disabled-text': '#004400',
+                '--button-disabled-border': '#004400'
+            },
+            dark: {
+                '--bg-primary': '#000000',
+                '--bg-secondary': '#0a0a0a',
+                '--bg-tertiary': '#1a1a1a',
+                '--bg-quaternary': '#000000',
+                '--text-primary': '#ffffff',
+                '--text-secondary': '#aaaaaa',
+                '--text-tertiary': '#666',
+                '--text-success': '#44ff44',
+                '--text-error': '#ff6666',
+                '--text-warning': '#ffaa44',
+                '--border-primary': '#222',
+                '--border-secondary': '#1a1a1a',
+                '--border-warning': '#ffaa44',
+                '--border-error': '#ff6666',
+                '--button-hover-bg': '#aaaaaa',
+                '--button-hover-text': '#0a0a0a',
+                '--button-disabled-bg': '#0a0a0a',
+                '--button-disabled-text': '#333',
+                '--button-disabled-border': '#333'
+            }
+        };
+
+        function applyTheme(themeName) {
+            const root = document.documentElement;
+            const theme = themes[themeName];
+            
+            if (theme) {
+                Object.entries(theme).forEach(([property, value]) => {
+                    root.style.setProperty(property, value);
+                });
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            // Apply theme from localStorage
+            const savedTheme = localStorage.getItem('clauder.tracer.theme');
+            if (savedTheme && themes[savedTheme]) {
+                applyTheme(savedTheme);
+            }
+            
             loadTimeline();
             loadEvents();
             updateStatusLabels();
@@ -589,27 +685,27 @@
                     // Update database status
                     if (!data.db_exists) {
                         document.getElementById('connection-status').textContent = 'No Database';
-                        document.getElementById('connection-status').style.color = '#ff0000';
+                        document.getElementById('connection-status').style.color = 'var(--text-error)';
                     } else {
                         document.getElementById('connection-status').textContent = 'Connected';
-                        document.getElementById('connection-status').style.color = '#00ff00';
+                        document.getElementById('connection-status').style.color = 'var(--text-success)';
                     }
                     
                     // Update table status
                     if (!data.table_exists) {
                         document.getElementById('table-status').textContent = 'No Table';
-                        document.getElementById('table-status').style.color = '#ffaa00';
+                        document.getElementById('table-status').style.color = 'var(--text-warning)';
                     } else {
                         document.getElementById('table-status').textContent = 'Ready';
-                        document.getElementById('table-status').style.color = '#00ff00';
+                        document.getElementById('table-status').style.color = 'var(--text-success)';
                     }
                 })
                 .catch(error => {
                     console.error('Error loading stats:', error);
                     document.getElementById('connection-status').textContent = 'Offline';
-                    document.getElementById('connection-status').style.color = '#ff0000';
+                    document.getElementById('connection-status').style.color = 'var(--text-error)';
                     document.getElementById('table-status').textContent = 'Not Ready';
-                    document.getElementById('table-status').style.color = '#ff0000';
+                    document.getElementById('table-status').style.color = 'var(--text-error)';
                 });
         }
 
@@ -904,7 +1000,7 @@
         function toggleAutoScroll() {
             autoScroll = !autoScroll;
             const btn = document.getElementById('auto-scroll-btn');
-            btn.textContent = `Auto-scroll: ${autoScroll ? 'ON' : 'OFF'}`;
+            btn.textContent = `auto-scroll: ${autoScroll ? 'ON' : 'OFF'}`;
         }
 
         // Refresh timeline and status labels every 10 seconds
