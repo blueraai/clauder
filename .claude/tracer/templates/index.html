@@ -37,8 +37,11 @@
 
         .header h1 {
             color: #00ff00;
-            font-size: 1.2em;
-            font-weight: normal;
+            font-size: 1.27em;
+            font-weight: bold;
+            font-family: 'Courier New', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace;
+            margin: 0;
+            line-height: 1.1;
         }
 
         .header .status-info {
@@ -87,6 +90,7 @@
             margin-bottom: 6px;
             text-transform: uppercase;
             font-weight: normal;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace;
         }
 
         .timeline-graph {
@@ -180,7 +184,7 @@
             border: 1px solid #00ff00;
             padding: 4px 8px;
             cursor: pointer;
-            font-family: inherit;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace;
             font-size: 0.8em;
             transition: all 0.2s ease;
         }
@@ -344,6 +348,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace;
         }
 
         .status::before {
@@ -479,7 +484,7 @@
         </div>
 
         <div class="timeline-container">
-            <div class="timeline-header">Recent Activity [Last 15 Minutes from Latest Event]</div>
+            <div class="timeline-header">┌─ Recent Activity [Last 15 Minutes from Latest Event] ─┐</div>
             <div class="timeline-graph" id="timeline-graph">Loading timeline...</div>
             <div class="timeline-legend" id="timeline-legend">
                 <div class="legend-item">
@@ -502,17 +507,17 @@
         </div>
 
         <div class="controls">
-            <button id="clear-btn" onclick="clearEvents()">Clear</button>
-            <button id="refresh-btn" onclick="loadEvents()">Refresh</button>
-            <button id="auto-scroll-btn" onclick="toggleAutoScroll()">Auto-scroll: ON</button>
+            <button id="clear-btn" onclick="clearEvents()">clear</button>
+            <button id="refresh-btn" onclick="loadEvents()">refresh</button>
+            <button id="auto-scroll-btn" onclick="toggleAutoScroll()">auto-scroll: ON</button>
         </div>
 
         <div class="events-container">
             <div class="events-header">
-                <h2>Trace Events</h2>
+                <h2>[ TRACE EVENTS ]</h2>
                 <div class="event-count" id="event-count">0 events</div>
                 <div class="load-more-link" id="load-more-container" style="display: none;">
-                    <a href="#" id="load-more-btn" onclick="loadMoreEvents(); return false;">Load More</a>
+                    <a href="#" id="load-more-btn" onclick="loadMoreEvents(); return false;">+ load more</a>
                 </div>
             </div>
             <div class="events-list" id="events-list">
@@ -579,9 +584,9 @@
                 })
                 .catch(error => {
                     console.error('Error loading stats:', error);
-                    document.getElementById('connection-status').textContent = 'Error';
+                    document.getElementById('connection-status').textContent = 'Offline';
                     document.getElementById('connection-status').style.color = '#ff0000';
-                    document.getElementById('table-status').textContent = 'Error';
+                    document.getElementById('table-status').textContent = 'Not Ready';
                     document.getElementById('table-status').style.color = '#ff0000';
                 });
         }
