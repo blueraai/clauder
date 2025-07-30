@@ -303,6 +303,10 @@
             border-left: 3px solid var(--border-error);
         }
 
+        .event-item.event-user-prompt {
+            border-left: 3px solid var(--text-secondary);
+        }
+
         .event-header {
             display: flex;
             justify-content: space-between;
@@ -332,6 +336,20 @@
             font-size: 0.7em;
             font-weight: bold;
             text-transform: uppercase;
+        }
+
+        .tool-name {
+            color: var(--text-tertiary);
+            font-size: 0.7em;
+            margin-left: 6px;
+            opacity: 0.85;
+        }
+
+        .subagent-type {
+            color: var(--text-warning);
+            font-size: 0.7em;
+            opacity: 0.9;
+            font-style: italic;
         }
 
         .event-timestamp {
@@ -547,6 +565,7 @@
         let lastEventId = 0;
         let currentLimit = 100;
         let hasMoreEvents = false;
+        let currentSubagentType = null;
 
         // Theme support
         const themes = {
@@ -917,7 +936,67 @@
 
             countElement.textContent = `Last ${events.length} events`;
 
-            container.innerHTML = events.map(event => {
+            // Process events in chronological order (oldest to newest) to establish context
+            const eventsInOrder = [...events].reverse();
+            let subagentContext = null;
+            
+            // First pass: establish subagent context for each event
+            const eventsWithContext = eventsInOrder.map(event => {
+                // Extract tool name and subagent type for PreToolUse and PostToolUse events
+                let toolName = '';
+                let subagentType = null;
+                if ((event.operation_type === 'PreToolUse' || event.operation_type === 'PostToolUse') && event.data) {
+                    try {
+                        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                        if (data && data.tool_name) {
+                            toolName = data.tool_name;
+                        } else if (data && data.name) {
+                            toolName = data.name;
+                        }
+                        
+                        // Extract subagent type for Task tools
+                        if (toolName === 'Task' && data && data.tool_input && data.tool_input.subagent_type) {
+                            subagentType = data.tool_input.subagent_type;
+                        }
+                    } catch (e) {
+                        // If parsing fails, try to extract tool name from string
+                        const dataStr = typeof event.data === 'string' ? event.data : JSON.stringify(event.data);
+                        const toolMatch = dataStr.match(/"tool_name"\s*:\s*"([^"]+)"/);
+                        if (toolMatch) {
+                            toolName = toolMatch[1];
+                        }
+                        
+                        // Try to extract subagent type from string
+                        const subagentMatch = dataStr.match(/"subagent_type"\s*:\s*"([^"]+)"/);
+                        if (toolName === 'Task' && subagentMatch) {
+                            subagentType = subagentMatch[1];
+                        }
+                    }
+                }
+                
+                // Update subagent context based on event
+                if (event.operation_type === 'PreToolUse' && toolName === 'Task' && subagentType) {
+                    subagentContext = subagentType;
+                } else if (event.operation_type === 'PostToolUse' && toolName === 'Task' && subagentType) {
+                    subagentContext = null;
+                } else if (event.operation_type === 'Stop' || event.operation_type === 'UserPromptSubmit') {
+                    subagentContext = null;
+                } else if (event.data && typeof event.data === 'object' && event.data.continue === false) {
+                    subagentContext = null;
+                } else if (event.data && typeof event.data === 'string' && event.data.toLowerCase().includes('continue: false')) {
+                    subagentContext = null;
+                }
+                
+                return {
+                    ...event,
+                    displaySubagentType: subagentContext
+                };
+            });
+            
+            // Reverse back to newest-first for display
+            const eventsForDisplay = eventsWithContext.reverse();
+
+            container.innerHTML = eventsForDisplay.map(event => {
                 // Determine event type for styling
                 let eventClass = '';
                 if (event.data && typeof event.data === 'object' && event.data.continue === false) {
@@ -926,6 +1005,28 @@
                     eventClass = 'event-error';
                 } else if (event.operation_type && event.operation_type.toLowerCase().includes('decision')) {
                     eventClass = 'event-decision';
+                } else if (event.operation_type === 'UserPromptSubmit') {
+                    eventClass = 'event-user-prompt';
+                }
+                
+                // Extract tool name for PreToolUse and PostToolUse events
+                let toolName = '';
+                if ((event.operation_type === 'PreToolUse' || event.operation_type === 'PostToolUse') && event.data) {
+                    try {
+                        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                        if (data && data.tool_name) {
+                            toolName = data.tool_name;
+                        } else if (data && data.name) {
+                            toolName = data.name;
+                        }
+                    } catch (e) {
+                        // If parsing fails, try to extract tool name from string
+                        const dataStr = typeof event.data === 'string' ? event.data : JSON.stringify(event.data);
+                        const toolMatch = dataStr.match(/"tool_name"\s*:\s*"([^"]+)"/);
+                        if (toolMatch) {
+                            toolName = toolMatch[1];
+                        }
+                    }
                 }
                 
                 return `
@@ -933,7 +1034,9 @@
                     <div class="event-header">
                         <div class="event-left">
                             <span class="event-id">#${event.id}</span>
+                            ${event.displaySubagentType ? `<span class="subagent-type">[${event.displaySubagentType}]</span>` : ''}
                             <span class="event-type">${event.operation_type}</span>
+                            ${toolName ? `<span class="tool-name">${toolName}</span>` : ''}
                         </div>
                         <span class="event-timestamp">${event.timestamp}</span>
                     </div>
