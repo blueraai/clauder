@@ -166,6 +166,13 @@ clauder_trace
 
 Access the tracer app at `http://localhost:4441` in your browser.
 
+![tracer-preview](https://fasplnlepuuumfjocrsu.supabase.co/storage/v1/object/public/web-assets//tracer-preview@0.5x.png)
+
+> [!TIP]
+> You may set any of the supported themes: `green`, `blue`, `gray`, `dark`
+> 
+> Run in browser console: `localStorage.setItem('clauder.tracer.theme', 'dark'); location.reload();`
+
 ## Features
 
 > [!IMPORTANT]
