@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claude Trace Viewer</title>
+    <title>Clauder Tracer</title>
     <style>
         * {
             margin: 0;
@@ -12,259 +12,508 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0f0f23;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace;
+            background: #0a0a0a;
             color: #ffffff;
-            line-height: 1.6;
+            line-height: 1.3;
+            font-size: 13px;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
         }
 
         .header {
-            background: #1a1a2e;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #2d2d44;
+            border-bottom: 1px solid #333;
+            padding: 8px 0;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .header h1 {
-            color: #64ffda;
-            margin-bottom: 10px;
-            font-size: 2em;
+            color: #00ff00;
+            font-size: 1.2em;
+            font-weight: normal;
+        }
+
+        .header .status-info {
+            color: #888;
+            font-size: 0.9em;
         }
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px;
+            margin-bottom: 15px;
         }
 
         .stat-card {
-            background: #1a1a2e;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #2d2d44;
+            border: 1px solid #333;
+            padding: 6px 8px;
+            background: #001100;
+            min-height: 45px;
         }
 
         .stat-card h3 {
-            color: #64ffda;
-            font-size: 0.9em;
-            margin-bottom: 5px;
+            color: #00ff00;
+            font-size: 0.75em;
+            margin-bottom: 3px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: normal;
         }
 
         .stat-card .value {
-            font-size: 1.5em;
-            font-weight: bold;
+            font-size: 1em;
             color: #ffffff;
+            font-weight: bold;
         }
 
+        .timeline-container {
+            border: 1px solid #333;
+            padding: 8px;
+            margin-bottom: 15px;
+            background: #001100;
+        }
+
+        .timeline-header {
+            color: #00ff00;
+            font-size: 0.75em;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+
+        .timeline-graph {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Courier New', monospace;
+            font-size: 0.7em;
+            line-height: 1;
+            white-space: pre;
+            color: #00ff00;
+            background: #000000;
+            padding: 4px;
+            border: 1px solid #002200;
+            overflow-x: auto;
+            overflow-y: hidden;
+            width: 100%;
+            min-width: 100%;
+            box-sizing: border-box;
+            display: block;
+            margin: 0;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0;
+            word-spacing: 0;
+            font-feature-settings: "tnum";
+            word-break: keep-all;
+            overflow-wrap: normal;
+            text-align: left;
+        }
+
+        .timeline-graph .event-block {
+            color: #00ff00 !important;
+        }
+
+        .timeline-graph .decision-block {
+            color: #ffaa00 !important;
+        }
+
+        .timeline-graph .error-block {
+            color: #ff0000 !important;
+        }
+
+        .timeline-graph .empty-block {
+            color: #333 !important;
+        }
+
+        .timeline-graph span {
+            display: inline-block;
+            width: 1ch;
+            height: 1em;
+            text-align: center;
+            line-height: 1;
+            font-family: inherit;
+            min-width: 1ch;
+        }
+
+        .timeline-legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 4px;
+            font-size: 0.7em;
+            color: #888;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .legend-color {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+        }
+
+        .legend-color.event { background: #00ff00; }
+        .legend-color.decision { background: #ffaa00; }
+        .legend-color.error { background: #ff0000; }
+        .legend-color.empty { background: #333; }
+
         .controls {
-            background: #1a1a2e;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #2d2d44;
+            border: 1px solid #333;
+            padding: 6px 8px;
+            margin-bottom: 15px;
+            background: #001100;
+            display: flex;
+            gap: 8px;
         }
 
         .controls button {
-            background: #64ffda;
-            color: #0f0f23;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
+            background: #001100;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 4px 8px;
             cursor: pointer;
-            margin-right: 10px;
-            font-weight: bold;
+            font-family: inherit;
+            font-size: 0.8em;
+            transition: all 0.2s ease;
         }
 
         .controls button:hover {
-            background: #4cd6b3;
+            background: #00ff00;
+            color: #001100;
         }
 
         .controls button:disabled {
-            background: #2d2d44;
-            color: #666;
+            background: #001100;
+            color: #004400;
+            border-color: #004400;
             cursor: not-allowed;
         }
 
         .events-container {
-            background: #1a1a2e;
-            border-radius: 10px;
-            border: 1px solid #2d2d44;
-            overflow: hidden;
+            border: 1px solid #333;
+            background: #001100;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 300px);
+            min-height: 400px;
         }
 
         .events-header {
-            background: #2d2d44;
-            padding: 15px 20px;
-            border-bottom: 1px solid #3d3d54;
+            border-bottom: 1px solid #333;
+            padding: 6px 8px;
+            background: #002200;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
         }
 
         .events-header h2 {
-            color: #64ffda;
-            font-size: 1.2em;
+            color: #00ff00;
+            font-size: 0.9em;
+            font-weight: normal;
+        }
+
+        .events-header .event-count {
+            color: #888;
+            font-size: 0.8em;
+        }
+
+        .load-more-link {
+            margin-left: 15px;
+        }
+
+        .load-more-link a {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 0.8em;
+            transition: color 0.2s ease;
+        }
+
+        .load-more-link a:hover {
+            color: #ffffff;
+        }
+
+        .load-more-link a:disabled {
+            color: #004400;
+            cursor: not-allowed;
+        }
+
+        .events-header h2 {
+            color: #00ff00;
+            font-size: 0.9em;
+            font-weight: normal;
+        }
+
+        .events-header .event-count {
+            color: #888;
+            font-size: 0.8em;
         }
 
         .events-list {
-            max-height: 600px;
+            flex: 1;
             overflow-y: auto;
             padding: 0;
         }
 
         .event-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid #2d2d44;
-            transition: background-color 0.2s;
+            padding: 6px 8px;
+            border-bottom: 1px solid #002200;
+            transition: background-color 0.2s ease;
         }
 
         .event-item:hover {
-            background: #2a2a3e;
+            background: #002200;
         }
 
         .event-item:last-child {
             border-bottom: none;
         }
 
+        .event-item.event-decision {
+            border-left: 3px solid #ffaa00;
+        }
+
+        .event-item.event-error {
+            border-left: 3px solid #ff0000;
+        }
+
         .event-header {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .event-left {
+            display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            gap: 8px;
+            flex: 1;
         }
 
         .event-id {
-            color: #64ffda;
+            color: #00ff00;
             font-weight: bold;
-            font-family: monospace;
+            font-size: 0.8em;
         }
 
         .event-type {
-            background: #4cd6b3;
-            color: #0f0f23;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
+            background: #00ff00;
+            color: #001100;
+            padding: 1px 4px;
+            font-size: 0.7em;
             font-weight: bold;
             text-transform: uppercase;
         }
 
         .event-timestamp {
             color: #888;
-            font-size: 0.9em;
-            font-family: monospace;
+            font-size: 0.75em;
+            flex-shrink: 0;
         }
 
         .event-data {
-            background: #0f0f23;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 0.9em;
+            background: #000000;
+            padding: 4px 6px;
+            font-size: 0.75em;
             white-space: pre-wrap;
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
-            border: 1px solid #2d2d44;
+            border: 1px solid #002200;
+            color: #00ff00;
+            line-height: 1.2;
         }
 
         .status {
-            padding: 10px 20px;
-            background: #2d2d44;
-            border-top: 1px solid #3d3d54;
-            font-size: 0.9em;
+            padding: 4px 8px;
+            background: #002200;
+            border-top: 1px solid #333;
+            font-size: 0.8em;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status::before {
+            content: '●';
             color: #888;
         }
 
-        .status.connected {
-            color: #4cd6b3;
+        .status.connected::before {
+            color: #00ff00;
         }
 
-        .status.disconnected {
-            color: #ff6b6b;
+        .status.disconnected::before {
+            color: #ff0000;
         }
+
+
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: #888;
+            font-size: 0.9em;
         }
 
         .no-events {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: #888;
+            font-size: 0.9em;
         }
 
         .new-event {
-            animation: highlight 2s ease-out;
+            animation: highlight 0.8s ease-out;
         }
 
         @keyframes highlight {
-            0% { background: #4cd6b3; }
-            100% { background: transparent; }
+            0% { 
+                background: #00ff00;
+                color: #001100;
+            }
+            100% { 
+                background: transparent;
+                color: #00ff00;
+            }
         }
 
         /* Scrollbar styling */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #1a1a2e;
+            background: #001100;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #2d2d44;
-            border-radius: 4px;
+            background: #333;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #3d3d54;
+            background: #555;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            
+            .event-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .controls button {
+                width: 100%;
+            }
+        }
+
+        /* Terminal cursor effect */
+        .cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Compact table styling */
+        .compact-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8em;
+        }
+
+        .compact-table th,
+        .compact-table td {
+            padding: 2px 4px;
+            text-align: left;
+            border-bottom: 1px solid #002200;
+        }
+
+        .compact-table th {
+            color: #00ff00;
+            font-weight: normal;
+            background: #002200;
+        }
+
+        .compact-table td {
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔍 Claude Trace Viewer</h1>
-            <p>Real-time monitoring of Claude operations and tool usage</p>
+            <h1>> clauder.tracer</h1>
+            <div class="status-info">
+                <span id="connection-status">Connecting...</span> | 
+                <span id="table-status">Checking...</span> | 
+                bluera.ai
+            </div>
         </div>
 
-        <div class="stats" id="stats">
-            <div class="stat-card">
-                <h3>Total Events</h3>
-                <div class="value" id="total-events">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Last Event</h3>
-                <div class="value" id="last-event">None</div>
-            </div>
-            <div class="stat-card">
-                <h3>Database Status</h3>
-                <div class="value" id="connection-status">Connecting...</div>
-            </div>
-            <div class="stat-card">
-                <h3>Table Status</h3>
-                <div class="value" id="table-status">Checking...</div>
+        <div class="timeline-container">
+            <div class="timeline-header">Recent Activity [Last 15 Minutes from Latest Event]</div>
+            <div class="timeline-graph" id="timeline-graph">Loading timeline...</div>
+            <div class="timeline-legend" id="timeline-legend">
+                <div class="legend-item">
+                    <div class="legend-color event"></div>
+                    <span>Event</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color decision"></div>
+                    <span>Decision</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color error"></div>
+                    <span>Error</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color empty"></div>
+                    <span>No Activity</span>
+                </div>
             </div>
         </div>
 
         <div class="controls">
-            <button id="clear-btn" onclick="clearEvents()">Clear Events</button>
+            <button id="clear-btn" onclick="clearEvents()">Clear</button>
             <button id="refresh-btn" onclick="loadEvents()">Refresh</button>
             <button id="auto-scroll-btn" onclick="toggleAutoScroll()">Auto-scroll: ON</button>
         </div>
 
         <div class="events-container">
             <div class="events-header">
-                <h2>📊 Trace Events</h2>
+                <h2>Trace Events</h2>
+                <div class="event-count" id="event-count">0 events</div>
+                <div class="load-more-link" id="load-more-container" style="display: none;">
+                    <a href="#" id="load-more-btn" onclick="loadMoreEvents(); return false;">Load More</a>
+                </div>
             </div>
             <div class="events-list" id="events-list">
                 <div class="loading">Loading events...</div>
@@ -278,51 +527,189 @@
         let autoScroll = true;
         let eventSource = null;
         let lastEventId = 0;
+        let currentLimit = 100;
+        let hasMoreEvents = false;
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            loadStats();
+            loadTimeline();
             loadEvents();
+            updateStatusLabels();
             startEventStream();
+            
+            // Regenerate timeline on window resize
+            window.addEventListener('resize', function() {
+                setTimeout(loadTimeline, 100); // Small delay to ensure resize is complete
+            });
         });
 
-        function loadStats() {
+        function loadTimeline() {
+            fetch('/api/events?limit=1000')
+                .then(response => response.json())
+                .then(data => {
+                    generateTimeline(data);
+                })
+                .catch(error => {
+                    console.error('Error loading timeline:', error);
+                    document.getElementById('timeline-graph').textContent = 'Error loading timeline';
+                });
+        }
+
+        function updateStatusLabels() {
             fetch('/api/stats')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('total-events').textContent = data.total_events;
-                    document.getElementById('last-event').textContent = 
-                        data.last_event ? `${data.last_event.operation_type} (${data.last_event.timestamp})` : 'None';
-                    
                     // Update database status
                     if (!data.db_exists) {
                         document.getElementById('connection-status').textContent = 'No Database';
-                        document.getElementById('connection-status').style.color = '#ff6b6b';
+                        document.getElementById('connection-status').style.color = '#ff0000';
                     } else {
                         document.getElementById('connection-status').textContent = 'Connected';
-                        document.getElementById('connection-status').style.color = '#4cd6b3';
+                        document.getElementById('connection-status').style.color = '#00ff00';
                     }
                     
                     // Update table status
                     if (!data.table_exists) {
                         document.getElementById('table-status').textContent = 'No Table';
-                        document.getElementById('table-status').style.color = '#ffa500';
+                        document.getElementById('table-status').style.color = '#ffaa00';
                     } else {
                         document.getElementById('table-status').textContent = 'Ready';
-                        document.getElementById('table-status').style.color = '#4cd6b3';
+                        document.getElementById('table-status').style.color = '#00ff00';
                     }
                 })
                 .catch(error => {
                     console.error('Error loading stats:', error);
                     document.getElementById('connection-status').textContent = 'Error';
-                    document.getElementById('connection-status').style.color = '#ff6b6b';
+                    document.getElementById('connection-status').style.color = '#ff0000';
                     document.getElementById('table-status').textContent = 'Error';
-                    document.getElementById('table-status').style.color = '#ff6b6b';
+                    document.getElementById('table-status').style.color = '#ff0000';
                 });
         }
 
+        function generateTimeline(events) {
+            const now = new Date();
+            
+            // Find the most recent event time, or use current time if no events
+            let lastEventTime = now;
+            if (events.length > 0) {
+                const timestamps = events.map(e => new Date(e.timestamp));
+                lastEventTime = new Date(Math.max(...timestamps));
+            }
+            
+            const fifteenMinutesAgo = new Date(lastEventTime.getTime() - 15 * 60 * 1000);
+            
+            // Get the container width to determine graph width
+            const container = document.querySelector('.timeline-container');
+            const containerWidth = container ? container.offsetWidth - 32 : 800; // Account for padding and borders
+            const charWidth = 6; // More accurate width for the font size
+            const graphWidth = Math.floor(containerWidth / charWidth); // Use full available width
+            
+
+            
+
+            
+            // Create timeline array based on available width
+            const timeline = new Array(graphWidth).fill(null);
+            
+            // Process events and map them to timeline
+            let mappedEvents = 0;
+            let timelineEvents = [];
+            
+            events.forEach(event => {
+                const eventTime = new Date(event.timestamp);
+                
+
+                
+                if (eventTime >= fifteenMinutesAgo && eventTime <= lastEventTime) {
+                    const minutesAgo = (lastEventTime - eventTime) / (1000 * 60); // Use floating point for precision
+                    // Map time to index: graphWidth-1 = oldest (left), 0 = newest (right) - RIGHT TO LEFT
+                    const timeRatio = minutesAgo / 15; // 0 to 1 ratio
+                    const index = graphWidth - 1 - Math.floor(timeRatio * (graphWidth - 1)); // Right to left mapping
+                    
+                    // Ensure index is within bounds
+                    const clampedIndex = Math.max(0, Math.min(graphWidth - 1, index));
+                    
+                    if (clampedIndex >= 0 && clampedIndex < graphWidth) {
+                        // Determine event type based on operation_type and data content
+                        let eventType = 'event';
+                        
+                        // Check if it's an error first (contains 'continue: false')
+                        if (event.data && typeof event.data === 'object' && event.data.continue === false) {
+                            eventType = 'error';
+                        }
+                        // Check if data is a string and contains 'continue: false'
+                        else if (event.data && typeof event.data === 'string' && event.data.toLowerCase().includes('continue: false')) {
+                            eventType = 'error';
+                        }
+                        // Check if it's a decision (case insensitive)
+                        else if (event.operation_type && event.operation_type.toLowerCase().includes('decision')) {
+                            eventType = 'decision';
+                        }
+                        
+                        // If there's already an event at this index, prioritize decision/error over regular events
+                        if (timeline[clampedIndex] && timeline[clampedIndex] !== 'event') {
+                            // Keep the existing event (decision/error takes priority)
+                        } else {
+                            timeline[clampedIndex] = eventType;
+                        }
+                        mappedEvents++;
+                        
+
+                    }
+                }
+            });
+            
+            // Generate character art timeline
+            const graphHeight = 8;
+            let graph = '';
+            
+
+            
+            // Add time labels with hours
+            const timeLabels = [];
+            const labelCount = Math.min(8, Math.floor(graphWidth / 8)); // More labels for better coverage
+            for (let i = 0; i < labelCount; i++) {
+                const minutesAgo = i * (15 / labelCount);
+                const time = new Date(lastEventTime.getTime() - minutesAgo * 60 * 1000);
+                const hours = time.getHours().toString().padStart(2, '0');
+                const minutes = time.getMinutes().toString().padStart(2, '0');
+                timeLabels.push(`${hours}:${minutes}`);
+            }
+            const labelSpacing = Math.floor(graphWidth / labelCount);
+            const timeLabelLine = timeLabels.reverse().map((label, i) => 
+                label.padStart(labelSpacing, ' ')
+            ).join('');
+            graph += timeLabelLine + '<br>';
+            
+
+            
+            // Generate timeline rows
+            for (let row = 0; row < graphHeight; row++) {
+                let line = '';
+                for (let col = 0; col < graphWidth; col++) {
+                    const event = timeline[col];
+                    if (event === 'event') {
+                        line += '<span class="event-block">█</span>';
+                    } else if (event === 'decision') {
+                        line += '<span class="decision-block">█</span>';
+                    } else if (event === 'error') {
+                        line += '<span class="error-block">█</span>';
+                    } else {
+                        line += '<span class="empty-block">·</span>';
+                    }
+                }
+                graph += line + '<br>';
+            }
+            
+
+            
+            document.getElementById('timeline-graph').innerHTML = graph;
+            
+
+        }
+
         function loadEvents() {
-            fetch('/api/events?limit=100')
+            fetch(`/api/events?limit=${currentLimit}`)
                 .then(response => response.json())
                 .then(data => {
                     events = data;
@@ -330,6 +717,8 @@
                     if (data.length > 0) {
                         lastEventId = Math.max(...data.map(e => e.id));
                     }
+                    // Check if there are more events available
+                    checkForMoreEvents();
                 })
                 .catch(error => {
                     console.error('Error loading events:', error);
@@ -360,8 +749,9 @@
                     statusElement.textContent = newEvent.message;
                     statusElement.className = `status ${newEvent.type}`;
                     
-                    // Refresh stats to update database/table status
-                    loadStats();
+                    // Refresh timeline and status labels
+                    loadTimeline();
+                    updateStatusLabels();
                     return;
                 }
                 
@@ -374,13 +764,14 @@
                 }
                 
                 renderEvents();
-                loadStats();
+                loadTimeline(); // Update timeline with new data
+                updateStatusLabels(); // Update status labels
                 
                 // Highlight new event
                 const firstEvent = document.querySelector('.event-item');
                 if (firstEvent) {
                     firstEvent.classList.add('new-event');
-                    setTimeout(() => firstEvent.classList.remove('new-event'), 2000);
+                    setTimeout(() => firstEvent.classList.remove('new-event'), 800);
                 }
             };
 
@@ -393,22 +784,40 @@
 
         function renderEvents() {
             const container = document.getElementById('events-list');
+            const countElement = document.getElementById('event-count');
             
             if (events.length === 0) {
                 container.innerHTML = '<div class="no-events">No events found</div>';
+                countElement.textContent = '0 events';
                 return;
             }
 
-            container.innerHTML = events.map(event => `
-                <div class="event-item">
+            countElement.textContent = `Last ${events.length} events`;
+
+            container.innerHTML = events.map(event => {
+                // Determine event type for styling
+                let eventClass = '';
+                if (event.data && typeof event.data === 'object' && event.data.continue === false) {
+                    eventClass = 'event-error';
+                } else if (event.data && typeof event.data === 'string' && event.data.toLowerCase().includes('continue: false')) {
+                    eventClass = 'event-error';
+                } else if (event.operation_type && event.operation_type.toLowerCase().includes('decision')) {
+                    eventClass = 'event-decision';
+                }
+                
+                return `
+                <div class="event-item ${eventClass}">
                     <div class="event-header">
-                        <span class="event-id">#${event.id}</span>
-                        <span class="event-type">${event.operation_type}</span>
+                        <div class="event-left">
+                            <span class="event-id">#${event.id}</span>
+                            <span class="event-type">${event.operation_type}</span>
+                        </div>
                         <span class="event-timestamp">${event.timestamp}</span>
                     </div>
                     <div class="event-data">${JSON.stringify(event.data, null, 2)}</div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             if (autoScroll) {
                 container.scrollTop = 0;
@@ -420,14 +829,62 @@
             renderEvents();
         }
 
+        function checkForMoreEvents() {
+            // Check if there are more events by requesting one more than current limit
+            fetch(`/api/events?limit=${currentLimit + 1}`)
+                .then(response => response.json())
+                .then(data => {
+                    hasMoreEvents = data.length > currentLimit;
+                    const loadMoreContainer = document.getElementById('load-more-container');
+                    if (hasMoreEvents) {
+                        loadMoreContainer.style.display = 'block';
+                    } else {
+                        loadMoreContainer.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking for more events:', error);
+                });
+        }
+
+        function loadMoreEvents() {
+            const link = document.getElementById('load-more-btn');
+            link.style.pointerEvents = 'none';
+            link.textContent = 'Loading...';
+            
+            currentLimit += 100;
+            
+            fetch(`/api/events?limit=${currentLimit}`)
+                .then(response => response.json())
+                .then(data => {
+                    events = data;
+                    renderEvents();
+                    if (data.length > 0) {
+                        lastEventId = Math.max(...data.map(e => e.id));
+                    }
+                    checkForMoreEvents();
+                    
+                    link.style.pointerEvents = 'auto';
+                    link.textContent = 'Load More';
+                })
+                .catch(error => {
+                    console.error('Error loading more events:', error);
+                    link.style.pointerEvents = 'auto';
+                    link.textContent = 'Load More';
+                });
+        }
+
         function toggleAutoScroll() {
             autoScroll = !autoScroll;
             const btn = document.getElementById('auto-scroll-btn');
             btn.textContent = `Auto-scroll: ${autoScroll ? 'ON' : 'OFF'}`;
         }
 
-        // Refresh stats every 10 seconds
-        setInterval(loadStats, 10000);
+        // Refresh timeline and status labels every 10 seconds
+        setInterval(() => {
+            loadTimeline();
+            updateStatusLabels();
+        }, 10000);
     </script>
 </body>
 </html> 
