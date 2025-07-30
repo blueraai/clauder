@@ -517,12 +517,61 @@ Examples:
                     "reason": "No exposed secrets detected. Proceeding."
                 }
             else:
+                # Prepare detailed findings without exposing secrets
+                findings = []
+                
+                # Add exact matches
+                for pattern, file_path in results['exact_matches']:
+                    findings.append({
+                        "type": "exact_match",
+                        "pattern": pattern,
+                        "file": file_path,
+                        "line": None
+                    })
+                
+                # Add pattern matches
+                for pattern, file_path in results['pattern_matches']:
+                    findings.append({
+                        "type": "pattern_match",
+                        "pattern": pattern,
+                        "file": file_path,
+                        "line": None
+                    })
+                
+                # Add secret indicators
+                for indicator, file_path in results['secret_indicators']:
+                    findings.append({
+                        "type": "secret_indicator",
+                        "pattern": indicator,
+                        "file": file_path,
+                        "line": None
+                    })
+                
+                # Add suspicious contents
+                for file_path, finding_type, line_num in results['suspicious_contents']:
+                    findings.append({
+                        "type": "suspicious_content",
+                        "pattern": finding_type,
+                        "file": file_path,
+                        "line": line_num
+                    })
+                
+                # Convert findings to stringified tuples
+                findings_strings = []
+                for finding in findings:
+                    if finding["line"] is not None:
+                        findings_strings.append(f"(type: {finding['type']}, pattern: {finding['pattern']}, file: {finding['file']}, line: {finding['line']})")
+                    else:
+                        findings_strings.append(f"(type: {finding['type']}, pattern: {finding['pattern']}, file: {finding['file']})")
+                
+                findings_str = ", ".join(findings_strings)
+                
                 output = {
                     "continue": False,
-                    "stopReason": "Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded. If secrets have been indexed or read by an AI, you should consider removing them from the project, invalidating them and renewing them. Opening an AI session without interacting is sufficient to index secrets. Secrets must not be stored in the project itself. Production secrets should be stored in a secure vault, unreadable by AI.",
+                    "stopReason": "Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded. If secrets have been indexed or read by an AI, you should consider removing them from the project, invalidating them and renewing them. Opening an AI session without interacting is sufficient to index secrets. Secrets must not be stored in the project itself. Production secrets should be stored in a secure vault, unreadable by AI. Found: {findings_str}",
                     "suppressOutput": True,
                     "decision": "block",
-                    "reason": "Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded."
+                    "reason": f"Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded: {findings_str}"
                 }
                 log_decision(output, operation_type="prevent_learning_secrets_decision")
             print(json.dumps(output))
