@@ -870,12 +870,12 @@
                     checkForMoreEvents();
                     
                     link.style.pointerEvents = 'auto';
-                    link.textContent = 'Load More';
+                    link.textContent = '+ load more';
                 })
                 .catch(error => {
                     console.error('Error loading more events:', error);
                     link.style.pointerEvents = 'auto';
-                    link.textContent = 'Load More';
+                    link.textContent = '+ load more';
                 });
         }
 
