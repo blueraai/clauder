@@ -38,7 +38,7 @@ class ProjectSafetyChecker:
         self.sensitive_patterns = [
             "secret",
             "private",
-            "env",
+            ".env.",
             ".env",
             ".env.local",
             ".env.example",
