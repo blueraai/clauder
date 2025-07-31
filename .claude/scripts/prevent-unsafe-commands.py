@@ -418,10 +418,13 @@ issues = validate_command(command)
 if issues:
     output = {
         "continue": True,
-        "stopReason": "Unsafe command blocked, requires Human approval.",
+        "stopReason": f"Unsafe command blocked, requires Human approval: {'; '.join(issues)}",
         "suppressOutput": False,
-        "decision": "block",
-        "reason": f"Unsafe command blocked, requires Human approval: {'; '.join(issues)}"
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "ask",
+            "permissionDecisionReason": f"Unsafe command blocked, requires Human approval: {'; '.join(issues)}"
+        }
     }
     log_decision(output, operation_type="unsafe_command_decision")
     print(json.dumps(output))

@@ -41,8 +41,11 @@ def main():
                 "continue": True,
                 "stopReason": f"Security policy violation. Attempted to modify immutable file, requiring human approval. (file: {path})",
                 "suppressOutput": False,
-                "decision": "block",
-                "reason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {path})"
+                "hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "permissionDecision": "deny",
+                    "permissionDecisionReason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {path})"
+                }
             }
             log_decision(output, operation_type="immutable_patterns_decision")
             print(json.dumps(output))
@@ -59,8 +62,11 @@ def main():
                                 "continue": True,
                                 "stopReason": f"Security policy violation. Attempted to modify immutable file, requiring human approval (file: {line}).",
                                 "suppressOutput": False,
-                                "decision": "block",
-                                "reason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {line})"
+                                "hookSpecificOutput": {
+                                    "hookEventName": "PreToolUse",
+                                    "permissionDecision": "deny",
+                                    "permissionDecisionReason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {line})"
+                                }
                             }
                             log_decision(output, operation_type="immutable_file_decision")
                             print(json.dumps(output))
@@ -77,8 +83,11 @@ def main():
                                 "continue": True,
                                 "stopReason": f"Security policy violation. Attempted to modify immutable file, requiring human approval (file: {line}).",
                                 "suppressOutput": False,
-                                "decision": "block",
-                                "reason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {line})"
+                                "hookSpecificOutput": {
+                                    "hookEventName": "PreToolUse",
+                                    "permissionDecision": "deny",
+                                    "permissionDecisionReason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {line})"
+                                }
                             }
                             log_decision(output, operation_type="env_variable_decision")
                             print(json.dumps(output))

@@ -190,6 +190,21 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/remind-rules.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/trace-event.py"
+          }
+        ]
+      }
     ]
   },
   "permissions": {
@@ -208,7 +223,7 @@
       "Read(private)",
       "Read(dist)",
       "Read(build)",
-      "Read(env)",
+      "Read(.env.*)",
       "Read(.env.local)",
       "Read(.env.example)",
       "Read(.env.dev)",
@@ -228,7 +243,6 @@
       "Bash(chgrp:*)",
       "Bash(chattr:*)",
       "Bash(lsattr:*)",
-      "Bash(rm:*)",
       "Bash(unlink:*)",
       "Bash(shred:*)",
       "Bash(git reset:*)",

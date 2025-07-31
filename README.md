@@ -450,6 +450,11 @@ cat .claude/preferences.json
 # Ensure "audio_summary.enabled" is true
 ```
 
+**Safe commands blocked**
+```bash
+# You may choose to disable unsafe command detection in `.claude/preferences.json` at your own risk
+```
+
 ### **Configuration Issues**
 
 **Aliases not working**
@@ -463,6 +468,8 @@ source ./clauder_install.sh
 ```bash
 # Check exclusion patterns (Important: Do not exclude actual secrets)
 cat .claude/.exclude_security_checks
+
+# Alternatively, you may choose to disable secret pattern detection in `.claude/preferences.json`
 ```
 
 ## Contributing

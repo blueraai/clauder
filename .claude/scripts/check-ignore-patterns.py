@@ -38,8 +38,11 @@ def main():
                     "continue": False,
                     "stopReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {pattern})",
                     "suppressOutput": False,
-                    "decision": "block",
-                    "reason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {pattern})"
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "deny",
+                        "permissionDecisionReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {pattern})"
+                    }
                 }
                 log_decision(output, operation_type="ignore_patterns_decision")
                 print(json.dumps(output))
@@ -56,8 +59,11 @@ def main():
                                 "continue": False,
                                 "stopReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {line})",
                                 "suppressOutput": False,
-                                "decision": "block",
-                                "reason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {line})"
+                                "hookSpecificOutput": {
+                                    "hookEventName": "PreToolUse",
+                                    "permissionDecision": "deny",
+                                    "permissionDecisionReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {line})"
+                                }
                             }
                             log_decision(output, operation_type="claudeignore_decision")
                             print(json.dumps(output))

@@ -29,10 +29,13 @@ if command.startswith("say ") or command.startswith("ls "):
 # Always block and require human approval
 output = {
     "continue": True,
-    "stopReason": "This action requires human approval.",
+    "stopReason": "[Flagged for human review] Risk detected. This action may be destructive beyond recovery, or may have significant consequences, and needs explicit human approval.",
     "suppressOutput": False,
-    "decision": "block",
-    "reason": "This action requires human approval. YOU MUST REQUEST EXPLICIT HUMAN APPROVAL for the tool and input before proceeding, stating 'Risk detected. This action may be destructive beyond recovery, or may have significant consequences. <your reasoning>'. DO NOT PROCEED UNTIL YOU HAVE RECEIVED EXPLICIT HUMAN APPROVAL."
+    "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "ask",
+        "permissionDecisionReason": f"[Flagged for human review] Risk detected. This action may be destructive beyond recovery, or may have significant consequences, and needs your explicit approval."
+    }
 }
 log_decision(output, operation_type="human_approval_decision")
 print(json.dumps(output))
