@@ -22,8 +22,8 @@ def main():
         
         # Define ignore patterns (including immutable patterns)
         ignore_patterns = [
-            '.env', 'package-lock.json', '.git/', 'dist', 'build', 
-            'node_modules', 'venv', 'env', '.claude/.immutable', 
+            '.env', 'package-lock.json', '.git/', 'dist/', 'build/', 
+            'node_modules', 'venv/', '.env.', '.claude/.immutable', 
             '.claude/.ignore', '.claude/settings.json', '.claude/commands/', 
             '.clause/scripts/', '.claude/preferences.json', '.claude/rules.md', 
             '.claude/logs/'

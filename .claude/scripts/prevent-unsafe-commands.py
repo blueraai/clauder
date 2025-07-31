@@ -4,6 +4,14 @@ import re
 import sys
 from utils.trace_decision import log_decision
 
+def get_preferences():
+    """Read preferences from .claude/preferences.json."""
+    try:
+        with open('.claude/preferences.json', 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
 # Define validation rules as a list of (regex pattern, message) tuples
 VALIDATION_RULES = [
     # File deletion commands
@@ -396,6 +404,13 @@ command = tool_input.get("command", "")
 
 if tool_name != "Bash" or not command:
     sys.exit(1)
+
+# Check if bash safety checks are enabled
+preferences = get_preferences()
+bash_safety_checks = preferences.get('bash_safety_checks', {})
+if not bash_safety_checks.get('enabled', True):
+    print(f"Skipping bash safety checks.")
+    sys.exit(0)
 
 # Validate the command
 issues = validate_command(command)

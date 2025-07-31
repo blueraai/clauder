@@ -15,6 +15,14 @@ from typing import List, Tuple
 from collections import Counter
 from utils.trace_decision import log_decision
 
+def get_preferences():
+    """Read preferences from .claude/preferences.json."""
+    try:
+        with open('.claude/preferences.json', 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
 class Colors:
     """ANSI color codes for terminal output."""
     RED = '\033[0;31m'
@@ -394,6 +402,11 @@ class ProjectSafetyChecker:
         # Load exclusion patterns
         self.exclusion_patterns = self._load_exclusion_patterns(project_path)
         
+        # Check if secret pattern safety checks are enabled
+        preferences = get_preferences()
+        secret_pattern_safety_checks = preferences.get('secret_pattern_safety_checks', {})
+        skip_secret_checks = not secret_pattern_safety_checks.get('enabled', True)
+        
         # print_status(Colors.YELLOW, "Checking project safety for indexing...")
         # print(f"Project directory: {project_path.resolve()}")
         
@@ -430,33 +443,50 @@ class ProjectSafetyChecker:
             for pattern, file_path in results['pattern_matches']:
                 print_status(Colors.RED, f"❌ [Security] Found files/directories containing: {pattern} ({file_path})")
         
-        # Check secret indicators
-        results['secret_indicators'] = self.check_secret_indicators(project_path)
-        if is_standalone:
-            for indicator, file_path in results['secret_indicators']:
-                print_status(Colors.RED, f"⚠️  [Security] Potential secret indicator: {indicator} ({file_path})")
+        # Check secret indicators (skip if secret pattern safety checks are disabled)
+        if not skip_secret_checks:
+            results['secret_indicators'] = self.check_secret_indicators(project_path)
+            if is_standalone:
+                for indicator, file_path in results['secret_indicators']:
+                    print_status(Colors.RED, f"⚠️  [Security] Potential secret indicator: {indicator} ({file_path})")
+        else:
+            results['secret_indicators'] = []
+            if is_standalone:
+                print_status(Colors.GRAY, "Skipping secret indicators check (disabled in preferences)")
         
-        # Check file contents
-        results['suspicious_contents'] = self.check_file_contents(project_path)
-        if is_standalone:
-            for file_path, finding_type, line_num in results['suspicious_contents']:
-                print_status(Colors.RED, f"🔍 [Security] Potential secret detected ({finding_type}) in: {file_path} (line {line_num})")
+        # Check file contents (skip if secret pattern safety checks are disabled)
+        if not skip_secret_checks:
+            results['suspicious_contents'] = self.check_file_contents(project_path)
+            if is_standalone:
+                for file_path, finding_type, line_num in results['suspicious_contents']:
+                    print_status(Colors.RED, f"🔍 [Security] Potential secret detected ({finding_type}) in: {file_path} (line {line_num})")
+        else:
+            results['suspicious_contents'] = []
+            if is_standalone:
+                print_status(Colors.GRAY, "Skipping suspicious contents check (disabled in preferences)")
         
-        # Determine if project is safe
-        is_safe = (len(results['exact_matches']) == 0 and 
-                  len(results['pattern_matches']) == 0 and
-                  len(results['suspicious_contents']) == 0)
+        # Determine if project is safe (only consider secret checks if enabled)
+        if skip_secret_checks:
+            is_safe = (len(results['exact_matches']) == 0 and 
+                      len(results['pattern_matches']) == 0)
+        else:
+            is_safe = (len(results['exact_matches']) == 0 and 
+                      len(results['pattern_matches']) == 0 and
+                      len(results['suspicious_contents']) == 0)
         
         if is_standalone:
             if is_safe:
-                print_status(Colors.GREEN, "• No exposed secrets detected. Proceeding..")
+                if skip_secret_checks:
+                    print_status(Colors.GREEN, "• No exposed secrets detected (secret pattern checks disabled). Proceeding..")
+                else:
+                    print_status(Colors.GREEN, "• No exposed secrets detected. Proceeding..")
             else:
                 print_status(Colors.RED, "🚨 [Security] Project is not safe for indexing. Aborting..")
                 print_status(Colors.RED, "Found sensitive information in files/directories that should be excluded. If secrets have been indexed or read by an AI, you should consider removing them from the project, invalidating them and renewing them. Opening an AI session without interacting is sufficient to index secrets. Secrets must not be stored in the project itself. Production secrets should be stored in a secure vault, unreadable by AI.")
                 
-                if results['secret_indicators']:
+                if not skip_secret_checks and results['secret_indicators']:
                     print_status(Colors.YELLOW, "[Security] Note: Additional potential secret indicators found")
-                if results['suspicious_contents']:
+                if not skip_secret_checks and results['suspicious_contents']:
                     print_status(Colors.YELLOW, "[Security] Note: Files with potential secrets detected")
         
         return is_safe, results

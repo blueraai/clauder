@@ -1,5 +1,11 @@
 {
   "audio_summary": {
     "enabled": false
+  },
+  "bash_safety_checks": {
+    "enabled": true
+  },
+  "secret_pattern_safety_checks": {
+    "enabled": true
   }
 }

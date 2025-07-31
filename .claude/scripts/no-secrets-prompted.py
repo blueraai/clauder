@@ -5,6 +5,14 @@ import re
 import base64
 from utils.trace_decision import log_decision
 
+def get_preferences():
+    """Read preferences from .claude/preferences.json."""
+    try:
+        with open('.claude/preferences.json', 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
 def is_likely_secret(text):
     """Check if text looks like a secret based on various heuristics."""
     if not text or len(text.strip()) < 10:
@@ -147,6 +155,13 @@ except json.JSONDecodeError as e:
     sys.exit(1)
 
 prompt = input_data.get("prompt", "")
+
+# Check if secret pattern safety checks are enabled
+preferences = get_preferences()
+secret_pattern_safety_checks = preferences.get('secret_pattern_safety_checks', {})
+if not secret_pattern_safety_checks.get('enabled', True):
+    print(f"Skipping secret pattern safety checks.")
+    sys.exit(0)
 
 # Check for sensitive keywords FIXME: (Disabled for false positives)
 # if check_for_sensitive_keywords(prompt):
