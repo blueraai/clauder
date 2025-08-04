@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace-event.py"
+            "command": "python3 .claude/hooks/trace-event.py"
           }
         ]
       },
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/check-ignore-patterns.py"
+            "command": "python3 .claude/hooks/check-ignore-patterns.py"
           }
         ]
       },
@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/check-immutable-patterns.py"
+            "command": "python3 .claude/hooks/check-immutable-patterns.py"
           }
         ]
       },
@@ -33,7 +33,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/prevent-unsafe-commands.py"
+            "command": "python3 .claude/hooks/prevent-unsafe-commands.py"
           }
         ]
       },
@@ -42,7 +42,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/require-human-approval.py"
+            "command": "python3 .claude/hooks/require-human-approval.py"
           }
         ]
       },
@@ -51,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/require-human-approval.py"
+            "command": "python3 .claude/hooks/require-human-approval.py"
           }
         ]
       },
@@ -60,7 +60,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/require-human-approval.py"
+            "command": "python3 .claude/hooks/require-human-approval.py"
           }
         ]
       },
@@ -69,7 +69,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/require-human-approval.py"
+            "command": "python3 .claude/hooks/require-human-approval.py"
           }
         ]
       },
@@ -78,7 +78,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/require-human-approval.py"
+            "command": "python3 .claude/hooks/require-human-approval.py"
           }
         ]
       }
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace-event.py"
+            "command": "python3 .claude/hooks/trace-event.py"
           }
         ]
       },
@@ -98,7 +98,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/log-bash-commands.py"
+            "command": "python3 .claude/hooks/log-bash-commands.py"
           }
         ]
       },
@@ -107,7 +107,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/log-mcp-commands.py"
+            "command": "python3 .claude/hooks/log-mcp-commands.py"
           }
         ]
       }
@@ -118,7 +118,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace-event.py"
+            "command": "python3 .claude/hooks/trace-event.py"
           }
         ]
       }
@@ -129,23 +129,23 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace-event.py"
+            "command": "python3 .claude/hooks/trace-event.py"
           },
           {
             "type": "command",
-            "command": "python3 .claude/scripts/check-required-tools.py"
+            "command": "python3 .claude/hooks/check-required-tools.py"
           },
           {
             "type": "command",
-            "command": "python3 .claude/scripts/git-checkpoint.py"
+            "command": "python3 .claude/hooks/git-checkpoint.py"
           },
           {
             "type": "command",
-            "command": "python3 .claude/scripts/no-secrets-prompted.py"
+            "command": "python3 .claude/hooks/no-secrets-prompted.py"
           },
           {
             "type": "command",
-            "command": "python3 .claude/scripts/prevent-learning-secrets.py"
+            "command": "python3 .claude/hooks/prevent-learning-secrets.py"
           }
         ]
       }
@@ -156,15 +156,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace-event.py"
+            "command": "python3 .claude/hooks/trace-event.py"
           },
           {
             "type": "command",
-            "command": "python3 .claude/scripts/audio-summary.py"
+            "command": "python3 .claude/hooks/audio-summary.py"
           },
           {
             "type": "command",
-            "command": "python3 .claude/scripts/enforce-completion-checks.py"
+            "command": "python3 .claude/hooks/enforce-completion-checks.py"
           }
         ]
       }
@@ -175,7 +175,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace-event.py"
+            "command": "python3 .claude/hooks/trace-event.py"
           }
         ]
       }
@@ -186,7 +186,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace-event.py"
+            "command": "python3 .claude/hooks/trace-event.py"
           }
         ]
       }
@@ -197,11 +197,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/scripts/remind-rules.py"
+            "command": "python3 .claude/hooks/remind-rules.py"
           },
           {
             "type": "command",
-            "command": "python3 .claude/scripts/trace-event.py"
+            "command": "python3 .claude/hooks/trace-event.py"
           }
         ]
       }

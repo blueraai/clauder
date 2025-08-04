@@ -331,7 +331,7 @@ clauder/
 │   │   ├── requirements.txt              # Python dependencies for tracer
 │   │   └── templates/                    # HTML templates
 │   │       └── index.html                # Main trace viewer interface
-│   └── scripts/                          # Python and shell scripts
+│   └── hooks/                          # Python and shell hooks
 │       ├── check-ignore-patterns.py      # Pre-tool use ignore pattern checker
 │       ├── check-immutable-patterns.py   # Pre-tool use immutable pattern checker
 │       ├── check-required-tools.py       # User prompt tools validation
@@ -438,9 +438,9 @@ git init
 
 **Permission denied errors**
 ```bash
-# Make scripts executable
-chmod +x .claude/scripts/*.py
-chmod +x .claude/scripts/*.sh
+# Make hooks executable
+chmod +x .claude/hooks/*.py
+chmod +x .claude/hooks/*.sh
 ```
 
 **Audio not working**

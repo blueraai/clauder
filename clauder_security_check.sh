@@ -31,7 +31,7 @@ check_patterns() {
     
     # Get the directory where this script is located
     local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    local python_script="$script_dir/.claude/scripts/prevent-learning-secrets.py"
+    local python_script="$script_dir/.claude/hooks/prevent-learning-secrets.py"
     
     # Check if Python script exists
     if [[ ! -f "$python_script" ]]; then

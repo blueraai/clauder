@@ -19,16 +19,18 @@ safe_exit() {
 
 # Function to display usage
 usage() {
-    echo "Usage: clauder_activate [target_project_path]"
+    echo "Usage: clauder_activate [target_project_path] [--expansions <name> <name> <name>]"
     echo "Example: clauder_activate ./my-project"
     echo "Example: clauder_activate                    # Use current directory"
+    echo "Example: clauder_activate . --expansions frontend-dev backend-dev"
     echo ""
     echo "Arguments:"
     echo "  target_project_path    Directory to activate (default: current directory)"
     echo ""
     echo "Options:"
-    echo "  -h, --help     Show this help message"
-    echo "  -v, --version  Show version information"
+    echo "  --expansions          Apply expansion packs (space-separated list)"
+    echo "  -h, --help            Show this help message"
+    echo "  -v, --version         Show version information"
     safe_exit 0
 }
 
@@ -203,6 +205,189 @@ check_existing_files() {
     return 0
 }
 
+# Function to merge JSON files deeply
+merge_json_files() {
+    local target_file="$1"
+    local source_file="$2"
+    
+    # Check if both files exist
+    if [ ! -f "$target_file" ] || [ ! -f "$source_file" ]; then
+        return 1
+    fi
+    
+    # Use jq to merge JSON files if available
+    if command -v jq >/dev/null 2>&1; then
+        # Create a temporary file for the merged result
+        local temp_file=$(mktemp)
+        
+        # Merge the JSON files using jq
+        if jq -s '.[0] * .[1]' "$target_file" "$source_file" > "$temp_file" 2>/dev/null; then
+            # Replace the target file with the merged content
+            mv "$temp_file" "$target_file"
+            return 0
+        else
+            # If jq merge fails, fall back to simple concatenation
+            rm -f "$temp_file"
+            return 1
+        fi
+    else
+        # Fallback: simple concatenation for JSON files
+        # This is not ideal but works for simple cases
+        return 1
+    fi
+}
+
+# Function to merge text files by appending content
+merge_text_files() {
+    local target_file="$1"
+    local source_file="$2"
+    
+    # Check if both files exist
+    if [ ! -f "$target_file" ] || [ ! -f "$source_file" ]; then
+        return 1
+    fi
+    
+    # Append source content to target file
+    echo "" >> "$target_file"
+    cat "$source_file" >> "$target_file"
+    return 0
+}
+
+# Function to copy expansion pack
+copy_expansion_pack() {
+    local expansion_name="$1"
+    local target_project="$2"
+    local target_claude="$target_project/.claude"
+    local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
+    local expansion_dir="$clauder_dir/.claude-expansion-packs/$expansion_name"
+    
+    # Check if expansion pack exists
+    if [ ! -d "$expansion_dir" ]; then
+        echo "Warning: Expansion pack '$expansion_name' does not exist."
+        return 1
+    fi
+    
+    echo "Applying expansion pack: $expansion_name"
+    
+    # Files that need special merging
+    local mergeable_files=(".exclude_security_checks" ".ignore" ".immutable" "preferences.json" "settings.json")
+    
+    # Copy all files from expansion pack
+    while IFS= read -r -d '' source_file; do
+        # Get relative path from source
+        local relative_path="${source_file#$expansion_dir/}"
+        local target_file="$target_claude/$relative_path"
+        
+        # Create target directory if it doesn't exist
+        local target_dir=$(dirname "$target_file")
+        if [ ! -d "$target_dir" ]; then
+            mkdir -p "$target_dir"
+        fi
+        
+        # Check if this is a mergeable file
+        local filename=$(basename "$relative_path")
+        local should_merge=false
+        
+        for mergeable_file in "${mergeable_files[@]}"; do
+            if [ "$filename" = "$mergeable_file" ]; then
+                should_merge=true
+                break
+            fi
+        done
+        
+        # Handle file copying/merging
+        if [ "$should_merge" = true ] && [ -f "$target_file" ]; then
+            # Merge the file
+            if [[ "$filename" == *.json ]]; then
+                if merge_json_files "$target_file" "$source_file"; then
+                    echo "  ✓ Merged: $relative_path"
+                else
+                    echo "  ⚠ Merged (fallback): $relative_path"
+                fi
+            else
+                if merge_text_files "$target_file" "$source_file"; then
+                    echo "  ✓ Merged: $relative_path"
+                else
+                    echo "  ⚠ Merged (fallback): $relative_path"
+                fi
+            fi
+        else
+            # Copy the file normally
+            if cp -f "$source_file" "$target_file" 2>/dev/null; then
+                echo "  ✓ Copied: $relative_path"
+            else
+                echo "  ✗ Failed to copy: $relative_path"
+            fi
+        fi
+    done < <(find "$expansion_dir" -type f -print0 2>/dev/null)
+    
+    # Add expansion name to .claude.expansion_packs if not already present
+    local expansion_packs_file="$target_claude/.expansion_packs"
+    if [ ! -f "$expansion_packs_file" ]; then
+        touch "$expansion_packs_file"
+    fi
+    
+    # Check if expansion name is already in the file
+    if ! grep -q "^$expansion_name$" "$expansion_packs_file" 2>/dev/null; then
+        echo "$expansion_name" >> "$expansion_packs_file"
+        echo "  ✓ Added to expansion packs list"
+    else
+        echo "  ℹ Already in expansion packs list"
+    fi
+    
+    echo "✓ Expansion pack '$expansion_name' applied successfully"
+}
+
+# Function to apply expansion packs
+apply_expansion_packs() {
+    local target_project="$1"
+    local expansions=("${@:2}")
+    
+    if [ ${#expansions[@]} -eq 0 ]; then
+        return 0
+    fi
+    
+    echo ""
+    echo "Applying expansion packs..."
+    
+    for expansion in "${expansions[@]}"; do
+        copy_expansion_pack "$expansion" "$target_project"
+    done
+    
+    echo ""
+    echo "All expansion packs applied."
+}
+
+# Function to apply previously applied expansion packs
+apply_previous_expansions() {
+    local target_project="$1"
+    local target_claude="$target_project/.claude"
+    local expansion_packs_file="$target_claude/.expansion_packs"
+    
+    if [ ! -f "$expansion_packs_file" ]; then
+        return 0
+    fi
+    
+    # Read expansion packs from file
+    local previous_expansions=()
+    while IFS= read -r line; do
+        # Skip empty lines and comments
+        if [[ -n "$line" && ! "$line" =~ ^[[:space:]]*# ]]; then
+            previous_expansions+=("$line")
+        fi
+    done < "$expansion_packs_file"
+    
+    if [ ${#previous_expansions[@]} -gt 0 ]; then
+        echo ""
+        echo "Applying previously installed expansion packs..."
+        for expansion in "${previous_expansions[@]}"; do
+            copy_expansion_pack "$expansion" "$target_project"
+        done
+        echo ""
+        echo "All previous expansion packs applied."
+    fi
+}
+
 # Function to copy .claude folder
 copy_claude_folder() {
     # Check if CLAUDER_DIR environment variable is set
@@ -300,23 +485,57 @@ main() {
     # Check if current directory is named 'clauder'
     check_current_directory
     
-    # Check if help or version is requested
-    if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-        usage
-    fi
+    # Parse arguments
+    local target_path="."
+    local expansions=()
+    local i=1
     
-    if [ "$1" = "-v" ] || [ "$1" = "--version" ]; then
-        version
-    fi
-    
-    # Get the target project path (default to current directory if not provided)
-    target_path="${1:-.}"
+    while [ $i -le $# ]; do
+        case "${!i}" in
+            -h|--help)
+                usage
+                ;;
+            -v|--version)
+                version
+                ;;
+            --expansions)
+                # Collect expansion names
+                ((i++))
+                while [ $i -le $# ] && [[ "${!i}" != -* ]]; do
+                    expansions+=("${!i}")
+                    ((i++))
+                done
+                continue
+                ;;
+            -*)
+                echo "Error: Unknown option '${!i}'"
+                usage
+                ;;
+            *)
+                if [ "$target_path" = "." ]; then
+                    target_path="${!i}"
+                else
+                    echo "Error: Multiple target paths specified"
+                    usage
+                fi
+                ;;
+        esac
+        ((i++))
+    done
     
     # Check if we're trying to activate in the clauder directory itself
     check_clauder_directory_activation "$target_path"
     
     # Copy the .claude folder
     copy_claude_folder "$target_path"
+    
+    # Apply expansion packs if specified
+    if [ ${#expansions[@]} -gt 0 ]; then
+        apply_expansion_packs "$target_path" "${expansions[@]}"
+    fi
+    
+    # Apply previously applied expansion packs
+    apply_previous_expansions "$target_path"
 }
 
 # Run main function with all arguments
