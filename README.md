@@ -455,6 +455,15 @@ cat .claude/preferences.json
 # You may choose to disable unsafe command detection in `.claude/preferences.json` at your own risk
 ```
 
+**.claude/*: [Errno 2] No such file or directory**
+```bash
+# Claude ran 'cd' and moved to a directory where it cannot find its '.claude' configuration.
+# Due to hooks needing to be be set in this '.claude' configuration, it will not be able to find them and will error out when trying to 'cd' back.
+
+# To resolve, stop Claude and run:
+clauder --continue 
+```
+
 ### **Configuration Issues**
 
 **Aliases not working**

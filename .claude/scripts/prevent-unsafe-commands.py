@@ -16,10 +16,6 @@ def get_preferences():
 VALIDATION_RULES = [
     # File deletion commands
     (
-        r"(^|\s&\s)rm\b",
-        "rm operations are not allowed. Use 'git rm' for tracked files or request a human to run this command, clearly highlighting risks.",
-    ),
-    (
         r"(^|\s&\s)unlink\b",
         "unlink can delete files. Use 'git rm' for tracked files or request a human to run this command, clearly highlighting risks.",
     ),
@@ -339,14 +335,6 @@ VALIDATION_RULES = [
     ),
     
     # File system operations that might be destructive
-    (
-        r"(^|\s&\s)mv\s+[-\w]*\s*/\b",
-        "Moving files to root directory can be destructive. Review the destination. Request a human to run this command, clearly highlighting risks.",
-    ),
-    (
-        r"(^|\s&\s)cp\s+[-\w]*\s*/\b",
-        "Copying files to root directory can be destructive. Review the destination. Request a human to run this command, clearly highlighting risks.",
-    ),
     (
         r"(^|\s&\s)ln\s+[-\w]*\s*-s\s*/\b",
         "Creating symlinks to root directory can be destructive. Review the destination. Request a human to run this command, clearly highlighting risks.",

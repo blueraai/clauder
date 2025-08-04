@@ -6,6 +6,6 @@
     "enabled": true
   },
   "secret_pattern_safety_checks": {
-    "enabled": true
+    "enabled": false
   }
 }
