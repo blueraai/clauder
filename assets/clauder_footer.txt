@@ -5,11 +5,11 @@
 
 * Useful commands:
 
-→ '/rules' to enforce rules.
-→ '/recruit' to recommend sub-agents for this project, or what you have in mind.
-→ '/spawn' to create a specialized sub-agents for a given task. (only report to the main agent, does not share context)
-→ '/review' for a general purpose code review
-→ '/consult' to consult another supported model through OpenRouter
+\033[0;31m→ '/rules'\033[0m to enforce rules.
+\033[0;31m→ '/recruit'\033[0m to recommend sub-agents for this project, or what you have in mind.
+\033[0;31m→ '/spawn'\033[0m to create a specialized sub-agents for a given task. (only report to the main agent, does not share context)
+\033[0;31m→ '/review'\033[0m for a general purpose code review
+\033[0;31m→ '/consult'\033[0m to consult another supported model through OpenRouter
 
 
 \033[1;33m⚠️  IMPORTANT\033[0m

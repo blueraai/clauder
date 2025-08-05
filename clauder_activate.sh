@@ -225,23 +225,14 @@ merge_json_files() {
         # Create a temporary file for the merged result
         local temp_file=$(mktemp)
         
-        # Debug: show what we're merging
-        echo "Debug: Merging $source_file into $target_file" >&2
-        echo "Debug: Target file content:" >&2
-        cat "$target_file" >&2
-        echo "Debug: Source file content:" >&2
-        cat "$source_file" >&2
-        
         # Check if source file is essentially empty (template)
         local source_content=$(jq -c '.' "$source_file" 2>/dev/null)
         if [ "$source_content" = "{}" ] || [ "$source_content" = "[]" ]; then
-            echo "Debug: Source file is empty template, skipping merge" >&2
             rm -f "$temp_file"
             return 0
         fi
         
         # Use Python for deep merge
-        echo "Debug: Using Python deep merge..." >&2
         if python3 -c "
 import json
 import sys
@@ -276,7 +267,6 @@ try:
     with open('$temp_file', 'w') as f:
         json.dump(merged, f, indent=2)
     
-    print('Debug: Python deep merge successful', file=sys.stderr)
     sys.exit(0)
 except Exception as e:
     print(f'Debug: Python merge failed: {e}', file=sys.stderr)
@@ -284,9 +274,6 @@ except Exception as e:
 " 2>/dev/null; then
             # Replace the target file with the merged content
             mv "$temp_file" "$target_file"
-            echo "Debug: JSON merge successful" >&2
-            echo "Debug: Merged result:" >&2
-            cat "$target_file" >&2
             return 0
         else
             # If Python merge fails, fall back to simple concatenation
