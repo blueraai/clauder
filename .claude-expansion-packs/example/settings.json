@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PreToolUse": [],
+    "PostToolUse": [],
+    "Notification": [],
+    "UserPromptSubmit": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/example-hook.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [],
+    "SubagentStop": [],
+    "PreCompact": [],
+    "SessionStart": []
+  },
+  "permissions": {
+    "allow": [
+      "Bash(echo:*)"
+    ],
+    "deny": []
+  }
+}

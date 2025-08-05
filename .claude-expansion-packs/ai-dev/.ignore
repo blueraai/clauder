@@ -1,0 +1,23 @@
+# inclusion only, no pattern matching
+
+# IMPORTANT: As of July 2025, there is no possible way to prevent Claude from automatically & silently learning every change made to the codebase, including secrets. These are only meant as a best effort to prevent retrieving them.
+
+secret
+private
+package-lock.json
+.tmp/
+.git/
+dist
+build
+env
+.env
+.env.local
+.env.example
+.env.dev
+.env.development
+.env.stage
+.env.staging
+.env.sandbox
+.env.preprod
+.env.prod 
+.env.production

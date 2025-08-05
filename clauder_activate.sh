@@ -138,8 +138,10 @@ cleanup_old_backups() {
     # Remove backups beyond the 10th one
     if [ ${#backups[@]} -gt 10 ]; then
         local backups_to_remove=()
-        for ((i=10; i<${#backups[@]}; i++)); do
+        i=10
+        while [ $i -lt ${#backups[@]} ]; do
             backups_to_remove+=("$(basename "${backups[$i]}")")
+            i=$((i + 1))
         done
         
         echo "Found ${#backups_to_remove[@]} old backup(s) to remove (keeping 10 most recent):"
@@ -151,10 +153,12 @@ cleanup_old_backups() {
         
         if [[ $reply =~ ^[Yy]$ ]]; then
             echo "Removing old backups..."
-            for ((i=10; i<${#backups[@]}; i++)); do
+            i=10
+            while [ $i -lt ${#backups[@]} ]; do
                 local old_backup="${backups[$i]}"
                 echo "Removing: $(basename "$old_backup")"
                 rm -rf "$old_backup"
+                i=$((i + 1))
             done
             echo "✓ Old backups removed successfully"
         else
@@ -212,6 +216,7 @@ merge_json_files() {
     
     # Check if both files exist
     if [ ! -f "$target_file" ] || [ ! -f "$source_file" ]; then
+        echo "Debug: Missing files - target: $target_file, source: $source_file" >&2
         return 1
     fi
     
@@ -220,19 +225,79 @@ merge_json_files() {
         # Create a temporary file for the merged result
         local temp_file=$(mktemp)
         
-        # Merge the JSON files using jq
-        if jq -s '.[0] * .[1]' "$target_file" "$source_file" > "$temp_file" 2>/dev/null; then
+        # Debug: show what we're merging
+        echo "Debug: Merging $source_file into $target_file" >&2
+        echo "Debug: Target file content:" >&2
+        cat "$target_file" >&2
+        echo "Debug: Source file content:" >&2
+        cat "$source_file" >&2
+        
+        # Check if source file is essentially empty (template)
+        local source_content=$(jq -c '.' "$source_file" 2>/dev/null)
+        if [ "$source_content" = "{}" ] || [ "$source_content" = "[]" ]; then
+            echo "Debug: Source file is empty template, skipping merge" >&2
+            rm -f "$temp_file"
+            return 0
+        fi
+        
+        # Use Python for deep merge
+        echo "Debug: Using Python deep merge..." >&2
+        if python3 -c "
+import json
+import sys
+
+def deep_merge(base, override):
+    if isinstance(base, dict) and isinstance(override, dict):
+        result = base.copy()
+        for key, value in override.items():
+            if key in result and isinstance(result[key], (dict, list)) and isinstance(value, type(result[key])):
+                result[key] = deep_merge(result[key], value)
+            else:
+                result[key] = value
+        return result
+    elif isinstance(base, list) and isinstance(override, list):
+        # Always concatenate arrays, even if override is empty
+        return base + override
+    else:
+        # If override is empty/null, keep base value
+        if override is None or override == {} or override == []:
+            return base
+        else:
+            return override
+
+try:
+    with open('$target_file', 'r') as f:
+        base = json.load(f)
+    with open('$source_file', 'r') as f:
+        override = json.load(f)
+    
+    merged = deep_merge(base, override)
+    
+    with open('$temp_file', 'w') as f:
+        json.dump(merged, f, indent=2)
+    
+    print('Debug: Python deep merge successful', file=sys.stderr)
+    sys.exit(0)
+except Exception as e:
+    print(f'Debug: Python merge failed: {e}', file=sys.stderr)
+    sys.exit(1)
+" 2>/dev/null; then
             # Replace the target file with the merged content
             mv "$temp_file" "$target_file"
+            echo "Debug: JSON merge successful" >&2
+            echo "Debug: Merged result:" >&2
+            cat "$target_file" >&2
             return 0
         else
-            # If jq merge fails, fall back to simple concatenation
+            # If Python merge fails, fall back to simple concatenation
             rm -f "$temp_file"
+            echo "Warning: Python merge failed, using fallback method" >&2
             return 1
         fi
     else
         # Fallback: simple concatenation for JSON files
         # This is not ideal but works for simple cases
+        echo "Debug: jq not available" >&2
         return 1
     fi
 }
@@ -247,9 +312,30 @@ merge_text_files() {
         return 1
     fi
     
-    # Append source content to target file
-    echo "" >> "$target_file"
-    cat "$source_file" >> "$target_file"
+    # Create a temporary file for the merged result
+    local temp_file=$(mktemp)
+    
+    # Copy existing content to temp file
+    cat "$target_file" > "$temp_file"
+    
+    # Add a newline if the target file doesn't end with one
+    if [ -s "$target_file" ] && [ "$(tail -c1 "$target_file" | wc -l)" -eq 0 ]; then
+        echo "" >> "$temp_file"
+    fi
+    
+    # Read source file line by line and add only non-duplicate lines
+    while IFS= read -r line; do
+        # Skip empty lines
+        if [ -n "$line" ]; then
+            # Check if line already exists in target file (case-sensitive)
+            if ! grep -q "^$(echo "$line" | sed 's/[[\.*^$()+?{|]/\\&/g')$" "$target_file"; then
+                echo "$line" >> "$temp_file"
+            fi
+        fi
+    done < "$source_file"
+    
+    # Replace target file with merged content
+    mv "$temp_file" "$target_file"
     return 0
 }
 
@@ -341,7 +427,8 @@ copy_expansion_pack() {
 # Function to apply expansion packs
 apply_expansion_packs() {
     local target_project="$1"
-    local expansions=("${@:2}")
+    shift
+    local expansions=("$@")
     
     if [ ${#expansions[@]} -eq 0 ]; then
         return 0
@@ -500,10 +587,10 @@ main() {
                 ;;
             --expansions)
                 # Collect expansion names
-                ((i++))
+                i=$((i + 1))
                 while [ $i -le $# ] && [[ "${!i}" != -* ]]; do
                     expansions+=("${!i}")
-                    ((i++))
+                    i=$((i + 1))
                 done
                 continue
                 ;;
@@ -520,7 +607,7 @@ main() {
                 fi
                 ;;
         esac
-        ((i++))
+        i=$((i + 1))
     done
     
     # Check if we're trying to activate in the clauder directory itself
@@ -529,13 +616,13 @@ main() {
     # Copy the .claude folder
     copy_claude_folder "$target_path"
     
-    # Apply expansion packs if specified
+    # Apply previously applied expansion packs first
+    apply_previous_expansions "$target_path"
+    
+    # Apply new expansion packs if specified (these will override previous ones)
     if [ ${#expansions[@]} -gt 0 ]; then
         apply_expansion_packs "$target_path" "${expansions[@]}"
     fi
-    
-    # Apply previously applied expansion packs
-    apply_previous_expansions "$target_path"
 }
 
 # Run main function with all arguments

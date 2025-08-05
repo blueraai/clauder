@@ -1,0 +1,25 @@
+# Files and folders to exclude from security checks
+# One pattern per line
+# Supports glob patterns and relative paths
+
+# Example exclusions:
+# tests/
+# docs/
+# examples/
+# *.test.js
+# test_*.py
+# __pycache__/
+# .git/
+# node_modules/ 
+
+.claude/
+.git/
+LICENSE
+README
+dist/
+build/
+node_modules/
+package-lock.json
+src-tauri/
+.cursor/
+.claude-backup/

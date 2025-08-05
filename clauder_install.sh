@@ -66,11 +66,11 @@ create_aliases() {
     cat >> "$temp_file" << EOF
 # Clauder project aliases
 export CLAUDER_DIR="$project_abs_path"
-alias clauder_activate='source "$activate_script"'
-alias clauder_security_check='source "$security_script"'
+alias clauder_activate='bash "$activate_script"'
+alias clauder_security_check='bash "$security_script"'
 alias clauder_trace='python3 ./.claude/tracer/app.py'
 clauder_footer() { local footer_content="\$(cat "$project_abs_path/assets/clauder_footer.txt")"; echo -e "\$footer_content"; }
-alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && source "$project_abs_path/clauder_update_check.sh" && clauder_security_check && clauder_footer && claude'
+alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && bash "$project_abs_path/clauder_update_check.sh" && clauder_security_check && clauder_footer && claude'
 EOF
     
     # Replace original file
@@ -78,11 +78,11 @@ EOF
     
     print_status $NC "✅ Added clauder aliases to $config_file"
     print_status $DARK_GRAY "   export CLAUDER_DIR='$project_abs_path'"
-    print_status $DARK_GRAY "   alias clauder_activate='source $activate_script'"
-    print_status $DARK_GRAY "   alias clauder_security_check='source $security_script'"
+    print_status $DARK_GRAY "   alias clauder_activate='bash $activate_script'"
+    print_status $DARK_GRAY "   alias clauder_security_check='bash $security_script'"
     print_status $DARK_GRAY "   alias clauder_trace='python3 ./.claude/tracer/app.py'"
     print_status $DARK_GRAY "   clauder_footer() { local footer_content=\"\$(cat "$project_abs_path/assets/clauder_footer.txt")\"; echo -e \"\$footer_content\"; }"
-    print_status $DARK_GRAY "   alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && source "$project_abs_path/clauder_update_check.sh" && clauder_security_check && clauder_footer && claude'"
+    print_status $DARK_GRAY "   alias clauder='cat "$project_abs_path/assets/clauder_banner.txt" && bash "$project_abs_path/clauder_update_check.sh" && clauder_security_check && clauder_footer && claude'"
     
     return 0
 }

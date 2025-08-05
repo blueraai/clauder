@@ -1,8 +1,8 @@
 ![clauder](https://fasplnlepuuumfjocrsu.supabase.co/storage/v1/object/public/web-assets//clauder-character.png)
 
-## `> CLAUDER` - a safer base configuration for Claude Code
+## `> CLAUDER` - a safer and supercharged configuration for Claude Code
 
-> Safer rules so Claude Code does not accidentally set the world on fire trying to help 🔥
+> Safer rules and smarter toolkit so Claude Code does not accidentally set the world on fire trying to help 🔥
 
 > [!WARNING]
 > While `clauder` helps setting generic guardrails, these are **insufficient to autonomously ensure correctness and safety**. `clauder` is solely meant as a safety net and toolset, and *assumes co-supervision by a human in the loop*.
@@ -11,7 +11,51 @@
 
 ## Overview
 
-This repository contains a base Claude Code configuration that provides safety mechanisms, logging, and best practices for AI-assisted development. It includes file protection, command validation, audio feedback, and automated documentation enforcement.
+This repository contains a comprehensive Claude Code configuration that provides advanced toolkits, safety mechanisms, logging, and best practices for AI-assisted development. Clauder includes:
+
+**🔒 Security & Safety**
+- Multi-layered secret detection and prevention
+- File protection with immutable and ignore patterns
+- Human-in-the-loop approval for sensitive operations
+- Git protection against destructive operations
+- Environment variable and sensitive data protection
+
+**🔎 Logging & Monitoring**
+- Comprehensive audit trail with SQLite database
+- Real-time bash command and MCP tool logging
+- Web-based tracer app for live monitoring
+- Pre and post-operation validation and logging
+
+**⚡ Workflow Automation**
+- Automatic git checkpoints before sessions
+- Documentation enforcement (HISTORY.md, SPECIFICATIONS.md)
+- Audio feedback for task completion
+- Automated backup and update management
+
+**🛠️ Advanced Toolset**
+- Custom commands for external AI consultation (`/consult`)
+- Sub-agent creation and management (`/spawn`)
+- Code review automation (`/review`)
+- Intelligent agent recruitment (`/recruit`)
+
+**🎯 Domain-Specific Expansion Packs**
+- **67 specialized agents** across 8 domains
+- **Frontend Development**: React, Vue, Angular, Svelte, TypeScript specialists
+- **Backend Development**: API architects, database specialists, security experts
+- **Data Science**: ML engineers, data scientists, visualization specialists
+- **AI Development**: OpenAI, LangChain, RAG, and LLM security specialists
+- **Infrastructure**: Cloud architects, DevOps engineers, SRE specialists
+- **Game Development**: Mechanics designers, performance optimizers, audio specialists
+- **Desktop Development**: Electron, Tauri, Flutter desktop specialists
+- **General Software**: System architects, UX researchers, QA strategists
+
+**💡 Smart Integration**
+- Automatic MCP tool detection and utilization
+- Automated Clauder updates
+- Claude configuration backups and rollback support
+- On-Demand expansion packs
+
+Clauder is designed as a safety-first configuration that provides a robust foundation for AI-assisted development while maintaining human oversight and preventing common security pitfalls.
 
 ## Get Started
 
@@ -42,8 +86,6 @@ clauder_activate
 # clauder_activate ./project_path
 ```
 
-> ☕ **Activation needs to be re-run on any `clauder` update** if and where you wish to propagate them.
-
 This will copy the `.claude` configuration to your project.
 
 Clauder's configuration will automatically:
@@ -54,8 +96,12 @@ Clauder's configuration will automatically:
 - Enforce history and specifications tracking as you interact with Claude Code (see `HISTORY.md`, `SPECIFICATIONS.md`)
 - Provides general guidelines/rules to Claude (see `.claude/rules.md`; Never guaranteed, but does help steering it; Do not solely rely on instructions for policing or workflows)
 - Provide audio feedback on completion (optional, supports mac, linux experimental; enabled in `.claude/preferences.md`)
-- Define custom commands for advanced workflows (e.g. `/consult` to consult a third party model for specific tasks, `/spawn` to create task specific agents)
+- Define custom commands for advanced workflows (e.g. `/consult` to consult a third party model for specific tasks, `/spawn` to create task specific agents, `/recruit` to recruit relevant agents for your project and needs, `/review` for a general review)
    - *Required MCP servers detailed below.*
+- Define custom agents to help the main instance achieve specific tasks
+
+> **Domain specific *expansion packs* available** (including agents, commands, hooks and configurations - see below)
+
 
 #### How to start a Claude session
 
@@ -65,12 +111,15 @@ Clauder's configuration will automatically:
 > If secrets have been indexed or read by an AI such as Claude, you should consider removing them from the project, invalidating them and renewing them. Production secrets should be stored in a secure vault, unreadable by AI. Keeping secrets out of the working directory prevents auto-indexing, but does not prevent Claude from finding ways to access them through running commands or calling tools. Clauder will try to prevent leaking secrets, potentially destructive, or unrecoverable actions, by detecting unsafe actions and requesting a Human in the loop, but none of it is bulletproof.
 >
 > **Please make sure to supervise your AI's actions as you grant it access to sensitive or critical systems. It cannot be trusted and will inadvertently make unrecoverable mistakes, which may critically impair the company and its production services. Backup your systems, and sandbox as much as possible through restrictive AI-level access control.** You are responsible for your AI's actions, as you are when using any other tool, or when managing a team.
+>
+> Prefer closer, slower supervision when working on root/core nodes in your project. Equally, allow faster, lower supervision for faster iterations when working on leaf nodes, or when prototyping.
 
 Once you familiarize yourself with the above, and set your forbidden paths in `.claude/.ignore`, you may start a new Claude Code session with Clauder security checks using:
 
 ```bash
-clauder # a safer way to start 'claude' to prevent exposing secrets
+clauder
 ```
+> ☕ **`clauder` includes security features, auto-updates, and configuration backups**. All Claude Code arguments supported (e.g. `--continue` to recall the last session)
 
 In Claude, type:
 ```
@@ -80,11 +129,12 @@ In Claude, type:
 This will define the mandatory guidelines for Claude Code.
 
 > [!TIP]
-> - If your project includes a `HISTORY.md` file at root level, `clauder` will enforce keeping a history of requests and actions taken, and use it to reason about the next action to take. 
-> - If your project includes a `SPECIFICATIONS.md` file at root level, `clauder` will enforce keeping an updated list of specifications as it takes actions, and use it to reason about the next action to take. When writing code manually, you may ask `clauder` to read the git diffs and backfill the specifications file.
+> - If your project includes a `HISTORY.md` file at root level, `clauder` will enforce keeping a history of requests and actions taken, and use it to reason about the next action to take. Comprehensive history tracking may take time.
+> - If your project includes a `SPECIFICATIONS.md` file at root level, `clauder` will enforce keeping an updated list of specifications as it takes actions, and use it to reason about the next action to take. When writing code manually, you may ask `clauder` to read the git diffs and backfill the specifications file.  Comprehensive specifications tracking may take time.
 > - Define your secret files and folders in `.claude/.ignore` so `clauder` can guard them from being read/written.
 > - Define your read-only files and folders in `.claude/.immutable` so `clauder` can guard them from being overwritten.
-> - In `.gitignore`, exclude `.claude/logs` and `.claude/.tmp` for cleaner commits.
+> - Exclude safe configuration files and folders in `.claude/.exclude_security_checks` so `clauder` can ommit them from safety checks (e.g. secret detection).
+> - In `.gitignore`, exclude `.claude/logs`, `.claude/.tmp`, and `.claude-backup` for cleaner commits.
 > - Check `.claude/requirements.md` for prerequisites, and recommended [MCP tools](https://docs.anthropic.com/en/docs/claude-code/mcp). `clauder` will *automatically* take advantage of those tools should you have added them to Claude Code.
 > - Check [Claude Code's best practices](https://www.anthropic.com/engineering/claude-code-best-practices) for better results.
 
@@ -146,6 +196,12 @@ The resulting agent instructions will be define in `.claude/agents/<agent-name>.
 
 **New agents become available/unavailable on start of a new Claude Code session**. Creating or deleting an agent will not apply to current sessions. Start a new `clauder` session to use your newly created agent.
 
+> [!TIP]
+> Best practices:
+> - **Tailor agents to your specific project and needs**, as you would when recruiting people.
+> - **Limit the number of agents, prefer smaller teams with clear separation of ownership/expertise.** Lesser communication and orchestration loss.
+> - **Leave all core coding to the main Claude instance, and consult other specialized agents for review or unrelated/leaf tasks.** Agents have their own context and do not know about the general history and reasoning for how and why things were done a certain way, or what other agents have said. Relying on communication greatly degrades the signal and often leads to breakage or unintended side effects. These personas are not better at coding than the main instance, they run the same model and backend orchestration. They are good at prioritizing / directing attention to specific areas - which is particularly useful for review, consultation, and leaf-type activities (as opposed to core parts). **Prefer one chef, with a few very good advisors, than too many chefs or too many advisors.**
+
 ##### Looking to recruit new sub agents?
 
 `clauder` includes a command to recommend sub-agents for your project.
@@ -161,6 +217,177 @@ or about something specific:
 ```sh
 /recruit I want to make this web app..
 ```
+
+#### Expansion packs (beta)
+
+`clauder` also provides **ready-made agents** for various development projects, **optionally installable as *expansion packs***.
+
+##### Installation
+
+```sh
+clauder_activate --expansions <expansion_name> <expansion_name>
+
+# e.g.
+# clauder_activate --expansions general-software-dev frontend-dev
+```
+> Expansions remain installed and auto-updated until `.claude` is removed.
+
+##### Usage 
+
+**All agents are automatically called by the main Claude instance when relevant, for advisory purposes.**
+
+If you'd like to query a sub-agent directly (advisory only by design):
+
+```sh
+/task <agent_name> "<query>"
+
+# e.g.
+#  /task system-architecture-consultant "Analyze the current system architecture..."
+#  /task ux-research-specialist "Research user experience patterns for..."
+#  /task qa-strategy-specialist "Develop testing strategy for..."
+```
+
+Refer to the expansion details for dedicated hooks and commands.
+
+##### Uninstall
+
+```sh
+# Important: backup your configuration before resetting it
+rm -rf ./.claude && clauder_activate
+```
+> If you'd like a more surgical approach, you may delete the corresponding `.claude/.expansion_packs` entry and remove the corresponding agents, commands, hooks and settings for that expansion.
+
+##### Available expansion packs
+
+---
+**Frontend Development** (`frontend-dev`)
+
+- Agents 
+   - `react-specialist` - Expert consultant for React ecosystem development, providing code review, architecture guidance, and best practices recommendations
+   - `vue-specialist` - Specialized consultant for Vue.js development, offering architectural guidance and Vue ecosystem best practices
+   - `angular-specialist` - Expert consultant for Angular development, providing framework-specific guidance and architectural recommendations
+   - `svelte-specialist` - Specialized consultant for Svelte development, offering modern reactive framework guidance and optimization strategies
+   - `typescript-specialist` - Expert consultant for TypeScript implementation, providing type safety guidance and advanced type system recommendations
+   - `css-architect` - Specialized consultant for CSS architecture, offering design system guidance and styling best practices
+   - `frontend-performance-optimizer` - Expert consultant for frontend performance optimization, providing bundle analysis and rendering optimization strategies
+   - `accessibility-specialist` - Specialized consultant for web accessibility (a11y), offering WCAG compliance guidance and inclusive design recommendations
+   - `security-reviewer` - Expert consultant for frontend security, providing vulnerability assessment and security best practices
+   - `build-engineer` - Specialized consultant for frontend build systems, offering bundler optimization and deployment pipeline guidance
+- Commands / Hooks / Configuration
+   - N/A
+
+---
+**Backend Development** (`backend-dev`)
+
+- Agents 
+   - `api-architect` - Expert consultant for REST/GraphQL API design, microservices architecture, and API governance
+   - `database-architect` - Specialized consultant for database design, offering schema optimization and data modeling strategies
+   - `auth-specialist` - Expert consultant for authentication and authorization systems, providing security pattern guidance
+   - `caching-specialist` - Specialized consultant for caching strategies, offering performance optimization and cache management guidance
+   - `messaging-specialist` - Expert consultant for message queues and event-driven architectures, providing distributed system guidance
+   - `observability-engineer` - Specialized consultant for monitoring and observability, offering logging, metrics, and tracing strategies
+   - `backend-security-specialist` - Expert consultant for backend security, providing vulnerability assessment and security hardening guidance
+   - `backend-testing-specialist` - Specialized consultant for backend testing strategies, offering test architecture and quality assurance guidance
+   - `serverless-specialist` - Expert consultant for serverless architectures, providing cloud-native development and function optimization guidance
+- Commands / Hooks / Configuration
+   - N/A
+
+---
+**Data Science** (`data-science`)
+
+- Agents 
+   - `data-scientist` - Expert consultant for data analysis and statistical modeling, providing insights and analytical strategy guidance
+   - `data-engineer` - Specialized consultant for data pipeline architecture, offering ETL optimization and data infrastructure guidance
+   - `ml-engineer` - Expert consultant for machine learning implementation, providing model deployment and ML pipeline guidance
+   - `data-visualization-specialist` - Specialized consultant for data visualization, offering chart design and interactive dashboard guidance
+   - `analytics-engineer` - Expert consultant for analytics implementation, providing tracking strategy and data analysis guidance
+   - `data-quality-engineer` - Specialized consultant for data quality assurance, offering validation strategies and data governance guidance
+   - `statistical-consultant` - Expert consultant for statistical analysis, providing experimental design and hypothesis testing guidance
+   - `ml-ethics-advisor` - Specialized consultant for AI ethics and responsible ML, offering bias detection and fairness assessment guidance
+- Commands / Hooks / Configuration
+   - N/A
+
+---
+**AI Development** (`ai-dev`)
+
+- Agents 
+   - `openai-api-specialist` - Expert consultant for OpenAI API integration, providing model selection and prompt engineering guidance
+   - `openrouter-specialist` - Specialized consultant for OpenRouter integration, offering multi-model API strategy and cost optimization guidance
+   - `langchain-specialist` - Expert consultant for LangChain framework, providing chain design and agent development guidance
+   - `langgraph-specialist` - Specialized consultant for LangGraph orchestration, offering workflow design and state management guidance
+   - `transformers-specialist` - Expert consultant for Hugging Face Transformers, providing model fine-tuning and deployment guidance
+   - `vllm-specialist` - Specialized consultant for vLLM inference optimization, offering high-performance model serving guidance
+   - `unsloth-specialist` - Expert consultant for Unsloth fine-tuning, providing efficient model training and optimization guidance
+   - `rag-specialist` - Specialized consultant for Retrieval-Augmented Generation, offering knowledge base design and retrieval optimization guidance
+   - `conversational-ai-specialist` - Expert consultant for conversational AI systems, providing chatbot design and dialogue management guidance
+   - `agentic-orchestration-specialist` - Specialized consultant for multi-agent systems, offering agent coordination and workflow orchestration guidance
+   - `agent-observability-specialist` - Expert consultant for AI agent monitoring, providing performance tracking and debugging guidance
+   - `agent-cost-specialist` - Specialized consultant for AI cost optimization, offering token usage analysis and cost management strategies
+   - `mcp-specialist` - Expert consultant for Model Context Protocol, providing tool integration and MCP server development guidance
+   - `llm-security-specialist` - Specialized consultant for LLM security, offering prompt injection protection and AI safety guidance
+- Commands / Hooks / Configuration
+   - N/A
+
+---
+**Infrastructure** (`infrastructure`)
+
+- Agents 
+   - `cloud-infrastructure-architect` - Expert consultant for cloud infrastructure design, providing multi-cloud strategy and resource optimization guidance
+   - `container-orchestration-specialist` - Specialized consultant for Kubernetes and Docker, offering containerization strategy and orchestration guidance
+   - `devops-pipeline-engineer` - Expert consultant for CI/CD pipeline design, providing automation strategy and deployment optimization guidance
+   - `site-reliability-engineer` - Specialized consultant for SRE practices, offering reliability engineering and incident response guidance
+   - `infrastructure-security-specialist` - Expert consultant for infrastructure security, providing security hardening and compliance guidance
+   - `infrastructure-cost-optimizer` - Specialized consultant for cloud cost optimization, offering resource management and cost analysis guidance
+   - `database-infrastructure-specialist` - Expert consultant for database infrastructure, providing scaling strategies and performance optimization guidance
+   - `network-architecture-specialist` - Specialized consultant for network design, offering connectivity strategy and security architecture guidance
+- Commands / Hooks / Configuration
+   - N/A
+
+---
+**Game Development** (`game-dev`)
+
+- Agents 
+   - `game-mechanics-designer` - Expert consultant for game mechanics design, providing gameplay balance and system design guidance
+   - `game-state-manager` - Specialized consultant for game state management, offering save systems and progression tracking guidance
+   - `game-performance-specialist` - Expert consultant for game performance optimization, providing rendering optimization and frame rate guidance
+   - `game-input-specialist` - Specialized consultant for game input systems, offering control scheme design and input handling guidance
+   - `game-audio-designer` - Expert consultant for game audio design, providing sound implementation and audio engine guidance
+   - `level-design-architect` - Specialized consultant for level design, offering world building and spatial design guidance
+   - `game-visual-designer` - Expert consultant for game visual design, providing art direction and visual asset optimization guidance
+- Commands / Hooks / Configuration
+   - N/A
+
+---
+**Desktop Development** (`desktop-dev`)
+
+- Agents 
+   - `electron-specialist` - Expert consultant for Electron applications, providing cross-platform desktop app development guidance
+   - `tauri-specialist` - Specialized consultant for Tauri framework, offering Rust-based desktop app development guidance
+   - `flutter-desktop-specialist` - Expert consultant for Flutter desktop development, providing cross-platform UI framework guidance
+   - `pwa-specialist` - Specialized consultant for Progressive Web Apps, offering web-to-desktop conversion and offline capability guidance
+   - `neutralino-specialist` - Expert consultant for Neutralino framework, providing lightweight desktop app development guidance
+   - `lynx-specialist` - Specialized consultant for Lynx framework, offering Tauri alternative desktop development guidance
+   - `desktop-security-specialist` - Expert consultant for desktop application security, providing security hardening and vulnerability assessment guidance
+- Commands / Hooks / Configuration
+   - N/A
+
+---
+**General Software Development** (`general-software-dev`)
+
+- Agents 
+   - `system-architecture-consultant` - Expert consultant for system architecture design, providing scalable architecture and design pattern guidance
+   - `ux-research-specialist` - Specialized consultant for user experience research, offering usability testing and user-centered design guidance
+   - `qa-strategy-specialist` - Expert consultant for quality assurance strategy, providing testing methodology and quality management guidance
+- Commands / Hooks / Configuration
+   - N/A
+
+---
+
+##### Creating expansion packs
+
+Clone `.claude-expansion-packs/example` to get started. The folder name is the name of your expansion. Define your custom `agents`, `commands`, `hooks` (set up in `settings.json`), and configurations.
+
+> Disclaimer: Remember to be specific, to prevent conflicts with the base `clauder` setup.
 
 #### How to trace & audit Claude
 
@@ -208,7 +435,7 @@ Access the tracer app at `http://localhost:4441` in your browser.
 ## Features
 
 > [!IMPORTANT]
-> Although better than having no guardrails at all, **`clauder` can miss critical security threats**. It is meant as a basic safety net and a tool for human supervision. **Do not leave Claude unsupervised**, as it will make critical mistakes and/or learn to escape the guardrails.
+> Although better than having no guardrails at all, **`clauder` can miss critical security threats**. It is meant as a basic safety net and a tool for human supervision. **Do not leave Claude unsupervised when working on core nodes or features**, as it will make critical mistakes and/or learn to escape the guardrails.
 
 ### 🔒 Security & Safety
 
@@ -264,6 +491,8 @@ Access the tracer app at `http://localhost:4441` in your browser.
 - **Code review**: Request a comprehensive code review of the project or specific files (see `/review` above)
 - **Sub-agent recruitment**: Get recommendations for specialized sub-agents based on project needs (see `/recruit` above)
 
+#### **On-Demand Expert Agents**
+- **Pre-made domain-specific advisors**: Instantly add teams of domain expert agents to your project, based on your needs (see *expansion packs* above).
 
 #### **MCP Tooling Detection**
 - **Automatic Optimatization**: Automatically utilizes the available MCP tools to enhance the above commands
@@ -279,7 +508,6 @@ Access the tracer app at `http://localhost:4441` in your browser.
 - **Task completion**: Audio summary when tasks are completed
 - **Error alerts**: Audio notifications for critical issues
 - **Customizable messages**: Configurable audio feedback content
-
 
 ### 🔄 Automated Maintenance
 
@@ -347,6 +575,145 @@ clauder/
 │       ├── trace-event.py                # General event logging script
 │       └── utils/                        # Utility modules
 │           └── trace_decision.py         # Trace decision logging module
+├── .claude-expansion-packs/              # Expansion packs directory
+│   ├── frontend-dev/                     # Frontend development expansion
+│   │   ├── agents/                       # Frontend specialist agents
+│   │   │   ├── react-specialist.md       # React ecosystem consultant
+│   │   │   ├── vue-specialist.md         # Vue.js development consultant
+│   │   │   ├── angular-specialist.md     # Angular development consultant
+│   │   │   ├── svelte-specialist.md      # Svelte development consultant
+│   │   │   ├── typescript-specialist.md  # TypeScript implementation consultant
+│   │   │   ├── css-architect.md          # CSS architecture consultant
+│   │   │   ├── frontend-performance-optimizer.md # Performance optimization consultant
+│   │   │   ├── accessibility-specialist.md # Web accessibility consultant
+│   │   │   ├── security-reviewer.md      # Frontend security consultant
+│   │   │   └── build-engineer.md         # Build systems consultant
+│   │   ├── settings.json                 # Frontend-specific settings
+│   │   ├── preferences.json              # Frontend-specific preferences
+│   │   ├── .ignore                       # Frontend-specific ignore patterns
+│   │   ├── .immutable                    # Frontend-specific immutable files
+│   │   ├── .exclude_security_checks      # Frontend-specific security exclusions
+│   │   └── requirements-frontend-dev-expansion.md # Frontend requirements
+│   ├── backend-dev/                      # Backend development expansion
+│   │   ├── agents/                       # Backend specialist agents
+│   │   │   ├── api-architect.md          # API design consultant
+│   │   │   ├── database-architect.md     # Database design consultant
+│   │   │   ├── auth-specialist.md        # Authentication consultant
+│   │   │   ├── caching-specialist.md     # Caching strategies consultant
+│   │   │   ├── messaging-specialist.md   # Message queues consultant
+│   │   │   ├── observability-engineer.md # Monitoring consultant
+│   │   │   ├── backend-security-specialist.md # Backend security consultant
+│   │   │   ├── backend-testing-specialist.md # Testing strategies consultant
+│   │   │   └── serverless-specialist.md  # Serverless architecture consultant
+│   │   ├── settings.json                 # Backend-specific settings
+│   │   ├── preferences.json              # Backend-specific preferences
+│   │   ├── .ignore                       # Backend-specific ignore patterns
+│   │   ├── .immutable                    # Backend-specific immutable files
+│   │   ├── .exclude_security_checks      # Backend-specific security exclusions
+│   │   └── requirements-backend-dev-expansion.md # Backend requirements
+│   ├── data-science/                     # Data science expansion
+│   │   ├── agents/                       # Data science specialist agents
+│   │   │   ├── data-scientist.md         # Data analysis consultant
+│   │   │   ├── data-engineer.md          # Data pipeline consultant
+│   │   │   ├── ml-engineer.md            # Machine learning consultant
+│   │   │   ├── data-visualization-specialist.md # Data visualization consultant
+│   │   │   ├── analytics-engineer.md     # Analytics implementation consultant
+│   │   │   ├── data-quality-engineer.md  # Data quality consultant
+│   │   │   ├── statistical-consultant.md # Statistical analysis consultant
+│   │   │   └── ml-ethics-advisor.md      # AI ethics consultant
+│   │   ├── settings.json                 # Data science-specific settings
+│   │   ├── preferences.json              # Data science-specific preferences
+│   │   ├── .ignore                       # Data science-specific ignore patterns
+│   │   ├── .immutable                    # Data science-specific immutable files
+│   │   ├── .exclude_security_checks      # Data science-specific security exclusions
+│   │   └── requirements-data-science-expansion.md # Data science requirements
+│   ├── ai-dev/                           # AI development expansion
+│   │   ├── agents/                       # AI development specialist agents
+│   │   │   ├── openai-api-specialist.md  # OpenAI API consultant
+│   │   │   ├── openrouter-specialist.md  # OpenRouter consultant
+│   │   │   ├── langchain-specialist.md   # LangChain consultant
+│   │   │   ├── langgraph-specialist.md   # LangGraph consultant
+│   │   │   ├── transformers-specialist.md # Hugging Face consultant
+│   │   │   ├── vllm-specialist.md        # vLLM consultant
+│   │   │   ├── unsloth-specialist.md     # Unsloth consultant
+│   │   │   ├── rag-specialist.md         # RAG consultant
+│   │   │   ├── conversational-ai-specialist.md # Conversational AI consultant
+│   │   │   ├── agentic-orchestration-specialist.md # Multi-agent consultant
+│   │   │   ├── agent-observability-specialist.md # Agent monitoring consultant
+│   │   │   ├── agent-cost-specialist.md  # AI cost optimization consultant
+│   │   │   ├── mcp-specialist.md         # MCP consultant
+│   │   │   └── llm-security-specialist.md # LLM security consultant
+│   │   ├── settings.json                 # AI development-specific settings
+│   │   ├── preferences.json              # AI development-specific preferences
+│   │   ├── .ignore                       # AI development-specific ignore patterns
+│   │   ├── .immutable                    # AI development-specific immutable files
+│   │   ├── .exclude_security_checks      # AI development-specific security exclusions
+│   │   └── requirements-ai-dev-expansion.md # AI development requirements
+│   ├── infrastructure/                   # Infrastructure expansion
+│   │   ├── agents/                       # Infrastructure specialist agents
+│   │   │   ├── cloud-infrastructure-architect.md # Cloud infrastructure consultant
+│   │   │   ├── container-orchestration-specialist.md # Kubernetes consultant
+│   │   │   ├── devops-pipeline-engineer.md # CI/CD consultant
+│   │   │   ├── site-reliability-engineer.md # SRE consultant
+│   │   │   ├── infrastructure-security-specialist.md # Infrastructure security consultant
+│   │   │   ├── infrastructure-cost-optimizer.md # Cost optimization consultant
+│   │   │   ├── database-infrastructure-specialist.md # Database infrastructure consultant
+│   │   │   └── network-architecture-specialist.md # Network design consultant
+│   │   ├── settings.json                 # Infrastructure-specific settings
+│   │   ├── preferences.json              # Infrastructure-specific preferences
+│   │   ├── .ignore                       # Infrastructure-specific ignore patterns
+│   │   ├── .immutable                    # Infrastructure-specific immutable files
+│   │   ├── .exclude_security_checks      # Infrastructure-specific security exclusions
+│   │   └── requirements-infrastructure-expansion.md # Infrastructure requirements
+│   ├── game-dev/                         # Game development expansion
+│   │   ├── agents/                       # Game development specialist agents
+│   │   │   ├── game-mechanics-designer.md # Game mechanics consultant
+│   │   │   ├── game-state-manager.md     # Game state management consultant
+│   │   │   ├── game-performance-specialist.md # Game performance consultant
+│   │   │   ├── game-input-specialist.md  # Game input systems consultant
+│   │   │   ├── game-audio-designer.md    # Game audio consultant
+│   │   │   ├── level-design-architect.md # Level design consultant
+│   │   │   └── game-visual-designer.md   # Game visual design consultant
+│   │   ├── settings.json                 # Game development-specific settings
+│   │   ├── preferences.json              # Game development-specific preferences
+│   │   ├── .ignore                       # Game development-specific ignore patterns
+│   │   ├── .immutable                    # Game development-specific immutable files
+│   │   ├── .exclude_security_checks      # Game development-specific security exclusions
+│   │   └── requirements-game-dev-expansion.md # Game development requirements
+│   ├── desktop-dev/                      # Desktop development expansion
+│   │   ├── agents/                       # Desktop development specialist agents
+│   │   │   ├── electron-specialist.md    # Electron consultant
+│   │   │   ├── tauri-specialist.md       # Tauri consultant
+│   │   │   ├── flutter-desktop-specialist.md # Flutter desktop consultant
+│   │   │   ├── pwa-specialist.md         # PWA consultant
+│   │   │   ├── neutralino-specialist.md  # Neutralino consultant
+│   │   │   ├── lynx-specialist.md        # Lynx consultant
+│   │   │   └── desktop-security-specialist.md # Desktop security consultant
+│   │   ├── settings.json                 # Desktop development-specific settings
+│   │   ├── preferences.json              # Desktop development-specific preferences
+│   │   ├── .ignore                       # Desktop development-specific ignore patterns
+│   │   ├── .immutable                    # Desktop development-specific immutable files
+│   │   ├── .exclude_security_checks      # Desktop development-specific security exclusions
+│   │   └── requirements-desktop-dev-expansion.md # Desktop development requirements
+│   ├── general-software-dev/             # General software development expansion
+│   │   ├── agents/                       # General software development specialist agents
+│   │   │   ├── system-architecture-consultant.md # System architecture consultant
+│   │   │   ├── ux-research-specialist.md # UX research consultant
+│   │   │   └── qa-strategy-specialist.md # QA strategy consultant
+│   │   ├── settings.json                 # General software development-specific settings
+│   │   ├── preferences.json              # General software development-specific preferences
+│   │   ├── .ignore                       # General software development-specific ignore patterns
+│   │   ├── .immutable                    # General software development-specific immutable files
+│   │   ├── .exclude_security_checks      # General software development-specific security exclusions
+│   │   └── requirements-general-software-dev-expansion.md # General software development requirements
+│   └── example/                          # Example expansion pack template
+│       ├── agents/                       # Example agents directory
+│       ├── settings.json                 # Example settings template
+│       ├── preferences.json              # Example preferences template
+│       ├── .ignore                       # Example ignore patterns template
+│       ├── .immutable                    # Example immutable files template
+│       ├── .exclude_security_checks      # Example security exclusions template
+│       └── requirements-example-expansion.md # Example requirements template
 ```
 
 ### Key Configuration Files
