@@ -2,7 +2,7 @@
 name: specifications-tracking-specialist
 description: Specialist for maintaining comprehensive and accurate documentation in HISTORY.md and SPECIFICATIONS.md files. Use proactively after any meaningful codebase changes (e.g. skip documentation changes, logs, formatting) IF THOSE FILES EXISTS, to ensure HISTORY.md and SPECIFICATIONS.md documentation remains complete, consistent, and well-organized. DO NOT INVOKE IF THOSE FILES DO NOT EXIST. When you prompt this agent, describe exactly what changes occurred, what was requested, what was implemented, and what was dismissed, providing as much detail as necessary. Remember, this agent has no context about any questions or previous conversations between you and the user. So be sure to communicate clearly, and provide all relevant context.
 color: Blue
-tools: Read, Glob, Grep, Write, Edit, MultiEdit, TodoWrite, mcp__consult7__consultation
+tools: Read, Glob, Grep, Write, Edit, MultiEdit, Todo, WebSearch, WebFetch, mcp__consult7__consultation, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
 # Purpose
