@@ -2,6 +2,11 @@
 
 ## `> CLAUDER` - a safer and supercharged configuration for Claude Code
 
+<p align="left">
+    <a href="https://github.com/blueraai/universal-intelligence/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/blueraai/universal-intelligence.svg?color=00bf48"></a>
+    <a href="https://discord.gg/7g9SrEc5yT"><img alt="Discord" src="https://img.shields.io/badge/Join-Discord-7289DA?logo=discord&logoColor=white&color=4911ff"></a>
+</p>
+
 > Safer rules and smarter toolkit so Claude Code does not accidentally set the world on fire trying to help 🔥
 
 > [!WARNING]
@@ -771,6 +776,28 @@ cat .claude/.exclude_security_checks
 > Hooks documentation: https://docs.anthropic.com/en/docs/claude-code/hooks 
 >
 > **Tips:** Hooks are dedupped and run in parallel. They rely on strict interpretation from the console output for decision making. Make sure never to print anything other than the expected specifications for Claude Code to parse it correctly, any offset will cause Claude Code to omit the decision entirely. Beware of infinite loop, particularly when blocking a 'Stop' event to inject an extra step, as the 'Stop' event will retrigger once that step completes. By default, Claude Code will continue unless set to 'False'. A 'block' decision only blocks a given interaction with a 'reason', at which point Claude Code may decide to take a different action or find a way to bypass it. Use `claude --debug` to enable debug logs when working on hooks, as they are hidden by default. When developing, never test `Clauder` changes on a real project as bugs may have irreparable consequences - use a test project instead.
+
+## Thanks
+
+This project is powered by [claude-code](https://github.com/anthropics/claude-code), an intelligent IDE made by [Anthropic](https://github.com/anthropics).
+
+## Support
+
+This software is open source, free for everyone, and lives on thanks to the community's support ☕
+
+If you'd like to support to `clauder` here are a few ways to do so:
+
+- ⭐ Consider leaving a star on this repository to support our team & help with visibility
+- 👽 Tell your friends and colleagues
+- 📰 Support this project on social medias (e.g. LinkedIn, Youtube, Medium, Reddit)
+- ✅ Use `clauder` to make cool things
+- 💪 Create your very own `clauder` expansion packs
+- 💡 Help surfacing/resolving issues
+- 💭 Help shape the next `clauder` versions
+- 🔧 Help maintain, test, enhance `clauder`
+- ✉️ Email us security concerns
+- ❤️ Sponsor this project on Github
+- 🤝 [Partner with Bluera](mailto:contact@bluera.ai)
 
 ## License
 
