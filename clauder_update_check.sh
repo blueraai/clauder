@@ -98,7 +98,7 @@ perform_update() {
     
     # Reinstall clauder
     print_status $BLUE "🔧 Reinstalling clauder..."
-    source ./clauder_install.sh || {
+    bash ./clauder_install.sh || {
         print_status $RED "❌ Failed to reinstall clauder"
         return 0
     }
@@ -110,21 +110,22 @@ perform_update() {
     
     # Ask for user approval before activating
     echo
-    print_status $YELLOW "Would you like to activate the latest version of clauder in the current project? (y/n)"
+    print_status $YELLOW "🔄 UPDATE COMPLETE: Would you like to activate the latest version of clauder in the current project? (y/n)"
+    print_status $DARK_GRAY "Current project: $original_dir"
     read -r activate_response
     
-    case "$activate_response" in
-        [yY]|[yY][eE][sS])
-            print_status $BLUE "🔧 Activating clauder in current directory..."
-            # Ensure we're in the original directory where the user ran the command
-            cd "$original_dir"
-            # Pass the original directory explicitly to avoid confusion
-            clauder_activate "$original_dir" || {
-                print_status $RED "❌ Failed to activate clauder"
-                return 0
-            }
-            print_status $GREEN "✅ Clauder updated and activated successfully!"
-            ;;
+            case "$activate_response" in
+            [yY]|[yY][eE][sS])
+                print_status $BLUE "🔧 Activating clauder in current directory..."
+                # Ensure we're in the original directory where the user ran the command
+                cd "$original_dir"
+                # Call the activate script directly instead of relying on alias
+                bash "$clauder_dir/clauder_activate.sh" "$original_dir" || {
+                    print_status $RED "❌ Failed to activate clauder"
+                    return 0
+                }
+                print_status $GREEN "✅ Clauder updated and activated successfully!"
+                ;;
         [nN]|[nN][oO])
             print_status $BLUE "Skipping activation."
             print_status $YELLOW "⚠️  Clauder was updated but the latest version was not applied to this project."
