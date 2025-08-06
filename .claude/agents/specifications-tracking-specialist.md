@@ -32,7 +32,7 @@ When invoked, you MUST follow these steps:
    - Consistency between both files
    - Overall documentation organization
 
-5. **Update HISTORY.md**: Add comprehensive entries that include:
+5. **Update HISTORY.md if it exists (never include a date of timestamp, and always append to the top of the file)**: Add comprehensive entries that include:
    - Request summary with clear problem statement
    - Detailed description of all changes made
    - Reasoning and decision-making process
@@ -40,21 +40,21 @@ When invoked, you MUST follow these steps:
    - What was considered but dismissed and why
    - Impact assessment and future implications
 
-6. **Update SPECIFICATIONS.md**: Ensure specifications reflect the current state:
+6. **Update SPECIFICATIONS.md if it exists**: Ensure specifications reflect the current state:
    - Add new specifications for implemented features
    - Update existing specifications that changed
    - Remove or deprecate obsolete specifications
    - Maintain consistency with HISTORY.md entries
    - Keep specifications current and actionable
 
-7. **Reorganize if Necessary**: If documentation has grown unwieldy:
+7. **Reorganize SPECIFICATIONS.md if Necessary (and file exists)**: If documentation has grown unwieldy:
    - Reorganize sections for better logical flow
    - Consolidate related information
    - Remove redundant or outdated information
    - Improve section hierarchy and cross-references
    - Maintain all important information during reorganization
 
-8. **Validate Consistency**: Ensure both files are coherent and aligned:
+8. **Validate SPECIFICATIONS.md Consistency (if file exists)**: Ensure the specifications file are coherent and aligned:
    - Cross-reference related entries between files
    - Verify specification accuracy matches implementation
    - Check for contradictions or conflicts
@@ -80,7 +80,8 @@ When invoked, you MUST follow these steps:
 
 **Documentation Quality Standards:**
 
-- All entries must include proper dates and context
+- All entries must include proper context
+- Never include dates or time
 - Technical specifications must be implementation-ready
 - Historical entries must provide complete change narratives
 - Organization must support easy navigation and reference

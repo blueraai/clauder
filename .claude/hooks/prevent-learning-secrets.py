@@ -598,10 +598,10 @@ Examples:
                 
                 output = {
                     "continue": False,
-                    "stopReason": "Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded. If secrets have been indexed or read by an AI, you should consider removing them from the project, invalidating them and renewing them. Opening an AI session without interacting is sufficient to index secrets. Secrets must not be stored in the project itself. Production secrets should be stored in a secure vault, unreadable by AI. Found: {findings_str}",
+                    "stopReason": f"Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded: {findings_str}. If secrets have been indexed or read by an AI, you should consider invalidating them and renewing them. Opening an AI session without interacting is sufficient to index secrets. Secrets must not be stored in the project itself. Production secrets should be stored in a secure vault, unreadable by AI. If this path is a false positive, you shall add it to the '.claude/.exclude_security_checks' file.",
                     "suppressOutput": True,
                     "decision": "block",
-                    "reason": f"Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded: {findings_str}"
+                    "reason": f"Security policy violation. Project is not safe for indexing. Found potential secrets in files/directories that should be excluded: {findings_str}. If secrets have been indexed or read by an AI, you should consider invalidating them and renewing them. Opening an AI session without interacting is sufficient to index secrets. Secrets must not be stored in the project itself. Production secrets should be stored in a secure vault, unreadable by AI. If this path is a false positive, you shall add it to the '.claude/.exclude_security_checks' file."
                 }
                 log_decision(output, operation_type="prevent_learning_secrets_decision")
             print(json.dumps(output))

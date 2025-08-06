@@ -41,7 +41,7 @@ def main():
                     "hookSpecificOutput": {
                         "hookEventName": "PreToolUse",
                         "permissionDecision": "deny",
-                        "permissionDecisionReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {pattern})"
+                        "permissionDecisionReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {pattern}). See '.claude/.ignore' for more information."
                     }
                 }
                 log_decision(output, operation_type="ignore_patterns_decision")
@@ -62,7 +62,7 @@ def main():
                                 "hookSpecificOutput": {
                                     "hookEventName": "PreToolUse",
                                     "permissionDecision": "deny",
-                                    "permissionDecisionReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {line})"
+                                    "permissionDecisionReason": f"Security policy violation. Attempted to access sensitive file. (file: {path}, pattern: {line}). See '.claude/.ignore' for more information."
                                 }
                             }
                             log_decision(output, operation_type="claudeignore_decision")

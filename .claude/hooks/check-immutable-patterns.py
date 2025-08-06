@@ -44,7 +44,7 @@ def main():
                 "hookSpecificOutput": {
                     "hookEventName": "PreToolUse",
                     "permissionDecision": "deny",
-                    "permissionDecisionReason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {path})"
+                    "permissionDecisionReason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {path}). See '.claude/.immutable' for more information."
                 }
             }
             log_decision(output, operation_type="immutable_patterns_decision")
@@ -65,7 +65,7 @@ def main():
                                 "hookSpecificOutput": {
                                     "hookEventName": "PreToolUse",
                                     "permissionDecision": "deny",
-                                    "permissionDecisionReason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {line})"
+                                    "permissionDecisionReason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {line}). See '.claude/.immutable' for more information."
                                 }
                             }
                             log_decision(output, operation_type="immutable_file_decision")
@@ -86,7 +86,7 @@ def main():
                                 "hookSpecificOutput": {
                                     "hookEventName": "PreToolUse",
                                     "permissionDecision": "deny",
-                                    "permissionDecisionReason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {line})"
+                                    "permissionDecisionReason": f"Security policy violation. Attempted to modify immutable file. Please request human approval to modify this file. (file: {line}). See '.claude/.immutable' for more information."
                                 }
                             }
                             log_decision(output, operation_type="env_variable_decision")
