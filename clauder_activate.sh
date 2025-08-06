@@ -289,7 +289,7 @@ except Exception as e:
     fi
 }
 
-# Function to merge text files by appending content
+# Function to merge text files by preserving custom configurations
 merge_text_files() {
     local target_file="$1"
     local source_file="$2"
@@ -302,7 +302,7 @@ merge_text_files() {
     # Create a temporary file for the merged result
     local temp_file=$(mktemp)
     
-    # Copy existing content to temp file
+    # Start with target file content (preserve existing custom configurations)
     cat "$target_file" > "$temp_file"
     
     # Add a newline if the target file doesn't end with one
@@ -369,7 +369,13 @@ copy_expansion_pack() {
         done
         
         # Handle file copying/merging
-        if [ "$should_merge" = true ] && [ -f "$target_file" ]; then
+        if [ "$should_merge" = true ]; then
+            # For mergeable files, create target if it doesn't exist, then merge
+            if [ ! -f "$target_file" ]; then
+                # Create empty target file for merging
+                touch "$target_file"
+            fi
+            
             # Merge the file
             if [[ "$filename" == *.json ]]; then
                 if merge_json_files "$target_file" "$source_file"; then
@@ -508,6 +514,9 @@ copy_claude_folder() {
     echo "Target directory: $target_claude"
     echo "Copying .claude files to $target_claude..."
     
+    # Files that need special merging to preserve existing configurations
+    local mergeable_files=(".exclude_security_checks" ".ignore" ".immutable" "preferences.json" "settings.json")
+    
     # Track successful and failed copies
     local successful_copies=()
     local failed_copies=()
@@ -524,12 +533,41 @@ copy_claude_folder() {
             mkdir -p "$target_dir"
         fi
         
-        # Copy the file (force overwrite)
-        if cp -f "$source_file" "$target_file" 2>/dev/null; then
-            successful_copies+=("$relative_path")
+        # Check if this is a mergeable file
+        local filename=$(basename "$relative_path")
+        local should_merge=false
+        
+        for mergeable_file in "${mergeable_files[@]}"; do
+            if [ "$filename" = "$mergeable_file" ]; then
+                should_merge=true
+                break
+            fi
+        done
+        
+        # Handle file copying/merging
+        if [ "$should_merge" = true ] && [ -f "$target_file" ]; then
+            # Merge with existing configuration to preserve custom settings
+            if [[ "$filename" == *.json ]]; then
+                if merge_json_files "$target_file" "$source_file"; then
+                    successful_copies+=("$relative_path (merged)")
+                else
+                    failed_copies+=("$relative_path (merge failed)")
+                fi
+            else
+                if merge_text_files "$target_file" "$source_file"; then
+                    successful_copies+=("$relative_path (merged)")
+                else
+                    failed_copies+=("$relative_path (merge failed)")
+                fi
+            fi
         else
-            failed_copies+=("$relative_path")
-            echo "Failed to copy: $source_file -> $target_file" >&2
+            # Copy the file normally (overwrite if it doesn't exist or isn't mergeable)
+            if cp -f "$source_file" "$target_file" 2>/dev/null; then
+                successful_copies+=("$relative_path")
+            else
+                failed_copies+=("$relative_path")
+                echo "Failed to copy: $source_file -> $target_file" >&2
+            fi
         fi
     done < <(find "$source_claude" -type f -print0 2>/dev/null)
     
