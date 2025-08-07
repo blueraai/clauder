@@ -459,6 +459,8 @@ clauder/
 ├── clauder_install.sh                    # Installation script
 ├── clauder_security_check.sh             # Security validation script
 ├── clauder_update_check.sh               # Update checking and management script
+├── clauder_trace.sh                      # Tracer app launcher script
+├── clauder.sh                            # Main clauder launcher script
 ├── assets/                               # Externalized assets and messages
 │   ├── clauder_banner.txt                # ASCII art banner displayed before clauder
 │   └── clauder_footer.txt                # Footer message with links and reminders
