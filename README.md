@@ -11,14 +11,14 @@
 
 Clauder is a **supercharged toolkit and a safety-first configuration for Claude Code**, designed to provide a robust foundation for AI-assisted development — while remaining *easily configurable and extensible to any project or workflow*.
 
-> Would you rather [**chat with our docs**](https://githubchat.bluera.ai/#url=https%3A%2F%2Fgithub.com%2Fblueraai%2Fclauder)? 💬
-> 
-> *Note: AI responses may include mistakes. Refer to the documentation below for sample code.*
-
 > [!WARNING]
 > While `clauder` helps setting generic guardrails, these are **insufficient to autonomously ensure correctness and safety**. `clauder` is solely meant as a safety net and toolset, and *assumes co-supervision by a human in the loop*.
 
 **Bluera Inc.** https://bluera.ai
+
+> Would you rather [**chat with our docs**](https://githubchat.bluera.ai/#url=https%3A%2F%2Fgithub.com%2Fblueraai%2Fclauder)? 💬
+> 
+> *Note: AI responses may include mistakes. Refer to the documentation below for sample code.*
 
 ## Overview
 
