@@ -16,7 +16,7 @@
 
 ## Overview
 
-![audio: what-is-clauder?](https://fasplnlepuuumfjocrsu.supabase.co/storage/v1/object/public/web-assets/what-is-clauder.mp3)
+![audio: what-is-clauder?](https://fasplnlepuuumfjocrsu.supabase.co/storage/v1/object/public/web-assets/what-is-clauder.mp4)
 
 This repository contains a comprehensive Claude Code configuration that provides advanced toolkits, safety mechanisms, logging, and best practices for AI-assisted development. Clauder includes:
 
