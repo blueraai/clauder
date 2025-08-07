@@ -16,14 +16,15 @@
 
 ## Overview
 
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">📻 Prefer audio?</strong></summary>
+<br>
 
 
-https://github.com/user-attachments/assets/a26a7b0b-0c7e-4c3f-bee2-fd9775cb7834
+https://github.com/user-attachments/assets/4de6c270-7b45-497a-80a2-3018d1217168
 
 
-
-https://github.com/user-attachments/assets/2c4bd62a-bdb8-4705-90fc-0d6a835402a1
-
+</details>
 
 
 This repository contains a comprehensive Claude Code configuration that provides advanced toolkits, safety mechanisms, logging, and best practices for AI-assisted development. Clauder includes:
