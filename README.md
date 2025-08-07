@@ -9,6 +9,8 @@
 
 > Safer rules and smarter toolkit so Claude Code does not accidentally set the world on fire trying to help 🔥
 
+Clauder is a **supercharged toolkit and a safety-first configuration for Claude Code**, designed to provide a robust foundation for AI-assisted development — while remaining *easily configurable and extensible to any project or workflow*.
+
 > [!WARNING]
 > While `clauder` helps setting generic guardrails, these are **insufficient to autonomously ensure correctness and safety**. `clauder` is solely meant as a safety net and toolset, and *assumes co-supervision by a human in the loop*.
 
@@ -70,7 +72,6 @@ This repository contains a comprehensive Claude Code configuration that provides
 - Claude configuration backups and rollback support
 - On-Demand expansion packs
 
-Clauder is designed as a safety-first configuration that provides a robust foundation for AI-assisted development while maintaining human oversight and preventing common security pitfalls.
 
 ## Get Started
 
@@ -82,7 +83,7 @@ git clone <repository-url>
 cd clauder
 
 # Install (must be run from the `clauder` dir)
-source ./clauder_install.sh
+bash ./clauder_install.sh
 ```
 
 ### Usage
