@@ -801,6 +801,8 @@ cat .claude/.exclude_security_checks
 
 This project is powered by [claude-code](https://github.com/anthropics/claude-code), an intelligent IDE made by [Anthropic](https://github.com/anthropics).
 
+Agent builder derived from disler's [claude-code-hook-mastery](https://github.com/disler/claude-code-hooks-mastery).
+
 ## Support
 
 This software is open source, free for everyone, and lives on thanks to the community's support ☕
