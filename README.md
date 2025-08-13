@@ -785,6 +785,24 @@ cat .claude/.exclude_security_checks
 # Alternatively, you may choose to disable secret pattern detection in `.claude/preferences.json`
 ```
 
+**claude: command not found**
+```bash
+# clauder runs claude in a standard 'bash' shell, irrespective of where it was started (e.g. ZSH).
+# You may only have Claude Code installed in a ZSH terminal.
+
+# Please make sure the 'claude' command is also installed in bash terminals (run 'bash' and install Claude Code using these instructions: https://docs.anthropic.com/en/docs/claude-code/troubleshooting).
+
+# Once installed, confirm installation using:
+bash
+# Then, in bash terminal
+which claude # macOS, Linux
+where claude # windows
+
+# If claude's path is displayed, you may now run in any terminal (e.g. ZSH, bash):
+clauder
+# Else, please refer to troubleshooting link above to fix your Claude Code installation.
+```
+
 ## Contributing
 
 1. Fork the repository
