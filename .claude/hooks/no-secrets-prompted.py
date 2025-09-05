@@ -182,10 +182,10 @@ if found_secret:
     preview = match_text[:8] + "..." if len(match_text) > 8 else match_text
     output = {
         "continue": False,
-        "stopReason": "Security policy violation: Quoted content contains potential secrets. Please rephrase your request without sensitive information.",
+        "stopReason": "Security policy violation: Quoted content contains potential secrets. Please rephrase your request without sensitive information. You may reference secrets from a different directory or vault (e.g. doppler, hashicorp vault, unix pass).",
         "suppressOutput": True,
         "decision": "block",
-        "reason": f"Security policy violation: Quoted content contains potential secrets. Pattern triggered: {pattern_name} (starts with: {preview}). Please rephrase your request without sensitive information."
+        "reason": f"Security policy violation: Quoted content contains potential secrets. Pattern triggered: {pattern_name} (starts with: {preview}). Please rephrase your request without sensitive information. You may reference secrets from a different directory or vault  (e.g. doppler, hashicorp vault, unix pass)."
     }
     log_decision(output, operation_type="quoted_secrets_decision")
     print(json.dumps(output))

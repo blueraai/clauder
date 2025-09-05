@@ -696,7 +696,7 @@ Clauder dependencies and recommended MCP servers.
 
 ### **Environment Secrets**
 - **Never store in project**: Keep secrets outside the working directory
-- **Secure vaults**: Use dedicated secret management systems
+- **Secure vaults**: Use dedicated secret management systems (e.g. doppler, hashicorp vault, unix pass)
 - **AI isolation**: Ensure AI cannot access production secrets
 - **Regular rotation**: Rotate secrets if accidentally exposed
 
