@@ -50,8 +50,15 @@ fi
 # Run the update check script
 bash "$UPDATE_SCRIPT"
 
-# Run the security check script
+# Run the security check script and capture exit code
 bash "$SECURITY_SCRIPT"
+security_exit_code=$?
+
+# Check if security check failed with codes 1 or 2
+if [[ $security_exit_code -eq 1 || $security_exit_code -eq 2 ]]; then
+    echo "Security check failed. Aborting execution."
+    exit $security_exit_code
+fi
 
 # Display footer
 clauder_footer
