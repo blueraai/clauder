@@ -32,6 +32,26 @@ detect_shell_configs() {
     echo "${configs[@]}"
 }
 
+# Function to cleanup old backup files (keep only latest 10)
+cleanup_old_backups() {
+    local config_file="$1"
+    local backup_pattern="${config_file}.backup.*"
+    
+    # Count existing backup files
+    local backup_count=$(ls -1 $backup_pattern 2>/dev/null | wc -l)
+    
+    if [[ $backup_count -gt 10 ]]; then
+        # Get all backup files sorted by modification time (oldest first)
+        local old_backups=$(ls -1t $backup_pattern 2>/dev/null | tail -n +11)
+        
+        # Remove the oldest backups
+        for old_backup in $old_backups; do
+            rm -f "$old_backup"
+            print_status $DARK_GRAY "🗑️  Removed old backup: $(basename "$old_backup")"
+        done
+    fi
+}
+
 # Function to create aliases
 create_aliases() {
     local config_file="$1"
@@ -52,6 +72,9 @@ create_aliases() {
         print_status $RED "Error: clauder_security_check.sh not found at $security_script"
         return 1
     fi
+    
+    # Cleanup old backups before creating new one
+    cleanup_old_backups "$config_file"
     
     # Create backup of config file
     local backup_file="${config_file}.backup.$(date +%Y%m%d_%H%M%S)"
