@@ -515,7 +515,7 @@ copy_claude_folder() {
     echo "Copying .claude files to $target_claude..."
     
     # Files that need special merging to preserve existing configurations
-    local mergeable_files=(".exclude_security_checks" ".ignore" ".immutable" "preferences.json" "settings.json")
+    local mergeable_files=(".exclude_security_checks" ".ignore" ".immutable" "preferences.json") # settings.json is not mergeable to ensure working operations upon auto-updates, for custom settings use .claude/settings.local.json instead
     
     # Track successful and failed copies
     local successful_copies=()

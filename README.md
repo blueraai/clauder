@@ -125,6 +125,10 @@ Clauder's configuration will automatically:
 
 > **Domain specific *expansion packs* available** (including agents, commands, hooks and configurations - see below)
 
+> [!IMPORTANT]
+> `.claude/settings.json` will be overriden for consistency and security purposes, upon every activation (including auto-updates).
+> Custom settings must be defined in `.claude/settings.local.json`, so they remain persisted throughout clauder activation.
+
 
 #### How to start a Claude session
 
@@ -160,6 +164,7 @@ This will define the mandatory guidelines for Claude Code.
 > - In `.gitignore`, exclude `.claude/logs`, `.claude/.tmp`, and `.claude-backup` for cleaner commits.
 > - Check `.claude/requirements.md` for prerequisites, and recommended [MCP tools](https://docs.anthropic.com/en/docs/claude-code/mcp). `clauder` will *automatically* take advantage of those tools should you have added them to Claude Code.
 > - Check [Claude Code's best practices](https://www.anthropic.com/engineering/claude-code-best-practices) for better results.
+> - Define your custom settings in `.claude/settings.local.json` instead of `.claude/settings.json`, so they remain persisted when clauder auto-updates.
 
 #### How to ask Claude to for a general review
 
@@ -657,7 +662,9 @@ clauder/
 
 #### **`.claude/settings.json`**
 
-Defines hooks and permissions.
+Defines hooks and permissions. Will be overriden upon auto-updating to ensure a safe and working setup.
+
+For custom settings use `.claude/settings.local.json` instead, so they remain persisted when clauder auto-updates.
 
 #### **`.claude/.ignore`**
 
