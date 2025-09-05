@@ -98,7 +98,10 @@ bash ./clauder_install.sh
 #### Activate Clauder in your project
 
 > [!IMPORTANT]
-> Activating Clauder may override any existing `.claude` configuration.
+> Activating Clauder may override any existing `.claude` configuration. Backups will automatically be created to save/restore your existing configurations. These can be found at `./.claude-backup/`.
+>
+> Notably, `.claude/settings.json` will be overriden for consistency and security purposes, upon every activation (including auto-updates).
+> Custom settings must be defined in `.claude/settings.local.json` to remain persisted throughout clauder activation.
 
 Run in your project directory:
 
@@ -124,11 +127,6 @@ Clauder's configuration will automatically:
 - Define custom agents to help the main instance achieve specific tasks
 
 > **Domain specific *expansion packs* available** (including agents, commands, hooks and configurations - see below)
-
-> [!IMPORTANT]
-> `.claude/settings.json` will be overriden for consistency and security purposes, upon every activation (including auto-updates).
-> Custom settings must be defined in `.claude/settings.local.json`, so they remain persisted throughout clauder activation.
-
 
 #### How to start a Claude session
 
