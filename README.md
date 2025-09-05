@@ -496,6 +496,8 @@ clauder/
 │   │   ├── mcp-logs.txt                  # MCP tool call history
 │   │   └── trace.sqlite                  # SQLite database for trace events
 │   ├── .tmp/                             # Temporary files (created at runtime)
+│   ├── statusline/                       # Status line configuration
+│   │   └── pyccsl.py                     # Python-based status line script
 │   ├── tracer/                           # Trace viewer web application
 │   │   ├── app.py                        # Flask web server for trace viewer
 │   │   ├── requirements.txt              # Python dependencies for tracer
@@ -822,11 +824,13 @@ clauder
 >
 > **Tips:** Hooks are dedupped and run in parallel. They rely on strict interpretation from the console output for decision making. Make sure never to print anything other than the expected specifications for Claude Code to parse it correctly, any offset will cause Claude Code to omit the decision entirely. Beware of infinite loop, particularly when blocking a 'Stop' event to inject an extra step, as the 'Stop' event will retrigger once that step completes. By default, Claude Code will continue unless set to 'False'. A 'block' decision only blocks a given interaction with a 'reason', at which point Claude Code may decide to take a different action or find a way to bypass it. Use `claude --debug` to enable debug logs when working on hooks, as they are hidden by default. When developing, never test `Clauder` changes on a real project as bugs may have irreparable consequences - use a test project instead.
 
-## Thanks
+## Credits
 
 This project is powered by [claude-code](https://github.com/anthropics/claude-code), an intelligent IDE made by [Anthropic](https://github.com/anthropics).
 
 Agent builder derived from disler's [claude-code-hook-mastery](https://github.com/disler/claude-code-hooks-mastery).
+
+Status line powered by [pyccsl](https://github.com/wolfdenpublishing/pyccsl), an open source project by [wolfdenpublishing](https://github.com/wolfdenpublishing).
 
 ## Support
 

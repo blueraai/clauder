@@ -1,4 +1,8 @@
 {
+  "statusLine": {
+    "type": "command",
+    "command": "python3 $CLAUDE_PROJECT_DIR/.claude/statusline/pyccsl.py folder,git,model --theme minimal --style pipes"
+  },
   "hooks": {
     "PreToolUse": [
       {
