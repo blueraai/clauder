@@ -141,6 +141,84 @@ perform_update() {
     return 0
 }
 
+# Function to check target .claude/.clauderrc file
+check_target_clauderrc() {
+    local clauder_dir="$1"
+    local target_dir="$2"
+    local clauderrc_file="$target_dir/.claude/.clauderrc"
+    
+    # Check if .claude/.clauderrc exists
+    if [[ ! -f "$clauderrc_file" ]]; then
+        print_status $YELLOW "⚠️  No .claude/.clauderrc found in target project"
+        return 1  # Needs activation
+    fi
+    
+    # Get current clauder commit
+    local current_clauder_commit=""
+    if [[ -d "$clauder_dir/.git" ]]; then
+        current_clauder_commit=$(cd "$clauder_dir" && git rev-parse HEAD 2>/dev/null)
+    fi
+    
+    if [[ -z "$current_clauder_commit" ]]; then
+        print_status $YELLOW "⚠️  Could not determine clauder commit ID"
+        return 1  # Needs activation
+    fi
+    
+    # Read the commit ID from .clauderrc
+    local target_commit=""
+    if [[ -f "$clauderrc_file" ]]; then
+        target_commit=$(cat "$clauderrc_file" 2>/dev/null | tr -d '\n\r')
+    fi
+    
+    if [[ -z "$target_commit" ]]; then
+        print_status $YELLOW "⚠️  .claude/.clauderrc is empty or unreadable"
+        return 1  # Needs activation
+    fi
+    
+    # Compare commit IDs
+    if [[ "$target_commit" != "$current_clauder_commit" ]]; then
+        print_status $YELLOW "🔄 Target project has different clauder version"
+        print_status $BLUE "Target:  $(echo "$target_commit" | cut -c1-8)"
+        print_status $BLUE "Current: $(echo "$current_clauder_commit" | cut -c1-8)"
+        return 1  # Needs activation
+    fi
+    
+    print_status $GREEN "✅ Target project is up to date with current clauder version"
+    return 0  # No activation needed
+}
+
+# Function to prompt for activation
+prompt_for_activation() {
+    local clauder_dir="$1"
+    local target_dir="$2"
+    
+    echo
+    print_status $YELLOW "Would you like to activate the current clauder version in this project? (y/n)"
+    print_status $DARK_GRAY "This will backup existing .claude configuration and apply the latest clauder settings."
+    read -r response
+    
+    case "$response" in
+        [yY]|[yY][eE][sS])
+            print_status $BLUE "🔧 Activating clauder in current directory..."
+            # Call the activate script directly
+            bash "$clauder_dir/clauder_activate.sh" "$target_dir" || {
+                print_status $RED "❌ Failed to activate clauder"
+                return 1
+            }
+            print_status $GREEN "✅ Clauder activated successfully!"
+            return 0
+            ;;
+        [nN]|[nN][oO])
+            print_status $BLUE "Skipping activation. Continuing with current configuration..."
+            return 0
+            ;;
+        *)
+            print_status $RED "Invalid response. Skipping activation."
+            return 0
+            ;;
+    esac
+}
+
 # Function to prompt user for update
 prompt_for_update() {
     local clauder_dir="$1"
@@ -179,6 +257,11 @@ main() {
     # Only prompt for update if an update is actually needed
     if [ "$update_needed" = true ]; then
         prompt_for_update "$clauder_dir" "$original_dir"
+    fi
+    
+    # Check if target project needs activation (regardless of whether update was needed)
+    if ! check_target_clauderrc "$clauder_dir" "$original_dir"; then
+        prompt_for_activation "$clauder_dir" "$original_dir"
     fi
 }
 
