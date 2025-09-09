@@ -438,6 +438,34 @@ apply_expansion_packs() {
     echo "All expansion packs applied."
 }
 
+# Function to create .clauderrc file with commit ID
+create_clauderrc() {
+    local target_claude="$1"
+    local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
+    local clauderrc_file="$target_claude/.clauderrc"
+    
+    # Get the commit ID from the clauder directory
+    local commit_id=""
+    if [ -d "$clauder_dir/.git" ]; then
+        commit_id=$(cd "$clauder_dir" && git rev-parse HEAD 2>/dev/null)
+    fi
+    
+    # If we couldn't get commit ID from git, try to get it from version function
+    if [ -z "$commit_id" ]; then
+        commit_id=$(cd "$clauder_dir" && git rev-parse HEAD 2>/dev/null || echo "unknown")
+    fi
+    
+    # Create the .clauderrc file with only the commit ID
+    echo "$commit_id" > "$clauderrc_file"
+    
+    if [ $? -eq 0 ]; then
+        echo "✓ Created .clauderrc with commit ID: $commit_id"
+    else
+        echo "⚠ Failed to create .clauderrc file"
+        return 1
+    fi
+}
+
 # Function to apply previously applied expansion packs
 apply_previous_expansions() {
     local target_project="$1"
@@ -587,6 +615,9 @@ copy_claude_folder() {
     else
         echo "Some files could not be copied, but continuing with activation..."
     fi
+    
+    # Create .clauderrc file to track the commit ID
+    create_clauderrc "$target_claude"
     
     echo "Successfully activated Claude configuration in $target_project"
     echo "You can now use Claude in this project with your custom configuration."
