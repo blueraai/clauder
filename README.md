@@ -11,6 +11,8 @@
 
 Clauder is a **supercharged toolkit and a safety-first configuration for Claude Code**, designed to provide a robust foundation for AI-assisted development — while remaining *easily configurable and extensible to any project or workflow*.
 
+It **auto-updates** so you always get the latest tools, and never have to think about it again.
+
 > [!WARNING]
 > While `clauder` helps setting guardrails, these are **insufficient to autonomously ensure correctness and safety**. `clauder` is solely meant as a safety net and toolset, and *assumes co-supervision by a human in the loop*.
 
@@ -38,7 +40,7 @@ Clauder is a **supercharged toolkit and a safety-first configuration for Claude 
 This repository contains a comprehensive Claude Code configuration that provides advanced toolkits, safety mechanisms, logging, and best practices for AI-assisted development. Clauder includes:
 
 **🔒 Security & Safety**
-- Multi-layered secret detection and prevention
+- Multi-layered secret detection and leak prevention
 - File protection with immutable and ignore patterns
 - Human-in-the-loop approval for sensitive operations
 - Git protection against destructive operations
@@ -52,9 +54,8 @@ This repository contains a comprehensive Claude Code configuration that provides
 
 **⚡ Workflow Automation**
 - Automatic git checkpoints before sessions
-- Documentation enforcement (HISTORY.md, SPECIFICATIONS.md)
-- Audio feedback for task completion
-- Automated backup and update management
+- (optional) Context engineering through documentation enforcement (HISTORY.md, SPECIFICATIONS.md)
+- (optional) Audio feedback on task completion
 
 **🛠️ Advanced Toolset**
 - Custom commands for external AI consultation (`/consult`)
@@ -75,9 +76,8 @@ This repository contains a comprehensive Claude Code configuration that provides
 
 **💡 Smart Integration**
 - Automatic MCP tool detection and utilization
-- Automated Clauder updates
+- Automated Clauder updates, while preserving custom configuration and expansion packs
 - Claude configuration backups and rollback support
-- On-Demand expansion packs
 
 
 ## Get Started
@@ -731,7 +731,7 @@ clauder_security_check & echo done
 # Creating or deleting an agent will not apply to current sessions. 
 # Start a new session to use your newly created agent.
 
-clauder
+clauder # (or) clauder --continue
 ```
 
 **Missing required tools**
@@ -768,11 +768,9 @@ cat .claude/preferences.json
 
 **.claude/*: [Errno 2] No such file or directory**
 ```bash
-# Claude ran 'cd' and moved to a directory where it cannot find its '.claude' configuration.
-# Due to hooks needing to be be set in this '.claude' configuration, it will not be able to find them and will error out when trying to 'cd' back.
-
-# To resolve, stop Claude and run:
-clauder --continue 
+# You may have an early legacy version of Clauder installed, which is no longer supported. 
+# Please pull the latest clauder and rerun 'bash ./clauder_install.sh'.
+# Newer versions of Clauder now auto-updates, so you never have to do it again.
 ```
 
 ### **Configuration Issues**
@@ -780,7 +778,7 @@ clauder --continue
 **Aliases not working**
 ```bash
 # Re-run alias setup (Important: Run from the `clauder` directory)
-source ./clauder_install.sh
+bash ./clauder_install.sh
 # Or restart your shell
 ```
 
@@ -808,6 +806,13 @@ where claude # windows
 # If claude's path is displayed, you may now run in any terminal (e.g. ZSH, bash):
 clauder
 # Else, please refer to troubleshooting link above to fix your Claude Code installation.
+```
+
+**Clauder does not auto-update, or 'clauder' fails unexpectedly after updating to the latest version**
+```bash
+# You may have an early legacy version of Clauder installed, which is no longer supported. 
+# Please pull the latest clauder and rerun 'bash ./clauder_install.sh'.
+# Newer versions of Clauder now auto-updates, so you never have to do it again.
 ```
 
 ## Contributing
