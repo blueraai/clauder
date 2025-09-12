@@ -62,6 +62,7 @@ This repository contains a comprehensive Claude Code configuration that provides
 - Sub-agent creation and management (`/spawn`)
 - Code review automation (`/review`)
 - Intelligent agent recruitment (`/recruit`)
+- **65+ on-demand MCP servers**, per project
 
 **🎯 Domain-Specific Expansion Packs**
 - **67 specialized agents** across 8 domains
@@ -75,30 +76,92 @@ This repository contains a comprehensive Claude Code configuration that provides
 - **General Software**: System architects, UX researchers, QA strategists
 
 **💡 Smart Integration**
+- Automated MCP server installation, on-demand, per project
 - Automatic MCP tool detection and utilization
 - Automated Clauder updates, while preserving custom configuration and expansion packs
 - Claude configuration backups and rollback support
+- Commands recommendations and active MCP servers list on start, project based
+- Status line with project name, branch, and active model, for easy monitoring (optionally, API costs per session)
 
 
-## Get Started
+## Requirements
 
-### Installation
+Supported platforms:
+- macOS
+- linux
+- windows (experimental)
+
+> Core features should work on windows as long as running a `bash` terminal. Some MCP servers may not work as is and may need manual setup instead. Please raise any issue encountered and we will try to help.
+
+Supported terminals:
+- `bash`
+- `zsh`
+
+> Run `bash` to open a bash terminal if running in an unsupported termnial (e.g. shell, powershell)
+
+Required dependencies:
+
+- Python 3.10+
+- `pip`
+- `git`
+- `jq`
+- `claude`
+
+Required if using MCP servers (refer to `.mcp.json` for details):
+- `npx`
+- `uvx`
+- `uv`
+- `pipx`
+- `pnpx`
+- `pnpx`
+- `docker`
+
+## Quick Start
+
+> Ensure the requirements above are met
+
+*If you do not have Clauder installed on your machine* (check using `which clauder`): 
 
 ```bash
-# Clone repository
-git clone <repository-url>
-cd clauder
-
-# Install (must be run from the `clauder` dir)
-bash ./clauder_install.sh
+# Clone and install repository
+cd ~/ && git clone https://github.com/blueraai/clauder.git && cd clauder && bash ./clauder_install.sh
 ```
 
-### Usage
+In `.gitignore`, exclude the following paths for cleaner commits:
+```text
+.claude 
+.claude-backup
+.claude-mcp-backup
+.mcp.json
+```
 
-#### Activate Clauder in your project
+Activate & start **clauder** in any of your projects:
+```bash
+# Navigate to project root directory (must be a git repository)
+cd replace-with-project-root-path # && git init (if not already a repository)
+
+# Start clauder
+clauder # (on initial load, choose to ** activate in project ** when prompted)
+```
+> Check section below for detailed information on how to use `> CLAUDER`
+
+## Installation
+
+> Ensure the requirements above are met
+```bash
+# Clone repository
+cd ~/ && git clone https://github.com/blueraai/clauder.git
+
+# Install (must be run from the `clauder` dir)
+cd clauder && bash ./clauder_install.sh
+```
+
+## Usage
+
+### Activate Clauder in your project
 
 > [!IMPORTANT]
-> Activating Clauder may override any existing `.claude` configuration. Backups will automatically be created to save/restore your existing configurations. These can be found at `./.claude-backup/`.
+> Activating Clauder may override any existing `.claude` configuration. Backups will automatically be created to save/restore your existing configurations. These can be found at `./.claude-backup/`, `./.claude-mcp-backup/` for MCP configurations.
 >
 > Notably, `.claude/settings.json` will be overriden for consistency and security purposes, upon every activation (including auto-updates).
 > Custom settings must be defined in `.claude/settings.local.json` to remain persisted throughout clauder activation.
@@ -110,6 +173,8 @@ clauder_activate
 
 # or you may activate it from anywhere else by providing a path to the project
 # clauder_activate ./project_path
+
+# or skip this step, start clauder, and choose 'activate' when prompted
 ```
 
 This will copy the `.claude` configuration to your project.
@@ -128,23 +193,40 @@ Clauder's configuration will automatically:
 
 > **Domain specific *expansion packs* available** (including agents, commands, hooks and configurations - see below)
 
-#### How to start a Claude session
+### How to start a Claude session
 
 > [!IMPORTANT]
 > **Opening Claude without interacting is sufficient to index and learn all secrets in the directory. Never keep secrets such as `.env` in the project directory.**
 >
-> If secrets have been indexed or read by an AI such as Claude, you should consider removing them from the project, invalidating them and renewing them. Production secrets should be stored in a secure vault, unreadable by AI. Keeping secrets out of the working directory prevents auto-indexing, but does not prevent Claude from finding ways to access them through running commands or calling tools. Clauder will try to prevent leaking secrets, potentially destructive, or unrecoverable actions, by detecting unsafe actions and requesting a Human in the loop, but none of it is bulletproof.
+> If secrets have been indexed or read by an AI such as Claude, you should consider removing them from the project, invalidating them and renewing them. Production secrets should be stored in a secure vault, unreadable by AI. Keeping secrets out of the working directory prevents auto-indexing, but does not prevent Claude from finding ways to access them through running commands or calling tools. 
+
+> _**Disclaimer**_:
+> 
+> Clauder will try to prevent leaking secrets, and potentially destructive, or unrecoverable actions, by detecting unsafe operations and requesting a Human in the loop, but none of it is bulletproof.
 >
 > **Please make sure to supervise your AI's actions as you grant it access to sensitive or critical systems. It cannot be trusted and will inadvertently make unrecoverable mistakes, which may critically impair the company and its production services. Backup your systems, and sandbox as much as possible through restrictive AI-level access control.** You are responsible for your AI's actions, as you are when using any other tool, or when managing a team.
 >
 > Prefer closer, slower supervision when working on root/core nodes in your project. Equally, allow faster, lower supervision for faster iterations when working on leaf nodes, or when prototyping.
 
-Once you familiarize yourself with the above, and set your forbidden paths in `.claude/.ignore`, you may start a new Claude Code session with Clauder security checks using:
+```bash
+# Navigate to project root directory (must be a git repository)
+cd replace-with-project-root-path # && git init (if not already a repository)
+```
+
+In `.gitignore`, exclude the following paths for cleaner commits:
+```text
+.claude 
+.claude-backup
+.claude-mcp-backup
+.mcp.json
+```
+
+Start a new **clauder** session:
 
 ```bash
 clauder
 ```
-> ☕ **`clauder` includes security features, auto-updates, and configuration backups**. All Claude Code arguments supported (e.g. `--continue` to recall the last session)
+> ☕ **clauder includes security features, auto-updates, and configuration backups**. All Claude Code arguments supported (e.g. `--continue` to recall the last session)
 
 In Claude, type:
 ```
@@ -154,17 +236,27 @@ In Claude, type:
 This will define the mandatory guidelines for Claude Code.
 
 > [!TIP]
-> - If your project includes a `HISTORY.md` file at root level, `clauder` will enforce keeping a history of requests and actions taken, and use it to reason about the next action to take. Comprehensive history tracking may take time.
-> - If your project includes a `SPECIFICATIONS.md` file at root level, `clauder` will enforce keeping an updated list of specifications as it takes actions, and use it to reason about the next action to take. When writing code manually, you may ask `clauder` to read the git diffs and backfill the specifications file.  Comprehensive specifications tracking may take time.
-> - Define your secret files and folders in `.claude/.ignore` so `clauder` can guard them from being read/written.
-> - Define your read-only files and folders in `.claude/.immutable` so `clauder` can guard them from being overwritten.
-> - Exclude safe configuration files and folders in `.claude/.exclude_security_checks` so `clauder` can ommit them from safety checks (e.g. secret detection).
-> - In `.gitignore`, exclude `.claude/logs`, `.claude/.tmp`, and `.claude-backup` for cleaner commits.
-> - Check `.claude/requirements.md` for prerequisites, and recommended [MCP tools](https://docs.anthropic.com/en/docs/claude-code/mcp). `clauder` will *automatically* take advantage of those tools should you have added them to Claude Code.
+> - If your project includes a `HISTORY.md` file at root level, **clauder** will enforce keeping a history of requests and actions taken, and use it to reason about the next action to take. Comprehensive history tracking may take time.
+> - If your project includes a `SPECIFICATIONS.md` file at root level, **clauder** will enforce keeping an updated list of specifications as it takes actions, and use it to reason about the next action to take. When writing code manually, you may ask **clauder** to read the git diffs and backfill the specifications file.  Comprehensive specifications tracking may take time.
+> - Define your secret files and folders in `.claude/.ignore` so **clauder** can guard them from being read/written.
+> - Define your read-only files and folders in `.claude/.immutable` so **clauder** can guard them from being overwritten.
+> - Exclude safe configuration files and folders in `.claude/.exclude_security_checks` so **clauder** can ommit them from safety checks (e.g. secret detection).
+> - Check `.claude/requirements.md` for prerequisites, and recommended [MCP tools](https://docs.anthropic.com/en/docs/claude-code/mcp). **clauder** will *automatically* take advantage of those tools should you have added them to Claude Code.
 > - Check [Claude Code's best practices](https://www.anthropic.com/engineering/claude-code-best-practices) for better results.
 > - Define your custom settings in `.claude/settings.local.json` instead of `.claude/settings.json`, so they remain persisted when clauder auto-updates.
+> - Declare custom rules in `CLAUDE.md` at root level for persisted intructions when clauder auto-updates.
 
-#### How to ask Claude to for a general review
+### How to give Claude project-level instructions
+
+Declare custom rules in `CLAUDE.md` at root level for persisted intructions when **clauder** auto-updates. 
+
+> Those will be read by Claude Code on start.
+
+Make sure these instructions do not conflict with **clauder**'s rules (see `.claude/rules.md`).
+
+> Do not modify the **clauder** rules themselves as those will be reset when **clauder** auto-updates.
+
+### How to ask Claude for a general review
 
 You may ask for a general purpose code review using:
 
@@ -180,11 +272,11 @@ or about something specific:
 
 > Create custom commands or sub-agents for project specic-reviews.
 
-#### How to ask Claude to consult a different model
+### How to ask Claude to consult a different model
 
 While Claude's models are performant for general coding, for particular tasks, such as ones requiring extensive context, or specialized training, requiring help from a different model may lead to better results.
 
-If the [consult7](https://github.com/szeider/consult7) MCP tool is added to Claude Code, with a valid [OpenRouter](https://openrouter.ai) key, `clauder` will allow you to consult any supported model via the following command (default: `openai/gpt-5`, 400k token context; for larger context you may alternatively use `google/gemini-2.5-pro`, 1M token context; larger context windows generally lower performance):
+If the [consult7](https://github.com/szeider/consult7) MCP tool is added to Claude Code, with a valid [OpenRouter](https://openrouter.ai) key, **clauder** will allow you to consult any supported model via the following command (default: `openai/gpt-5`, 400k token context; for larger context you may alternatively use `google/gemini-2.5-pro`, 1M token context; larger context windows generally lower performance):
 
 ```sh
 /consult <user query>
@@ -200,11 +292,11 @@ e.g.
 > - Files and directories listed in `.claude/.ignore` will not be passed as context.
 > - Third party models consulted in the cloud do not have access to Claude Code's tools.
 
-#### How to create specialized agents
+### How to create specialized agents
 
 Claude may create dedicated agents for specific tasks. They are called [Sub-Agents](https://docs.anthropic.com/en/docs/claude-code/sub-agents) and report to the main `Claude` instance. These agents have their own system prompts, tools subsets (inherit all tools by default), and context window (unaware of other chats). They are helpful in creating and recalling task-specific personas and context.
 
-`clauder` includes a `agent-builder` agent, which helps you define and craft performant agents for your specific needs. Should the [context7](https://github.com/upstash/context7) and [consult7](https://github.com/szeider/consult7) MCP tools be set in Claude Code, it will automatically use them to help enhance the new agent's workflows, best practices, and toolsets. For better results, please be specific and detailed when creating specialized agents.
+**clauder** includes a `agent-builder` agent, which helps you define and craft performant agents for your specific needs. Should the [context7](https://github.com/upstash/context7) and [consult7](https://github.com/szeider/consult7) MCP tools be set in Claude Code, it will automatically use them to help enhance the new agent's workflows, best practices, and toolsets. For better results, please be specific and detailed when creating specialized agents.
 
 You may create a new agent simply by asking for it:
 
@@ -220,7 +312,7 @@ or using the `/spawn` command explicitly.
 
 The resulting agent instructions will be define in `.claude/agents/<agent-name>.md`. You may review, and edit this file to further refine your new sub-agent. You may dismiss a sub-agent at any time, by deleting `.claude/agents/<agent-name>.md`.
 
-**New agents become available/unavailable on start of a new Claude Code session**. Creating or deleting an agent will not apply to current sessions. Start a new `clauder` session to use your newly created agent.
+**New agents become available/unavailable on start of a new Claude Code session**. Creating or deleting an agent will not apply to current sessions. Start a new **clauder** session to use your newly created agent.
 
 > [!TIP]
 > Best practices:
@@ -228,9 +320,9 @@ The resulting agent instructions will be define in `.claude/agents/<agent-name>.
 > - **Limit the number of agents, prefer smaller teams with clear separation of ownership/expertise.** Lesser communication and orchestration loss.
 > - **Leave all core coding to the main Claude instance, and consult other specialized agents for review or unrelated/leaf tasks.** Agents have their own context and do not know about the general history and reasoning for how and why things were done a certain way, or what other agents have said. Relying on communication greatly degrades the signal and often leads to breakage or unintended side effects. These personas are not better at coding than the main instance, they run the same model and backend orchestration. They are good at prioritizing / directing attention to specific areas - which is particularly useful for review, consultation, and leaf-type activities (as opposed to core parts). **Prefer one chef, with a few very good advisors, than too many chefs or too many advisors.**
 
-##### Looking to recruit new sub agents?
+#### Looking to recruit new sub agents?
 
-`clauder` includes a command to recommend sub-agents for your project.
+**clauder** includes a command to recommend sub-agents for your project.
 
 You may ask for general project-specific recommendations using:
 
@@ -244,11 +336,105 @@ or about something specific:
 /recruit I want to make this web app..
 ```
 
-#### Expansion packs (beta)
+### Add and manage MCP servers
 
-`clauder` also provides **ready-made agents** for various development projects, **optionally installable as *expansion packs***.
+> About MCP: https://modelcontextprotocol.io/docs/getting-started/intro
 
-##### Installation
+To easily add project specific MCP servers run in your project root:
+```bash
+clauder_activate
+```
+> ⚡ 65+ pre-integrated, hot-swappable, MCP servers for instant use. 
+> 
+> - Configuration automatically backed up locally prior each activation. 
+> - MCP servers become active upon running `clauder`.
+
+
+
+You may remove them, or update their environment variables at any time in `.mcp.json` at root level.
+
+> **Do not hardcode any secret keys in your project.** Set and reference environment variables instead. Do not leave an empty or malformed `.mcp.json` file as it may interfere with **clauder** when adding servers to your existing configuration.
+
+If you'd like to manually add MCP servers globally or at project level, beyond the list of pre-integrated servers, you may of course as you usually do. Clauder will honor them.
+
+#### Available MCP servers
+
+The following servers come pre-integrated for easy installation.
+
+| MCP Server | Description |
+|------------|-------------|
+| [AWSBedrock](https://awslabs.github.io/mcp/servers/bedrock-kb-retrieval-mcp-server) | access AWS Bedrock knowledge bases - mac/linux only |
+| [AWSCloudtrail](https://awslabs.github.io/mcp/servers/cloudtrail-mcp-server) | access AWS Cloudtrail - mac/linux only |
+| [AWSCloudwatch](https://awslabs.github.io/mcp/servers/cloudwatch-mcp-server) | access AWS Cloudwatch - mac/linux only |
+| [AWSKnowledge](https://awslabs.github.io/mcp/servers/aws-knowledge-mcp-server/) | access AWS documentation, code sample, and API reference |
+| [AWSLambda](https://awslabs.github.io/mcp/servers/lambda-tool-mcp-server) | access AWS Lambda functions - mac/linux only |
+| [AWSPostgres](https://awslabs.github.io/mcp/servers/postgres-mcp-server/) | access AWS Postgres - mac/linux only |
+| [AWSPrice](https://awslabs.github.io/mcp/servers/aws-pricing-mcp-server/) | access AWS pricing information and forecasts - mac/linux only |
+| [AWSPrometheus](https://awslabs.github.io/mcp/servers/prometheus-mcp-server/) | access AWS Prometheus - mac/linux only |
+| [AWSServerless](https://awslabs.github.io/mcp/servers/aws-serverless-mcp-server/) | access AWS Serverless applications in read-only mode - mac/linux only |
+| [AWSServerless_unrestricted](https://awslabs.github.io/mcp/servers/aws-serverless-mcp-server/) | access, create, and manage AWS Serverless applications - mac/linux only |
+| [AdobeXD](https://mcp-hunt.com/mcp/server/adobe-xd-mcp-server) | access and extract design context from Adobe XD |
+| [Arxiv](https://github.com/blazickjp/arxiv-mcp-server) | search and access papers from arXiv |
+| [AtlassianJiraConfluenceCompass](https://support.atlassian.com/rovo/docs/getting-started-with-the-atlassian-remote-mcp-server/) | access and manage Jira, Confluence, Compass and other Atlassian products |
+| [Azure](https://learn.microsoft.com/en-us/azure/developer/azure-mcp-server/get-started/tools/cursor) | access and manage Azure |
+| [Bitbucket](https://github.com/MatanYemini/bitbucket-mcp) | access and manage Bitbucket repositories |
+| [BrowserStack](https://github.com/browserstack/mcp-server) | test app across multiple browsers and devices with BrowserStack |
+| [CloudflareAIGateway](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | search your Cloudflare AI Gateway logs, get details about the prompts and responses |
+| [CloudflareAuditLogs](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | query Cloudflare audit logs and generate reports for review |
+| [CloudflareAutoRag](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | list and search documents on your Cloudflare AutoRAGs |
+| [CloudflareBrowser](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | fetch web pages, convert them to markdown and take screenshots, using Cloudflare |
+| [CloudflareDNSAnalytics](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | optimize Cloudflare DNS performance and debug issues |
+| [CloudflareDigitalExperienceMonitoring](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | get quick insight on critical applications for your Cloudflare organization |
+| [CloudflareDocumentation](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | get up to date reference information on Cloudflare |
+| [CloudflareGraphQL](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | get analytics data using Cloudflare's GraphQL API |
+| [CloudflareLogpush](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | get quick summaries for Cloudflare Logpush job health |
+| [CloudflareRadar](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | get global Internet traffic insights, trends, URL scans, and other utilities, through Cloudflare |
+| [CloudflareSandboxContainers](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | spin up a sandbox development environment in Cloudflare |
+| [CloudflareWorkerBindings](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | build Cloudflare Workers applications with storage, AI, and compute primitives |
+| [CloudflareWorkerBuilds](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | get insights and manage your Cloudflare Workers Builds |
+| [CloudflareWorkerObservability](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | debug and get insight into your Cloudflare application's logs and analytics |
+| [Consult7](https://github.com/szeider/consult7) | consult other models through OpenRouter |
+| [Context7](https://github.com/upstash/context7) | access up-to-date documentation for any software package |
+| [Context7_authenticated](https://github.com/upstash/context7) | access up-to-date documentation for any software package, w/ higher rate limits |
+| [DigitalOcean](https://www.digitalocean.com/community/tutorials/control-apps-using-mcp-server) | access and manage DigitalOcean |
+| [Docker](https://github.com/QuantGeekDev/docker-mcp) | Docker container creation, instantiation, logs retrieval, listing and status monitoring |
+| [DockerHub](https://hub.docker.com/mcp/server/dockerhub/overview) | access and manage DockerHub - refer to website for setup information |
+| [DuckDuckGoSearch](https://github.com/nickclyde/duckduckgo-mcp-server) | search the web locally using DuckDuckGo |
+| [ElevenLabs](https://github.com/elevenlabs/elevenlabs-mcp) | text to speech with ElevenLabs |
+| [Figma](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Dev-Mode-MCP-Server) | access and extract design context from a local Figma application - refer to website for setup information |
+| [Firebase](https://firebase.google.com/docs/cli/mcp-server) | access and manage Firebase |
+| [GitLab](https://docs.gitlab.com/user/gitlab_duo/model_context_protocol/mcp_server/) | access and manage GitLab |
+| [Github](https://github.com/github/github-mcp-server?tab=readme-ov-file) | access and manage repositories, actions, issues and wikis on Github |
+| [GoogleAnalytics](https://github.com/googleanalytics/google-analytics-mcp) | access and manage Google Analytics |
+| [HuggingFace](https://github.com/evalstate/hf-mcp-server) | search models, datasets, spaces, papers, and more on Hugging Face |
+| [Kubernetes](https://github.com/containers/kubernetes-mcp-server) | access and manage Kubernetes clusters |
+| [MCPCompass](https://github.com/liuyoshio/mcp-compass) | search for MCP servers using natural language |
+| [Memory](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) | read and write sepecifications to a local knowledge graph |
+| [MemoryBank](https://github.com/alioshr/memory-bank-mcp) | store and retrieve structured specifications from a local memory bank |
+| [N8N](https://github.com/czlonkowski/n8n-mcp) | access, create and manage automations with N8N |
+| [Notion](https://developers.notion.com/docs/mcp) | access and manage Notion |
+| [Octocode](https://octocode.ai/) | search for, and deep dive into, public Github, NPM, and Pip packages remotely |
+| [Octocode_authenticated](https://octocode.ai/) | search for, and deep dive into, Github, NPM, and Pip packages remotely, given authenticated access |
+| [Pinecone](https://docs.pinecone.io/guides/operations/mcp-server) | search Pinecone documentation, manage indexes, upsert data, and query indexes |
+| [Playwright](https://github.com/microsoft/playwright-mcp) | automate and debug web applications in the browser |
+| [PostHog](https://posthog.com/docs/model-context-protocol) | access and manage PostHog analytics, a/b testing, and feature flags |
+| [Postgres](https://github.com/crystaldba/postgres-mcp) | restricted read-only access to databases in Postgres |
+| [Postgres_unrestricted](https://github.com/crystaldba/postgres-mcp) | unrestricted read-write access to databases in Postgres |
+| [Reddit](https://github.com/adhikasp/mcp-reddit) | access hot threads from any subreddit on Reddit |
+| [Sentry](https://docs.sentry.io/product/sentry-mcp/) | access issues and events from Sentry |
+| [SequentialThinking](https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking) | break down complex problems into manageable steps |
+| [Slack](https://github.com/korotovsky/slack-mcp-server) | access and manage Slack |
+| [Stripe](https://docs.stripe.com/mcp) | access and manage payments with Stripe |
+| [Supabase](https://supabase.com/blog/mcp-server) | access and manage databases, edge functions, and services in Supabase |
+| [Trello](https://github.com/delorenj/mcp-server-trello) | access and manage Trello |
+| [Vercel](https://vercel.com/docs/mcp/vercel-mcp) | access and manage deployments with Vercel |
+| [Youtube](https://github.com/ZubeidHendricks/youtube-mcp-server) | search about YouTube channels, videos, and playlists, and retrieve transcriptions |
+
+### Expansion packs (beta)
+
+**clauder** also provides **ready-made agents** for various development projects, **optionally installable as *expansion packs***.
+
+#### Installation
 
 ```sh
 clauder_activate --expansions <expansion_name> <expansion_name>
@@ -258,7 +444,7 @@ clauder_activate --expansions <expansion_name> <expansion_name>
 ```
 > Expansions remain installed and auto-updated until `.claude` is removed.
 
-##### Usage 
+#### Usage 
 
 **All agents are automatically called by the main Claude instance when relevant, for advisory purposes.**
 
@@ -275,7 +461,7 @@ If you'd like to query a sub-agent directly (advisory only by design):
 
 Refer to the expansion details for dedicated hooks and commands.
 
-##### Uninstall
+#### Uninstall
 
 ```sh
 # Important: backup your configuration before resetting it
@@ -283,7 +469,7 @@ rm -rf ./.claude && clauder_activate
 ```
 > If you'd like a more surgical approach, you may delete the corresponding `.claude/.expansion_packs` entry and remove the corresponding agents, commands, hooks and settings for that expansion.
 
-##### Available expansion packs
+#### Available expansion packs
 
 ---
 **Frontend Development** (`frontend-dev`)
@@ -409,27 +595,27 @@ rm -rf ./.claude && clauder_activate
 
 ---
 
-##### Creating expansion packs
+#### Creating expansion packs
 
 Clone `.claude-expansion-packs/example` to get started. The folder name is the name of your expansion. Define your custom `agents`, `commands`, `hooks` (set up in `settings.json`), and configurations.
 
-> Disclaimer: Remember to be specific, to prevent conflicts with the base `clauder` setup.
+> Disclaimer: Remember to be specific, to prevent conflicts with the base **clauder** setup.
 
-#### How to trace & audit Claude
+### How to trace & audit Claude
 
-Every event and automated `clauder` intervention is locally logged in a SQLite database for auditing and live monitoring Claude.
+Every event and automated **clauder** intervention is locally logged in a SQLite database for auditing and live monitoring Claude.
 
 That database is available at `.claude/logs/trace.sqlite`, once the first event has been logged.
 
 Additionally, all `bash` commands ran and MCP tool calls are duplicated as text logs for easy inspection at `.claude/logs/bash-logs.txt` and `.claude/logs/mcp-logs.txt`.
 
-##### Real-time monitoring with Clauder Tracer
+#### Real-time monitoring with Clauder Tracer
 
-You may use or build any monitoring app you'd like to inspect that SQLite database. For convenience, a lightweight tracer app is also shipped with `clauder`.
+You may use or build any monitoring app you'd like to inspect that SQLite database. For convenience, a lightweight tracer app is also shipped with **clauder**.
 
 You may run the tracer app in a parallel termimal at any time, new events will be live streamed to it:
 
-###### Install
+##### Install
 
 ```bash
 # install (using conda, in project directory)
@@ -439,7 +625,7 @@ conda create -n clauder_trace python=3.11 -y && conda activate clauder_trace && 
 pip install -r ./.claude/tracer/requirements.txt
 ```
 
-###### Run
+##### Run
 
 ```bash
 # run (using conda, in project directory)
@@ -825,15 +1011,17 @@ clauder
 
 > Hooks documentation: https://docs.anthropic.com/en/docs/claude-code/hooks 
 >
-> **Tips:** Hooks are dedupped and run in parallel. They rely on strict interpretation from the console output for decision making. Make sure never to print anything other than the expected specifications for Claude Code to parse it correctly, any offset will cause Claude Code to omit the decision entirely. Beware of infinite loop, particularly when blocking a 'Stop' event to inject an extra step, as the 'Stop' event will retrigger once that step completes. By default, Claude Code will continue unless set to 'False'. A 'block' decision only blocks a given interaction with a 'reason', at which point Claude Code may decide to take a different action or find a way to bypass it. Use `claude --debug` to enable debug logs when working on hooks, as they are hidden by default. When developing, never test `Clauder` changes on a real project as bugs may have irreparable consequences - use a test project instead.
+> **Tips:** Hooks are dedupped and run in parallel. They rely on strict interpretation from the console output for decision making. Make sure never to print anything other than the expected specifications for Claude Code to parse it correctly, any offset will cause Claude Code to omit the decision entirely. Beware of infinite loop, particularly when blocking a 'Stop' event to inject an extra step, as the 'Stop' event will retrigger once that step completes. By default, Claude Code will continue unless set to 'False'. A 'block' decision only blocks a given interaction with a 'reason', at which point Claude Code may decide to take a different action or find a way to bypass it. Use `claude --debug` to enable debug logs when working on hooks, as they are hidden by default. When developing, never test **clauder** changes on a real project as bugs may have irreparable consequences - use a test project instead.
 
-## Credits
+## Acknowledgements
 
 This project is powered by [claude-code](https://github.com/anthropics/claude-code), an intelligent IDE made by [Anthropic](https://github.com/anthropics).
 
 Agent builder derived from disler's [claude-code-hook-mastery](https://github.com/disler/claude-code-hooks-mastery).
 
 Status line powered by [pyccsl](https://github.com/wolfdenpublishing/pyccsl), an open source project by [wolfdenpublishing](https://github.com/wolfdenpublishing).
+
+MCP servers made and distributed by third parties. See `Available MCP servers` for links and information.
 
 ## Support
 

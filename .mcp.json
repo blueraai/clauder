@@ -1,0 +1,683 @@
+{
+  "mcpServers": {
+    "Context7": {
+      "_website": "https://github.com/upstash/context7",
+      "_category": "Recommended",
+      "_description": "access up-to-date documentation for any software package",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "Context7_authenticated": {
+      "_website": "https://github.com/upstash/context7",
+      "_description": "access up-to-date documentation for any software package, w/ higher rate limits",
+      "_requires": ["$CONTEXT7_API_KEY"],
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp", "--api-key", "CONTEXT7_API_KEY"]
+    },
+    "Consult7": {
+      "_website": "https://github.com/szeider/consult7",
+      "_category": "Recommended",
+      "_description": "consult other models through OpenRouter",
+      "_requires": ["$OPENROUTER_API_KEY"],
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["consult7", "openrouter", "$OPENROUTER_API_KEY"]
+    },
+    "Playwright": {
+      "_website": "https://github.com/microsoft/playwright-mcp",
+      "_category": "Recommended",
+      "_description": "automate and debug web applications in the browser",
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    },
+    "Github": {
+      "_website": "https://github.com/github/github-mcp-server?tab=readme-ov-file",
+      "_category": "Dangerous",
+      "_description": "access and manage repositories, actions, issues and wikis on Github",
+      "_requires": ["OAuth at runtime"],
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "Sentry": {
+      "_website": "https://docs.sentry.io/product/sentry-mcp/",
+      "_description": "access issues and events from Sentry",
+      "_requires": ["OAuth at runtime"],
+      "command": "npx",
+      "args": ["-y", "mcp-remote@latest", "https://mcp.sentry.dev/mcp"]
+    },
+    "Postgres_unrestricted": {
+      "_website": "https://github.com/crystaldba/postgres-mcp",
+      "_category": "Dangerous",
+      "_description": "unrestricted read-write access to databases in Postgres",
+      "_requires": ["$DATABASE_URI_{{PROJECT_NAME}}"],
+      "command": "uv",
+      "args": [
+        "run",
+        "postgres-mcp",
+        "--access-mode=unrestricted"
+      ],
+      "env": {
+        "DATABASE_URI": "$DATABASE_URI_{{PROJECT_NAME}}"
+      }
+    },
+    "Postgres": {
+      "_website": "https://github.com/crystaldba/postgres-mcp",
+      "_description": "restricted read-only access to databases in Postgres",
+      "_requires": ["$DATABASE_URI_{{PROJECT_NAME}}"],
+      "command": "uv",
+      "args": [
+        "run",
+        "postgres-mcp",
+        "--access-mode=restricted"
+      ],
+      "env": {
+        "DATABASE_URI": "$DATABASE_URI_{{PROJECT_NAME}}"
+      }
+    },
+    "SequentialThinking": {
+      "_website": "https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking",
+      "_description": "break down complex problems into manageable steps",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "MemoryBank": {
+      "_website": "https://github.com/alioshr/memory-bank-mcp",
+      "_description": "store and retrieve structured specifications from a local memory bank",
+      "_requires": ["$MEMORY_BANK_PATH_{{PROJECT_NAME}}"],
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@allpepper/memory-bank-mcp@latest"
+      ],
+      "env": {
+        "MEMORY_BANK_ROOT": "$MEMORY_BANK_PATH_{{PROJECT_NAME}}"
+      }
+    },
+    "Memory": {
+      "_website": "https://github.com/modelcontextprotocol/servers/tree/main/src/memory",
+      "_description": "read and write sepecifications to a local knowledge graph",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ]
+    },
+    "DuckDuckGoSearch": {
+      "_website": "https://github.com/nickclyde/duckduckgo-mcp-server",
+      "_category": "Dangerous",
+      "_description": "search the web locally using DuckDuckGo",
+      "command": "uvx",
+      "args": ["duckduckgo-mcp-server"]
+    },
+    "MCPCompass": {
+      "_website": "https://github.com/liuyoshio/mcp-compass",
+      "_description": "search for MCP servers using natural language",
+      "command": "npx",
+      "args": [
+         "-y",
+         "@liuyoshio/mcp-compass"
+      ]
+   },
+   "Octocode": {
+      "_website": "https://octocode.ai/",
+      "_category": "Recommended",
+      "_description": "search for, and deep dive into, public Github, NPM, and Pip packages remotely",
+      "command": "npx",
+      "args": ["octocode-mcp"],
+      "env": {
+        "ENABLE_TOOLS": "githubSearchCode,githubGetFileContent,githubViewRepoStructure,githubSearchRepositories,githubSearchCommits,githubSearchPullRequests,packageSearch"
+      }
+    },
+    "Octocode_authenticated": {
+      "_website": "https://octocode.ai/",
+      "_description": "search for, and deep dive into, Github, NPM, and Pip packages remotely, given authenticated access",
+      "_requires": ["$GITHUB_TOKEN_OCTOCODE"],
+      "command": "npx",
+      "args": ["octocode-mcp"],
+      "env": {
+        "ENABLE_TOOLS": "githubSearchCode,githubGetFileContent,githubViewRepoStructure,githubSearchRepositories,githubSearchCommits,githubSearchPullRequests,packageSearch",
+        "GITHUB_TOKEN": "$GITHUB_TOKEN_OCTOCODE"
+      }
+    },
+    "Supabase": {
+      "_website": "https://supabase.com/blog/mcp-server",
+      "_category": "Dangerous",
+      "_description": "access and manage databases, edge functions, and services in Supabase",
+      "_requires": ["$SUPABASE_ACCESS_TOKEN_{{PROJECT_NAME}}"],
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "$SUPABASE_ACCESS_TOKEN_{{PROJECT_NAME}}"
+      ]
+    },
+    "CloudflareDocumentation": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "get up to date reference information on Cloudflare",
+			"command": "npx",
+			"args": ["mcp-remote", "https://docs.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareWorkerBindings": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_category": "Dangerous",
+      "_description": "build Cloudflare Workers applications with storage, AI, and compute primitives",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://bindings.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareWorkerBuilds": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_category": "Dangerous",
+      "_description": "get insights and manage your Cloudflare Workers Builds",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote@latest", "https://builds.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareWorkerObservability": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "debug and get insight into your Cloudflare application's logs and analytics",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://observability.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareRadar": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "get global Internet traffic insights, trends, URL scans, and other utilities, through Cloudflare",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://radar.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareSandboxContainers": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "spin up a sandbox development environment in Cloudflare",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://containers.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareBrowser": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "fetch web pages, convert them to markdown and take screenshots, using Cloudflare",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://browser.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareLogpush": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "get quick summaries for Cloudflare Logpush job health",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://logs.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareAIGateway": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "search your Cloudflare AI Gateway logs, get details about the prompts and responses",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://ai-gateway.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareAutoRag": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "list and search documents on your Cloudflare AutoRAGs",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://autorag.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareAuditLogs": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "query Cloudflare audit logs and generate reports for review",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://auditlogs.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareDNSAnalytics": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_category": "Dangerous",
+      "_description": "optimize Cloudflare DNS performance and debug issues",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://dns-analytics.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareDigitalExperienceMonitoring": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "get quick insight on critical applications for your Cloudflare organization",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://dex.mcp.cloudflare.com/sse"]
+		},
+    "CloudflareGraphQL": {
+      "_website": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+      "_description": "get analytics data using Cloudflare's GraphQL API",
+      "_requires": ["OAuth at runtime"],
+			"command": "npx",
+			"args": ["mcp-remote", "https://graphql.mcp.cloudflare.com/sse"]
+		},
+    "Youtube": {
+      "_website": "https://github.com/ZubeidHendricks/youtube-mcp-server",
+      "_description": "search about YouTube channels, videos, and playlists, and retrieve transcriptions",
+      "_requires": ["$YOUTUBE_API_KEY"],
+      "command": "npx",
+      "args": ["-y", "zubeid-youtube-mcp-server"],
+      "env": {
+        "YOUTUBE_API_KEY": "$YOUTUBE_API_KEY"
+      }
+    },
+    "Notion": {
+      "_website": "https://developers.notion.com/docs/mcp",
+      "_description": "access and manage Notion",
+      "_requires": ["OAuth at runtime"],
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "Slack": {
+      "_website": "https://github.com/korotovsky/slack-mcp-server",
+      "_description": "access and manage Slack",
+      "_requires": ["$SLACK_OAUTH_TOKEN"],
+      "command": "npx",
+      "args": [
+        "-y",
+        "slack-mcp-server@latest",
+        "--transport",
+        "stdio"
+      ],
+      "env": {
+        "SLACK_MCP_XOXP_TOKEN": "$SLACK_OAUTH_TOKEN"
+      }
+    },
+    "AtlassianJiraConfluenceCompass": {
+      "_website": "https://support.atlassian.com/rovo/docs/getting-started-with-the-atlassian-remote-mcp-server/",
+      "_description": "access and manage Jira, Confluence, Compass and other Atlassian products",
+      "_requires": ["OAuth at runtime"],
+      "url": "https://mcp.atlassian.com/v1/sse"
+    },
+    "Bitbucket": {
+      "_website": "https://github.com/MatanYemini/bitbucket-mcp",
+      "_category": "Dangerous",
+      "_description": "access and manage Bitbucket repositories",
+      "_requires": ["$BITBUCKET_URL", "$BITBUCKET_USERNAME", "$BITBUCKET_PASSWORD"],
+      "command": "npx",
+      "env": {
+        "BITBUCKET_URL": "$BITBUCKET_URL",
+        "BITBUCKET_USERNAME": "$BITBUCKET_USERNAME",
+        "BITBUCKET_PASSWORD": "$BITBUCKET_PASSWORD"
+      },
+      "args": ["-y", "bitbucket-mcp@latest"]
+    },
+    "Trello": {
+      "_website": "https://github.com/delorenj/mcp-server-trello",
+      "_description": "access and manage Trello",
+      "_requires": ["$TRELLO_API_KEY", "$TRELLO_TOKEN"],
+      "command": "pnpx",
+      "args": ["@delorenj/mcp-server-trello"],
+      "env": {
+        "TRELLO_API_KEY": "$TRELLO_API_KEY",
+        "TRELLO_TOKEN": "$TRELLO_TOKEN"
+      }
+    },
+    "DigitalOcean": {
+      "_website": "https://www.digitalocean.com/community/tutorials/control-apps-using-mcp-server",
+      "_category": "Dangerous",
+      "_description": "access and manage DigitalOcean",
+      "_requires": ["$DIGITALOCEAN_API_TOKEN_{{PROJECT_NAME}}"],
+      "command": "npx",
+      "args": ["@digitalocean/mcp"],
+      "env": {
+        "DIGITALOCEAN_API_TOKEN": "$DIGITALOCEAN_API_TOKEN_{{PROJECT_NAME}}"
+      }
+    },
+    "DockerHub": {
+      "_website": "https://hub.docker.com/mcp/server/dockerhub/overview",
+      "_description": "access and manage DockerHub - refer to website for setup information",
+      "_requires": ["$DOCKERHUB_PAT_TOKEN", "$DOCKERHUB_USERNAME"],
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "HUB_PAT_TOKEN",
+        "mcp/dockerhub",
+        "--transport=stdio",
+        "--username=$DOCKERHUB_USERNAME"
+      ],
+      "env": {
+        "HUB_PAT_TOKEN": "$DOCKERHUB_PAT_TOKEN"
+      }
+    },
+    "Docker": {
+      "_website": "https://github.com/QuantGeekDev/docker-mcp",
+      "_description": "Docker container creation, instantiation, logs retrieval, listing and status monitoring",
+      "command": "uvx",
+      "args": [
+        "docker-mcp"
+      ]
+    },
+    "Azure": {
+      "_website": "https://learn.microsoft.com/en-us/azure/developer/azure-mcp-server/get-started/tools/cursor",
+      "_category": "Dangerous",
+      "_description": "access and manage Azure",
+      "_requires": ["OAuth at runtime"],
+      "command": "npx",
+      "args": [
+        "-y",
+        "@azure/mcp@latest",
+        "server",
+        "start"
+      ]
+    },
+    "Firebase": {
+      "_website": "https://firebase.google.com/docs/cli/mcp-server",
+      "_category": "Dangerous",
+      "_description": "access and manage Firebase",
+      "_requires": ["OAuth at runtime"],
+      "command": "npx",
+      "args": ["-y", "firebase-tools@latest", "experimental:mcp"]
+    },
+    "Stripe": {
+      "_website": "https://docs.stripe.com/mcp",
+      "_category": "Dangerous",
+      "_description": "access and manage payments with Stripe",
+      "_requires": ["OAuth at runtime"],
+      "url": "https://mcp.stripe.com"
+    },
+    "Vercel": {
+      "_website": "https://vercel.com/docs/mcp/vercel-mcp",
+      "_category": "Dangerous",
+      "_description": "access and manage deployments with Vercel",
+      "_requires": ["OAuth at runtime"],
+      "url": "https://mcp.vercel.com"
+    },
+    "HuggingFace": {
+      "_website": "https://github.com/evalstate/hf-mcp-server",
+      "_description": "search models, datasets, spaces, papers, and more on Hugging Face",
+      "_requires": ["$HF_TOKEN"],
+      "url": "https://huggingface.co/mcp",
+      "headers": {
+        "Authorization": "Bearer $HF_TOKEN"
+      }
+    },
+    "Figma": {
+      "_website": "https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Dev-Mode-MCP-Server",
+      "_description": "access and extract design context from a local Figma application - refer to website for setup information",
+      "url": "http://127.0.0.1:3845/mcp"
+    },
+    "AdobeXD": {
+      "_website": "https://mcp-hunt.com/mcp/server/adobe-xd-mcp-server",
+      "_description": "access and extract design context from Adobe XD",
+      "_requires": ["OAuth at runtime"],
+      "command": "npx",
+      "args": ["adobe-xd-mcp-server"]
+    },
+    "GoogleAnalytics": {
+      "_website": "https://github.com/googleanalytics/google-analytics-mcp",
+      "_description": "access and manage Google Analytics",
+      "_requires": ["$GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH_{{PROJECT_NAME}}", "$GOOGLE_PROJECT_ID_{{PROJECT_NAME}}"],
+      "command": "pipx",
+      "args": [
+        "run",
+        "analytics-mcp"
+      ],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "$GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH_{{PROJECT_NAME}}",
+        "GOOGLE_PROJECT_ID": "$GOOGLE_PROJECT_ID_{{PROJECT_NAME}}"
+      }
+    },
+    "BrowserStack": {
+      "_website": "https://github.com/browserstack/mcp-server",
+      "_description": "test app across multiple browsers and devices with BrowserStack",
+      "_requires": ["$BROWSERSTACK_USERNAME", "$BROWSERSTACK_ACCESS_KEY"],
+      "command": "npx",
+      "args": ["-y", "@browserstack/mcp-server@latest"],
+      "env": {
+        "BROWSERSTACK_USERNAME": "$BROWSERSTACK_USERNAME",
+        "BROWSERSTACK_ACCESS_KEY": "$BROWSERSTACK_ACCESS_KEY"
+      }
+    },
+    "N8N": {
+      "_website": "https://github.com/czlonkowski/n8n-mcp",
+      "_description": "access, create and manage automations with N8N",
+      "_requires": ["$N8N_API_URL", "$N8N_API_KEY"],
+      "command": "npx",
+      "args": ["n8n-mcp"],
+      "env": {
+        "MCP_MODE": "stdio",
+        "LOG_LEVEL": "error",
+        "DISABLE_CONSOLE_OUTPUT": "true",
+        "N8N_API_URL": "$N8N_API_URL",
+        "N8N_API_KEY": "$N8N_API_KEY"
+      }
+    },
+    "Pinecone": {
+      "_website": "https://docs.pinecone.io/guides/operations/mcp-server",
+      "_description": "search Pinecone documentation, manage indexes, upsert data, and query indexes",
+      "_requires": ["$PINECONE_API_KEY_{{PROJECT_NAME}}"],
+      "command": "npx",
+      "args": [
+        "-y", "@pinecone-database/mcp"
+      ],
+      "env": {
+        "PINECONE_API_KEY": "$PINECONE_API_KEY_{{PROJECT_NAME}}"
+      }
+    },
+    "PostHog": {
+      "_website": "https://posthog.com/docs/model-context-protocol",
+      "_description": "access and manage PostHog analytics, a/b testing, and feature flags",
+      "_requires": ["$POSTHOG_AUTH_HEADER_{{PROJECT_NAME}}"],
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://mcp.posthog.com/sse",
+        "--header",
+        "Authorization:${POSTHOG_AUTH_HEADER}"
+      ],
+      "env": {
+        "POSTHOG_AUTH_HEADER": "Bearer $POSTHOG_AUTH_HEADER_{{PROJECT_NAME}}"
+      }
+    },
+    "Reddit": {
+      "_website": "https://github.com/adhikasp/mcp-reddit",
+      "_description": "access hot threads from any subreddit on Reddit",
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/adhikasp/mcp-reddit.git", "mcp-reddit"],
+      "env": {}
+    },
+    "GitLab": {
+      "_website": "https://docs.gitlab.com/user/gitlab_duo/model_context_protocol/mcp_server/",
+      "_description": "access and manage GitLab",
+      "_requires": ["OAuth at runtime"],
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://gitlab.com/api/v4/mcp",
+        "--static-oauth-client-metadata",
+        "{\"scope\": \"mcp\"}"
+      ]
+    },
+    "ElevenLabs": {
+      "_website": "https://github.com/elevenlabs/elevenlabs-mcp",
+      "_description": "text to speech with ElevenLabs",
+      "_requires": ["$ELEVENLABS_API_KEY"],
+      "command": "uvx",
+      "args": ["elevenlabs-mcp"],
+      "env": {
+        "ELEVENLABS_API_KEY": "$ELEVENLABS_API_KEY"
+      }
+    },
+    "Arxiv": {
+      "_website": "https://github.com/blazickjp/arxiv-mcp-server",
+      "_description": "search and access papers from arXiv",
+      "_requires": ["$ARXIV_STORAGE_PATH"],
+      "command": "uv",
+      "args": [
+        "tool",
+        "run",
+        "arxiv-mcp-server",
+        "--storage-path", "$ARXIV_STORAGE_PATH"
+      ]
+    },
+    "Kubernetes": {
+      "_website": "https://github.com/containers/kubernetes-mcp-server",
+      "_category": "Dangerous",
+      "_description": "access and manage Kubernetes clusters",
+      "_requires": ["OAuth at runtime"],
+      "command": "npx",
+      "args": [
+        "-y",
+        "kubernetes-mcp-server@latest"
+      ]
+    },
+    "AWSKnowledge": {
+      "_website": "https://awslabs.github.io/mcp/servers/aws-knowledge-mcp-server/",
+      "_description": "access AWS documentation, code sample, and API reference",
+      "url": "https://knowledge-mcp.global.api.aws"
+    },
+    "AWSServerless_unrestricted": {
+      "_website": "https://awslabs.github.io/mcp/servers/aws-serverless-mcp-server/",
+      "_category": "Dangerous",
+      "_description": "access, create, and manage AWS Serverless applications - mac/linux only",
+      "_requires": ["$AWS_SERVERLESS_PROFILE_{{PROJECT_NAME}}", "$AWS_SERVERLESS_REGION_{{PROJECT_NAME}}"],
+      "command": "uvx",
+      "args": [
+        "awslabs.aws-serverless-mcp-server@latest",
+        "--allow-write",
+        "--allow-sensitive-data-access"
+      ],
+      "env": {
+          "AWS_PROFILE": "$AWS_SERVERLESS_PROFILE_{{PROJECT_NAME}}",
+          "AWS_REGION": "$AWS_SERVERLESS_REGION_{{PROJECT_NAME}}"
+        },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "AWSServerless": {
+      "_website": "https://awslabs.github.io/mcp/servers/aws-serverless-mcp-server/",
+      "_description": "access AWS Serverless applications in read-only mode - mac/linux only",
+      "_requires": ["$AWS_SERVERLESS_PROFILE_{{PROJECT_NAME}}", "$AWS_SERVERLESS_REGION_{{PROJECT_NAME}}"],
+      "command": "uvx",
+      "args": [
+        "awslabs.aws-serverless-mcp-server@latest"
+      ],
+      "env": {
+          "AWS_PROFILE": "$AWS_SERVERLESS_PROFILE_{{PROJECT_NAME}}",
+          "AWS_REGION": "$AWS_SERVERLESS_REGION_{{PROJECT_NAME}}"
+        },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "AWSLambda": {
+      "_website": "https://awslabs.github.io/mcp/servers/lambda-tool-mcp-server",
+      "_category": "Dangerous",
+      "_description": "access AWS Lambda functions - mac/linux only",
+      "_requires": ["$AWS_LAMBDA_PROFILE_{{PROJECT_NAME}}", "$AWS_LAMBDA_REGION_{{PROJECT_NAME}}"],
+      "command": "uvx",
+      "args": ["awslabs.lambda-tool-mcp-server@latest"],
+      "env": {
+        "AWS_PROFILE": "$AWS_LAMBDA_PROFILE_{{PROJECT_NAME}}",
+        "AWS_REGION": "$AWS_LAMBDA_REGION_{{PROJECT_NAME}}"
+      }
+    },
+    "AWSBedrock": {
+      "_website": "https://awslabs.github.io/mcp/servers/bedrock-kb-retrieval-mcp-server",
+      "_category": "Dangerous",
+      "_description": "access AWS Bedrock knowledge bases - mac/linux only",
+      "_requires": ["$AWS_BEDROCK_PROFILE_{{PROJECT_NAME}}", "$AWS_BEDROCK_REGION_{{PROJECT_NAME}}"],
+      "command": "uvx",
+      "args": ["awslabs.bedrock-kb-retrieval-mcp-server@latest"],
+      "env": {
+        "AWS_PROFILE": "$AWS_BEDROCK_PROFILE_{{PROJECT_NAME}}",
+        "AWS_REGION": "$AWS_BEDROCK_REGION_{{PROJECT_NAME}}",
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "BEDROCK_KB_RERANKING_ENABLED": "false"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "AWSPrometheus": {
+      "_website": "https://awslabs.github.io/mcp/servers/prometheus-mcp-server/",
+      "_description": "access AWS Prometheus - mac/linux only",
+      "_requires": ["OAuth at runtime"],
+      "command": "uvx",
+      "args": [
+        "awslabs.prometheus-mcp-server@latest"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "DEBUG"
+      }
+    },
+    "AWSPostgres": {
+      "_website": "https://awslabs.github.io/mcp/servers/postgres-mcp-server/",
+      "_category": "Dangerous",
+      "_description": "access AWS Postgres - mac/linux only",
+      "_requires": ["$AWS_POSTGRES_PROFILE_{{PROJECT_NAME}}", "$AWS_POSTGRES_REGION_{{PROJECT_NAME}}", "$AWS_POSTGRES_RESOURCE_ARN_{{PROJECT_NAME}}", "$AWS_POSTGRES_SECRET_ARN_{{PROJECT_NAME}}", "$AWS_POSTGRES_DATABASE_{{PROJECT_NAME}}"],
+      "command": "uvx",
+      "args": [
+        "awslabs.postgres-mcp-server@latest",
+        "--resource_arn", "$AWS_POSTGRES_RESOURCE_ARN_{{PROJECT_NAME}}",
+        "--secret_arn", "$AWS_POSTGRES_SECRET_ARN_{{PROJECT_NAME}}",
+        "--database", "$AWS_POSTGRES_DATABASE_{{PROJECT_NAME}}",
+        "--region", "$AWS_POSTGRES_REGION_{{PROJECT_NAME}}",
+        "--readonly", "True"
+      ],
+      "env": {
+        "AWS_PROFILE": "$AWS_POSTGRES_PROFILE_{{PROJECT_NAME}}",
+        "AWS_REGION": "$AWS_POSTGRES_REGION_{{PROJECT_NAME}}",
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "AWSCloudwatch": {
+      "_website": "https://awslabs.github.io/mcp/servers/cloudwatch-mcp-server",
+      "_description": "access AWS Cloudwatch - mac/linux only",
+      "_requires": ["$AWS_CLOUDWATCH_PROFILE_{{PROJECT_NAME}}"],
+      "autoApprove": [],
+      "disabled": false,
+      "command": "uvx",
+      "args": [
+        "awslabs.cloudwatch-mcp-server@latest"
+      ],
+      "env": {
+        "AWS_PROFILE": "$AWS_CLOUDWATCH_PROFILE_{{PROJECT_NAME}}",
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "transportType": "stdio"
+    },
+    "AWSCloudtrail": {
+      "_website": "https://awslabs.github.io/mcp/servers/cloudtrail-mcp-server",
+      "_description": "access AWS Cloudtrail - mac/linux only",
+      "_requires": ["$AWS_CLOUDTRAIL_PROFILE_{{PROJECT_NAME}}"],
+      "autoApprove": [],
+      "disabled": false,
+      "command": "uvx",
+      "args": [
+        "awslabs.cloudtrail-mcp-server@latest"
+      ],
+      "env": {
+        "AWS_PROFILE": "$AWS_CLOUDTRAIL_PROFILE_{{PROJECT_NAME}}",
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "transportType": "stdio"
+    },
+    "AWSPrice": {
+      "_website": "https://awslabs.github.io/mcp/servers/aws-pricing-mcp-server/",
+      "_category": "Dangerous",
+      "_description": "access AWS pricing information and forecasts - mac/linux only",
+      "_requires": ["$AWS_PRICING_PROFILE_{{PROJECT_NAME}}", "$AWS_PRICING_REGION_{{PROJECT_NAME}}"],
+      "command": "uvx",
+      "args": [
+         "awslabs.aws-pricing-mcp-server@latest"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "AWS_PROFILE": "$AWS_PRICING_PROFILE_{{PROJECT_NAME}}",
+        "AWS_REGION": "$AWS_PRICING_REGION_{{PROJECT_NAME}}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

@@ -6,4 +6,5 @@
 .claude/preferences.json
 .claude/rules.md
 .claude-backup/
+.claude-mcp-backup/
 .claude/logs

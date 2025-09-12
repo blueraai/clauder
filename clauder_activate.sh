@@ -17,6 +17,34 @@ safe_exit() {
     fi
 }
 
+# Function to check if colors are supported
+colors_supported() {
+    # Check if we're in a terminal and colors are supported
+    if [[ -t 1 ]] && command -v tput >/dev/null 2>&1 && [[ $(tput colors 2>/dev/null) -ge 8 ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Function to print text in white
+print_white() {
+    if colors_supported; then
+        echo -n "$(tput setaf 7)$1$(tput sgr0)"
+    else
+        echo -n "$1"
+    fi
+}
+
+# Function to print text in gray
+print_gray() {
+    if colors_supported; then
+        echo -n "$(tput setaf 8)$1$(tput sgr0)"
+    else
+        echo -n "$1"
+    fi
+}
+
 # Function to display usage
 usage() {
     echo "Usage: clauder_activate [target_project_path] [--expansions <name> <name> <name>]"
@@ -147,7 +175,7 @@ cleanup_old_backups() {
         echo "Found ${#backups_to_remove[@]} old backup(s) to remove (keeping 10 most recent):"
         printf '  %s\n' "${backups_to_remove[@]}"
         echo ""
-        echo -n "Do you want to remove these old backups? (y/N): "
+        print_white "Do you want to remove these old backups? (y/N): "
         read -r reply
         echo
         
@@ -196,7 +224,7 @@ check_existing_files() {
         echo "Warning: The following files will be backed up and overwritten:"
         printf '  %s\n' "${files_to_overwrite[@]}"
         echo ""
-        echo -n "Do you want to backup and replace these existing files? (y/N): "
+        print_white "Do you want to backup and replace these existing files? (y/N): "
         read -r reply
         echo
         if [[ ! $reply =~ ^[Yy]$ ]]; then
@@ -496,6 +524,993 @@ apply_previous_expansions() {
     fi
 }
 
+    # Function to select MCP servers interactively
+    select_mcp_servers() {
+        local servers=("$@")
+        local selected=()
+        local current=0
+        local total=${#servers[@]}
+        local first_display=true
+        local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
+        local source_mcp_file="$clauder_dir/.mcp.json"
+        
+        # Pagination variables
+        local servers_per_page=7
+        local current_page=0
+        local total_pages=$(( (total + servers_per_page - 1) / servers_per_page ))
+        local show_warning=false
+        
+        # Initialize selected array (all false initially)
+        for ((i=0; i<total; i++)); do
+            selected[i]=false
+        done
+    
+    # Function to print colored text
+    print_gray() {
+        if colors_supported; then
+            echo -n "$(tput setaf 8)$1$(tput sgr0)"
+        else
+            echo -n "$1"
+        fi
+    }
+    
+    print_pink() {
+        if colors_supported; then
+            echo -n "$(tput setaf 5)$1$(tput sgr0)"
+        else
+            echo -n "$1"
+        fi
+    }
+    
+    print_yellow() {
+        if colors_supported; then
+            echo -n "$(tput setaf 3)$1$(tput sgr0)"
+        else
+            echo -n "$1"
+        fi
+    }
+    
+    print_green() {
+        if colors_supported; then
+            echo -n "$(tput setaf 2)$1$(tput sgr0)"
+        else
+            echo -n "$1"
+        fi
+    }
+    
+    # Function to display the menu
+    display_menu() {
+        # If this is the first display, add lines and clear screen
+        if [ "$first_display" = true ]; then
+            # Add 400 new lines to push previous content into scrollback buffer
+            for ((i=0; i<400; i++)); do
+                echo ""
+            done
+            
+            # Now clear the screen
+            printf "\033[2J"  # Clear the entire screen
+            printf "\033[H"   # Move cursor to top-left corner
+        else
+            # For subsequent redraws, just clear the screen
+            printf "\033[2J"  # Clear the entire screen
+            printf "\033[H"   # Move cursor to top-left corner
+        fi
+        
+        # Mark that we've displayed the menu
+        first_display=false
+        
+        # Display the menu
+        echo ""
+        print_white "Select MCP servers to add to the project:"
+        echo ""
+        echo ""
+        print_gray "Enabling more than 5-7 MCP servers within a single project may significantly degrade performance."
+        echo ""
+        print_gray "If you need more than that, consider using an MCP gateway."
+        echo ""
+        echo ""
+        print_gray "Avoid enabling servers with similar functionalities, as they may confuse Claude and degrade performance."
+        echo ""
+        echo ""
+        print_gray "Clauder will help you set the required environment variables upon selecting servers."
+        echo ""
+        print_gray "Use dedicated keys with limited access when possible."
+        echo ""
+        echo ""
+        echo "Press SPACE to select/unselect, ↑/↓ or J/K to navigate, ←/→ to change pages, ENTER to proceed, Q to cancel"
+        echo ""
+        echo ""
+        
+        # Calculate start and end indices for current page
+        local start_index=$((current_page * servers_per_page))
+        local end_index=$((start_index + servers_per_page - 1))
+        if [ $end_index -ge $total ]; then
+            end_index=$((total - 1))
+        fi
+        
+        # Display servers for current page
+        for ((i=start_index; i<=end_index; i++)); do
+            local display_index=$((i - start_index))
+            local marker="☐"
+            local color=""
+            local server_name="${servers[i]}"
+            
+            # Get description for this server
+            local description=""
+            if [ -f "$source_mcp_file" ]; then
+                if command -v jq >/dev/null 2>&1; then
+                    description=$(jq -r ".mcpServers.\"$server_name\"._description // empty" "$source_mcp_file" 2>/dev/null)
+                else
+                    # Fallback: use grep and sed to extract description
+                    description=$(grep -A 10 "\"$server_name\":" "$source_mcp_file" | grep "_description" | sed 's/.*"_description": *"\([^"]*\)".*/\1/' 2>/dev/null)
+                fi
+            fi
+            
+            # Get category for this server
+            local category=""
+            if [ -f "$source_mcp_file" ]; then
+                if command -v jq >/dev/null 2>&1; then
+                    category=$(jq -r ".mcpServers.\"$server_name\"._category // empty" "$source_mcp_file" 2>/dev/null)
+                else
+                    # Fallback: use grep and sed to extract category
+                    category=$(grep -A 10 "\"$server_name\":" "$source_mcp_file" | grep "_category" | sed 's/.*"_category": *"\([^"]*\)".*/\1/' 2>/dev/null)
+                fi
+            fi
+            
+            # Get requirements for this server
+            local requirements=()
+            if [ -f "$source_mcp_file" ]; then
+                if command -v jq >/dev/null 2>&1; then
+                    # Use jq to extract the _requires array
+                    while IFS= read -r req; do
+                        if [ -n "$req" ] && [ "$req" != "null" ]; then
+                            requirements+=("$req")
+                        fi
+                    done < <(jq -r ".mcpServers.\"$server_name\"._requires[]? // empty" "$source_mcp_file" 2>/dev/null)
+                else
+                    # Fallback: use grep and sed to extract requirements
+                    local req_line=$(grep -A 20 "\"$server_name\":" "$source_mcp_file" | grep -A 5 "_requires" | grep -E '^\s*"[^"]*"' | sed 's/.*"\([^"]*\)".*/\1/' 2>/dev/null)
+                    if [ -n "$req_line" ]; then
+                        requirements+=("$req_line")
+                    fi
+                fi
+            fi
+            
+            # Format server name with description if available
+            local display_name="$server_name"
+            local has_description=false
+            if [ -n "$description" ]; then
+                has_description=true
+            fi
+            
+            if [ $i -eq $current ]; then
+                # Current item - highlight with different marker
+                if [ "${selected[i]}" = true ]; then
+                    marker="⏹"
+                    color="pink"
+                else
+                    marker="☐"
+                    color="gray"
+                fi
+                # Add cursor indicator
+                printf "> "
+            else
+                # Other items
+                if [ "${selected[i]}" = true ]; then
+                    marker="⏹"
+                    color="pink"
+                else
+                    marker="☐"
+                    color="gray"
+                fi
+                printf "  "
+            fi
+            
+            if [ "$color" = "pink" ]; then
+                print_pink "$marker $server_name"
+                if [ "$has_description" = true ]; then
+                    print_gray " ("
+                    print_gray "$description"
+                    print_gray ")"
+                fi
+            else
+                print_white "$marker $server_name"
+                if [ "$has_description" = true ]; then
+                    print_gray " ("
+                    print_gray "$description"
+                    print_gray ")"
+                fi
+            fi
+            echo ""
+            
+            # Display category if any
+            if [ -n "$category" ]; then
+                local category_lower=$(echo "$category" | tr '[:upper:]' '[:lower:]')
+                if [ "$category_lower" = "dangerous" ] || [ "$category_lower" = "risky" ]; then
+                    printf "    ⚠ "
+                    # Show dangerous/risky categories in yellow if selected, gray if not
+                    if [ "${selected[i]}" = true ]; then
+                        print_yellow "$category"
+                    else
+                        print_gray "$category"
+                    fi
+                elif [ "$category_lower" = "recommended" ]; then
+                    printf "    ⏣ "
+                    # Show recommended categories in green if selected, gray if not
+                    if [ "${selected[i]}" = true ]; then
+                        print_green "$category"
+                    else
+                        print_gray "$category"
+                    fi
+                else
+                    printf "    ⏣ "
+                    print_gray "$category"
+                fi
+                echo ""
+            fi
+            
+            # Display requirements if any
+            if [ ${#requirements[@]} -gt 0 ]; then
+                for req in "${requirements[@]}"; do
+                    printf "    ⌙ "
+                    if [ "${selected[i]}" = true ]; then
+                        echo -n "requires $req"
+                    else
+                        print_gray "requires $req"
+                    fi
+                    echo ""
+                done
+            fi
+            
+            # Add spacing between options
+            echo ""
+        done
+        
+        echo ""
+        
+        # Count selected servers properly
+        local selected_count=0
+        local dangerous_selected_count=0
+        for ((i=0; i<total; i++)); do
+            if [ "${selected[i]}" = true ]; then
+                selected_count=$((selected_count+1))
+                
+                # Check if this server is dangerous
+                local server_name="${servers[i]}"
+                local category=""
+                if [ -f "$source_mcp_file" ]; then
+                    if command -v jq >/dev/null 2>&1; then
+                        category=$(jq -r ".mcpServers.\"$server_name\"._category // empty" "$source_mcp_file" 2>/dev/null)
+                    else
+                        # Fallback: use grep and sed to extract category
+                        category=$(grep -A 10 "\"$server_name\":" "$source_mcp_file" | grep "_category" | sed 's/.*"_category": *"\([^"]*\)".*/\1/' 2>/dev/null)
+                    fi
+                fi
+                
+                local category_lower=$(echo "$category" | tr '[:upper:]' '[:lower:]')
+                if [ "$category_lower" = "dangerous" ]; then
+                    dangerous_selected_count=$((dangerous_selected_count+1))
+                fi
+            fi
+        done
+        
+        # Display selection count with warning if too many selected
+        if [ $selected_count -gt 5 ]; then
+            print_yellow "($selected_count selected - enabling too many servers may significantly degrade performance)"
+        else
+            print_gray "($selected_count selected)"
+        fi
+        
+        # Display dangerous server warning if any dangerous servers are selected
+        if [ $dangerous_selected_count -gt 0 ]; then
+            echo ""
+            print_yellow "Some of these MCP servers may cause irreversible damages."
+            echo ""
+            print_yellow "Restrict their accesses through server or token configurations, use isolated environments, and supervise their use."
+        fi
+        
+        # Display pagination info
+        if [ $total_pages -gt 1 ]; then
+            echo ""
+            print_gray "Page $((current_page + 1)) of $total_pages"
+        fi
+        
+        # Show warning if no servers selected and Enter was pressed
+        if [ "$show_warning" = true ]; then
+            echo ""
+            print_yellow "No MCP server selected. Use SPACE to select, or Q to cancel."
+        fi
+        
+        echo ""
+    }
+    
+    # Function to handle key input
+    handle_key() {
+        local key
+        # Use IFS to prevent word splitting and read raw input
+        IFS= read -rs -n1 key
+        
+        # Handle escape sequences (arrow keys)
+        if [ "$key" = $'\e' ]; then
+            IFS= read -rs -n2 key
+            case "$key" in
+                '[A') # Up arrow
+                    if [ $current -gt 0 ]; then
+                        current=$((current-1))
+                        # Check if we need to move to previous page
+                        local new_page=$((current / servers_per_page))
+                        if [ $new_page -lt $current_page ]; then
+                            current_page=$new_page
+                        fi
+                    fi
+                    show_warning=false  # Clear warning when user navigates
+                    ;;
+                '[B') # Down arrow
+                    if [ $current -lt $((total-1)) ]; then
+                        current=$((current+1))
+                        # Check if we need to move to next page
+                        local new_page=$((current / servers_per_page))
+                        if [ $new_page -gt $current_page ]; then
+                            current_page=$new_page
+                        fi
+                    fi
+                    show_warning=false  # Clear warning when user navigates
+                    ;;
+                '[C') # Right arrow - next page
+                    if [ $current_page -lt $((total_pages-1)) ]; then
+                        current_page=$((current_page+1))
+                        # Adjust current to first item on new page
+                        current=$((current_page * servers_per_page))
+                    fi
+                    show_warning=false  # Clear warning when user navigates
+                    ;;
+                '[D') # Left arrow - previous page
+                    if [ $current_page -gt 0 ]; then
+                        current_page=$((current_page-1))
+                        # Adjust current to first item on new page
+                        current=$((current_page * servers_per_page))
+                    fi
+                    show_warning=false  # Clear warning when user navigates
+                    ;;
+                '') # Single escape - cancel
+                    return 1
+                    ;;
+            esac
+            return 2  # Continue
+        fi
+        
+        case "$key" in
+            " ")  # Space - toggle selection
+                if [ "${selected[current]}" = true ]; then
+                    selected[current]=false
+                else
+                    selected[current]=true
+                fi
+                show_warning=false  # Clear warning when user makes a selection
+                ;;
+            "")   # Enter - proceed
+                # Check if any servers are selected
+                local selected_count=0
+                for ((i=0; i<total; i++)); do
+                    if [ "${selected[i]}" = true ]; then
+                        selected_count=$((selected_count+1))
+                    fi
+                done
+                
+                if [ $selected_count -eq 0 ]; then
+                    # No servers selected - set warning flag and continue
+                    show_warning=true
+                    return 2
+                else
+                    # Servers selected - clear warning and proceed
+                    show_warning=false
+                    return 0
+                fi
+                ;;
+            "j") # j key - down
+                if [ $current -lt $((total-1)) ]; then
+                    current=$((current+1))
+                    # Check if we need to move to next page
+                    local new_page=$((current / servers_per_page))
+                    if [ $new_page -gt $current_page ]; then
+                        current_page=$new_page
+                    fi
+                fi
+                show_warning=false  # Clear warning when user navigates
+                ;;
+            "k") # k key - up
+                if [ $current -gt 0 ]; then
+                    current=$((current-1))
+                    # Check if we need to move to previous page
+                    local new_page=$((current / servers_per_page))
+                    if [ $new_page -lt $current_page ]; then
+                        current_page=$new_page
+                    fi
+                fi
+                show_warning=false  # Clear warning when user navigates
+                ;;
+            "q") # q key - quit
+                return 1
+                ;;
+            *)    # Unknown key - ignore
+                ;;
+        esac
+        return 2  # Continue
+    }
+    
+    # Main selection loop
+    while true; do
+        display_menu
+        handle_key
+        local result=$?
+        
+        if [ $result -eq 0 ]; then
+            # User pressed enter with selections - proceed
+            break
+        elif [ $result -eq 1 ]; then
+            # User pressed escape - cancel
+            echo "Selection cancelled."
+            return 1
+        elif [ $result -eq 2 ]; then
+            # User pressed enter with no selections - show warning at bottom
+            # Continue the loop to show menu again with warning
+            :
+        fi
+    done
+    
+    # Collect selected servers
+    local selected_servers=()
+    for ((i=0; i<total; i++)); do
+        if [ "${selected[i]}" = true ]; then
+            selected_servers+=("${servers[i]}")
+        fi
+    done
+    
+    if [ ${#selected_servers[@]} -gt 0 ]; then
+        # Clear screen and show selected options
+        printf "\033[2J"  # Clear the entire screen
+        printf "\033[H"   # Move cursor to top-left corner
+        
+        echo ""
+        print_white "Selected MCP servers:"
+        echo ""
+        for server in "${selected_servers[@]}"; do
+            print_pink "  ⏹ $server"
+            echo ""
+        done
+        echo ""
+        
+        # Check environment variables requirements
+        echo "Checking environment variables requirement.."
+        echo ""
+        
+        # Source shell configuration files first to load any existing environment variables
+        echo "Loading existing environment variables..."
+        # echo ""
+        
+        # Define shell configuration files
+        local shell_files=("$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.profile" "$HOME/.zshrc")
+        
+        for shell_file in "${shell_files[@]}"; do
+            if [ -f "$shell_file" ]; then
+                . "$shell_file" >/dev/null 2>&1
+            fi
+        done
+        
+        # echo ""
+        
+        # Collect all required environment variables
+        local required_vars=()
+        local project_name_placeholder_found=false
+        
+        for server in "${selected_servers[@]}"; do
+            # Get requirements for this server
+            local requirements=()
+            if [ -f "$source_mcp_file" ]; then
+                if command -v jq >/dev/null 2>&1; then
+                    # Use jq to extract the _requires array
+                    while IFS= read -r req; do
+                        if [ -n "$req" ] && [ "$req" != "null" ]; then
+                            requirements+=("$req")
+                        fi
+                    done < <(jq -r ".mcpServers.\"$server\"._requires[]? // empty" "$source_mcp_file" 2>/dev/null)
+                else
+                    # Fallback: use grep and sed to extract requirements
+                    local req_line=$(grep -A 20 "\"$server\":" "$source_mcp_file" | grep -A 5 "_requires" | grep -E '^\s*"[^"]*"' | sed 's/.*"\([^"]*\)".*/\1/' 2>/dev/null)
+                    if [ -n "$req_line" ]; then
+                        requirements+=("$req_line")
+                    fi
+                fi
+            fi
+            
+            # Add to required_vars and check for project name placeholder
+            for req in "${requirements[@]}"; do
+                required_vars+=("$req")
+                if [[ "$req" == *"{{PROJECT_NAME}}"* ]]; then
+                    project_name_placeholder_found=true
+                fi
+            done
+        done
+        
+        # Remove duplicates from required_vars
+        local unique_vars=()
+        for var in "${required_vars[@]}"; do
+            local found=false
+            for unique_var in "${unique_vars[@]}"; do
+                if [ "$var" = "$unique_var" ]; then
+                    found=true
+                    break
+                fi
+            done
+            if [ "$found" = false ]; then
+                unique_vars+=("$var")
+            fi
+        done
+        
+        # Ask for project name if needed
+        local project_name=""
+        if [ "$project_name_placeholder_found" = true ]; then
+            # echo ""
+            echo "Project name required for some MCP servers."
+            # echo ""
+            print_white "Enter project name (uppercase letters, numbers, and underscores only): "
+            read -r project_name
+            
+            # Validate project name
+            while [[ ! "$project_name" =~ ^[A-Z0-9_]+$ ]] || [ -z "$project_name" ]; do
+                echo ""
+                print_white "Invalid project name. Please use only uppercase letters, numbers, and underscores: "
+                read -r project_name
+            done
+            echo ""
+        fi
+        
+        # Display environment variables if any
+        if [ ${#unique_vars[@]} -gt 0 ]; then
+            echo ""
+            print_white "Required environment variables:"
+            echo ""
+            
+            # Collect missing environment variables
+            local missing_vars=()
+            for var in "${unique_vars[@]}"; do
+                # Replace project name placeholder if present
+                local display_var="$var"
+                if [ -n "$project_name" ]; then
+                    display_var=$(echo "$var" | sed "s/{{PROJECT_NAME}}/$project_name/g")
+                fi
+                
+                # Get current value (first 3 characters + ellipsis)
+                # Remove $ prefix for variable access
+                local var_name="${display_var/#\$/}"
+                local current_value="${!var_name:-}"
+                if [ -n "$current_value" ]; then
+                    local masked_value="${current_value:0:3}..."
+                    print_gray "  $display_var = $masked_value"
+                else
+                    print_gray "  $display_var = (not set)"
+                    missing_vars+=("$display_var")
+                fi
+                echo ""
+            done
+            
+            # Ask for values and add missing environment variables to shell configuration files
+            if [ ${#missing_vars[@]} -gt 0 ]; then
+                echo ""
+                echo "Please provide values for the missing environment variables:"
+                #echo ""
+                
+                # Collect values for missing environment variables
+                local env_values=()
+                for var in "${missing_vars[@]}"; do
+                    print_white "Enter value for $var: "
+                    read -r value
+                    env_values+=("$var=$value")
+                done
+                
+                echo ""
+                print_white "Adding environment variables to shell configuration files..."
+                echo ""
+                
+                # Define shell configuration files
+                local shell_files=("$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.profile" "$HOME/.zshrc")
+                
+                for shell_file in "${shell_files[@]}"; do
+                    # Create file if it doesn't exist
+                    if [ ! -f "$shell_file" ]; then
+                        touch "$shell_file"
+                        local display_path="${shell_file/#$HOME/~}"
+                        echo "  ✓ Created $display_path"
+                    fi
+                    
+                    # Add environment variables to the file
+                    echo "" >> "$shell_file"
+                    echo "# MCP Environment Variables - Added by Clauder" >> "$shell_file"
+                    for env_pair in "${env_values[@]}"; do
+                        # Remove $ prefix from variable name for shell files
+                        local clean_pair="${env_pair/#\$/}"
+                        echo "export $clean_pair" >> "$shell_file"
+                    done
+                    echo "# End MCP Environment Variables" >> "$shell_file"
+                    echo "" >> "$shell_file"
+                    
+                    local display_path="${shell_file/#$HOME/~}"
+                    echo "  ✓ Added environment variables to $display_path"
+                done
+                
+                echo ""
+                echo "Sourcing shell configuration files..."
+                echo ""
+                
+                # Source the shell configuration files
+                for shell_file in "${shell_files[@]}"; do
+                    if [ -f "$shell_file" ]; then
+                        local display_path="${shell_file/#$HOME/~}"
+                        if . "$shell_file" >/dev/null 2>&1; then
+                            # Silently source successful files
+                            :
+                        else
+                            echo "  ⚠ Failed to source $display_path"
+                        fi
+                    fi
+                done
+                
+                echo ""
+                print_gray "Environment variables have been set with the values you provided."
+                echo ""
+            fi
+        else
+            echo ""
+            print_gray "No environment variables required."
+            echo ""
+        fi
+        
+        # Backup and merge .mcp.json file
+        backup_and_merge_mcp_file "$target_project" "${selected_servers[@]}"
+    else
+        echo "No servers selected."
+        echo ""
+    fi
+}
+
+# Function to clean up old MCP backup files (keep only 5 most recent)
+cleanup_old_mcp_backups() {
+    local backup_dir="$1"
+    
+    # Get list of backup files sorted by modification time (newest first)
+    # Use macOS compatible find command
+    local backups=($(find "$backup_dir" -maxdepth 1 -type f -name ".mcp.json.backup.*" -exec stat -f "%m %N" {} \; | sort -nr | cut -d' ' -f2-))
+    
+    # Remove backups beyond the 5th one
+    if [ ${#backups[@]} -gt 5 ]; then
+        local backups_to_remove=()
+        i=5
+        while [ $i -lt ${#backups[@]} ]; do
+            backups_to_remove+=("$(basename "${backups[$i]}")")
+            i=$((i + 1))
+        done
+        
+        echo "Found ${#backups_to_remove[@]} old MCP backup(s) to remove (keeping 5 most recent):"
+        printf '  %s\n' "${backups_to_remove[@]}"
+        echo ""
+        print_white "Do you want to remove these old MCP backups? (y/N): "
+        read -r reply
+        echo
+        
+        if [[ $reply =~ ^[Yy]$ ]]; then
+            echo "Removing old MCP backups..."
+            i=5
+            while [ $i -lt ${#backups[@]} ]; do
+                local old_backup="${backups[$i]}"
+                echo "Removing: $(basename "$old_backup")"
+                rm -f "$old_backup"
+                i=$((i + 1))
+            done
+            echo "✓ Old MCP backups removed successfully"
+        else
+            echo "Skipping cleanup of old MCP backups"
+        fi
+    fi
+}
+
+# Function to backup and merge .mcp.json file
+backup_and_merge_mcp_file() {
+    local target_project="$1"
+    shift
+    local selected_servers=("$@")
+    local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
+    local source_mcp_file="$clauder_dir/.mcp.json"
+    local target_mcp_file="$target_project/.mcp.json"
+    
+    # Check if source .mcp.json exists
+    if [ ! -f "$source_mcp_file" ]; then
+        echo "Warning: Source .mcp.json file not found."
+        return 1
+    fi
+    
+    # Check if we have selected servers
+    if [ ${#selected_servers[@]} -eq 0 ]; then
+        return 0
+    fi
+    
+    echo ""
+    echo "Configuring MCP servers..."
+    
+    # Backup existing .mcp.json if it exists
+    if [ -f "$target_mcp_file" ]; then
+        # Create .claude-mcp-backup directory if it doesn't exist
+        local backup_dir="$target_project/.claude-mcp-backup"
+        if [ ! -d "$backup_dir" ]; then
+            mkdir -p "$backup_dir"
+        fi
+        
+        local backup_file="$backup_dir/.mcp.json.backup.$(date +%Y%m%d_%H%M%S)"
+        if cp "$target_mcp_file" "$backup_file" 2>/dev/null; then
+            echo "  ✓ Backed up existing .mcp.json to $(basename "$backup_file")"
+            
+            # Clean up old backups (keep only 5 most recent)
+            cleanup_old_mcp_backups "$backup_dir"
+        else
+            echo "  ⚠ Failed to backup existing .mcp.json"
+        fi
+    fi
+    
+    # Create target .mcp.json if it doesn't exist
+    if [ ! -f "$target_mcp_file" ]; then
+        echo '{"mcpServers": {}}' > "$target_mcp_file"
+        echo "  ✓ Created new .mcp.json file"
+    fi
+    
+    # Merge selected servers from source to target
+    if command -v jq >/dev/null 2>&1; then
+        # Use jq for JSON manipulation
+        local temp_file=$(mktemp)
+        
+        # Read source and target files
+        local source_json=$(cat "$source_mcp_file")
+        local target_json=$(cat "$target_mcp_file")
+        
+        # Extract selected servers from source
+        local selected_servers_json="{}"
+        for server in "${selected_servers[@]}"; do
+            local server_config=$(echo "$source_json" | jq -r ".mcpServers.\"$server\" // empty" 2>/dev/null)
+            if [ -n "$server_config" ] && [ "$server_config" != "null" ]; then
+                # Remove metadata fields (_website, _category, _description, _requires) before adding to target
+                local clean_config=$(echo "$server_config" | jq 'del(._website, ._category, ._description, ._requires)' 2>/dev/null)
+                selected_servers_json=$(echo "$selected_servers_json" | jq --arg server "$server" --argjson config "$clean_config" '. + {($server): $config}' 2>/dev/null)
+            fi
+        done
+        
+        # Merge selected servers into target, preserving the entire JSON structure
+        local merged_json=$(echo "$target_json" | jq --argjson selected "$selected_servers_json" '.mcpServers = (.mcpServers * $selected)' 2>/dev/null)
+        
+        if [ $? -eq 0 ] && [ -n "$merged_json" ]; then
+            echo "$merged_json" > "$temp_file"
+            mv "$temp_file" "$target_mcp_file"
+            echo "  ✓ Merged selected MCP servers into .mcp.json"
+        else
+            echo "  ✗ Failed to merge MCP servers using jq"
+            rm -f "$temp_file"
+            return 1
+        fi
+    else
+        # Fallback: use Python for JSON manipulation
+        local temp_file=$(mktemp)
+        
+        if python3 -c "
+import json
+import sys
+
+def merge_mcp_servers(target_file, source_file, selected_servers):
+    try:
+        # Read source and target files
+        with open(source_file, 'r') as f:
+            source_data = json.load(f)
+        with open(target_file, 'r') as f:
+            target_data = json.load(f)
+        
+        # Ensure mcpServers exists in target
+        if 'mcpServers' not in target_data:
+            target_data['mcpServers'] = {}
+        
+        # Add selected servers to target
+        for server in selected_servers:
+            if server in source_data.get('mcpServers', {}):
+                server_config = source_data['mcpServers'][server].copy()
+                # Remove metadata fields
+                metadata_fields = ['_website', '_category', '_description', '_requires']
+                for field in metadata_fields:
+                    server_config.pop(field, None)
+                target_data['mcpServers'][server] = server_config
+        
+        # Write merged data to temp file
+        with open('$temp_file', 'w') as f:
+            json.dump(target_data, f, indent=2)
+        
+        sys.exit(0)
+    except Exception as e:
+        print(f'Error: {e}', file=sys.stderr)
+        sys.exit(1)
+" "$target_mcp_file" "$source_mcp_file" "${selected_servers[@]}" 2>/dev/null; then
+            mv "$temp_file" "$target_mcp_file"
+            echo "  ✓ Merged selected MCP servers into .mcp.json"
+        else
+            echo "  ✗ Failed to merge MCP servers using Python"
+            rm -f "$temp_file"
+            return 1
+        fi
+    fi
+    
+    # Display added servers
+    echo "  Added MCP servers:"
+    for server in "${selected_servers[@]}"; do
+        echo "    ✓ $server"
+    done
+    
+    echo ""
+    echo "MCP configuration updated successfully."
+    echo ""
+    print_gray "The newly added MCP servers will be active upon starting Clauder"
+}
+
+# Function to check for missing MCP servers
+check_missing_mcp_servers() {
+    local target_project="$1"
+    local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
+    local source_mcp_file="$clauder_dir/.mcp.json"
+    local target_claude="$target_project/.claude"
+    
+    # Check if source .mcp.json exists
+    if [ ! -f "$source_mcp_file" ]; then
+        return 0
+    fi
+    
+    # Get currently enabled MCP servers
+    local enabled_servers=()
+    if command -v claude >/dev/null 2>&1; then
+        # Change to target project directory to run claude command in correct context
+        cd "$target_project" 2>/dev/null || return 0
+        
+        local mcp_output=$(claude mcp list 2>/dev/null)
+        if [ $? -eq 0 ] && [ -n "$mcp_output" ]; then
+            # Extract server names from the output
+            enabled_servers=($(echo "$mcp_output" | grep -E '^[a-zA-Z0-9_-]+:' | sed 's/:.*$//'))
+        fi
+    fi
+    
+    # Get recommended MCP servers from source .mcp.json
+    local recommended_servers=()
+    if command -v jq >/dev/null 2>&1; then
+        # Use jq to extract server names
+        recommended_servers=($(jq -r '.mcpServers | keys[]' "$source_mcp_file" 2>/dev/null))
+    else
+        # Fallback: use grep and sed to extract server names
+        recommended_servers=($(grep -o '"[^"]*":\s*{' "$source_mcp_file" | sed 's/":\s*{//g' | sed 's/"//g' 2>/dev/null))
+    fi
+    
+    # Find missing servers
+    local missing_servers=()
+    for recommended in "${recommended_servers[@]}"; do
+        local found=false
+        for enabled in "${enabled_servers[@]}"; do
+            if [ "$recommended" = "$enabled" ]; then
+                found=true
+                break
+            fi
+        done
+        if [ "$found" = false ]; then
+            missing_servers+=("$recommended")
+        fi
+    done
+    
+    # Sort missing servers: recommended first (alphabetical), then others (alphabetical)
+    local recommended_missing=()
+    local other_missing=()
+    
+    for server in "${missing_servers[@]}"; do
+        # Get category for this server
+        local category=""
+        if command -v jq >/dev/null 2>&1; then
+            category=$(jq -r ".mcpServers.\"$server\"._category // empty" "$source_mcp_file" 2>/dev/null)
+        else
+            # Fallback: use grep and sed to extract category
+            category=$(grep -A 10 "\"$server\":" "$source_mcp_file" | grep "_category" | sed 's/.*"_category": *"\([^"]*\)".*/\1/' 2>/dev/null)
+        fi
+        
+        local category_lower=$(echo "$category" | tr '[:upper:]' '[:lower:]')
+        if [ "$category_lower" = "recommended" ]; then
+            recommended_missing+=("$server")
+        else
+            other_missing+=("$server")
+        fi
+    done
+    
+    # Sort each group alphabetically
+    IFS=$'\n' recommended_missing=($(sort <<<"${recommended_missing[*]}"))
+    IFS=$'\n' other_missing=($(sort <<<"${other_missing[*]}"))
+    
+    # Combine: recommended first, then others
+    missing_servers=("${recommended_missing[@]}" "${other_missing[@]}")
+    
+    # Display missing servers if any
+    if [ ${#missing_servers[@]} -gt 0 ]; then
+        echo ""
+        echo "Clauder may help you setup any of the following recommended MCP servers:"
+        for server in "${missing_servers[@]}"; do
+            # Try to get description from .mcp.json
+            local description=""
+            if command -v jq >/dev/null 2>&1; then
+                description=$(jq -r ".mcpServers.\"$server\"._description // empty" "$source_mcp_file" 2>/dev/null)
+            else
+                # Fallback: use grep and sed to extract description
+                description=$(grep -A 10 "\"$server\":" "$source_mcp_file" | grep "_description" | sed 's/.*"_description": *"\([^"]*\)".*/\1/' 2>/dev/null)
+            fi
+            
+            # Try to get category from .mcp.json
+            local category=""
+            if command -v jq >/dev/null 2>&1; then
+                category=$(jq -r ".mcpServers.\"$server\"._category // empty" "$source_mcp_file" 2>/dev/null)
+            else
+                # Fallback: use grep and sed to extract category
+                category=$(grep -A 10 "\"$server\":" "$source_mcp_file" | grep "_category" | sed 's/.*"_category": *"\([^"]*\)".*/\1/' 2>/dev/null)
+            fi
+            
+            # Format server name with description
+            local display_name="$server"
+            if [ -n "$description" ]; then
+                display_name="$server ($description)"
+            fi
+            
+            print_gray "  ☐ $display_name"
+            echo ""
+        done
+        
+        # Ask if user wants to setup MCP tools
+        echo ""
+        print_white "Would you like to setup any of these MCP tools for this project? (y/N): "
+        read -r setup_reply
+        echo
+        
+        if [[ $setup_reply =~ ^[Yy]$ ]]; then
+            echo ""
+            
+            # Show interactive selection
+            select_mcp_servers "${missing_servers[@]}"
+        fi
+    fi
+}
+
+# Function to display MCP servers
+display_mcp_servers() {
+    local target_project="$1"
+    
+    # Change to target project directory to run claude command in correct context
+    cd "$target_project" 2>/dev/null || return 0
+    
+    echo ""
+    echo "Scanning available MCP servers.."
+    echo "MCP servers are standard tools allowing Claude to interact with other systems."
+    echo "Learn more about MCP: https://modelcontextprotocol.io/docs/getting-started/intro"
+    echo ""
+    echo "MCP servers enabled for this project:"
+    
+    # Run 'claude mcp list' command and extract server names
+    local mcp_output=$(claude mcp list 2>/dev/null)
+    if [ $? -eq 0 ] && [ -n "$mcp_output" ]; then
+        # Extract server names from the output (look for lines with server names followed by status)
+        local server_names=$(echo "$mcp_output" | grep -E '^[a-zA-Z0-9_-]+:' | sed 's/:.*$//')
+        if [ -n "$server_names" ]; then
+            echo "$server_names" | while IFS= read -r server_name; do
+                echo "  ☒ $server_name"
+            done
+        else
+            print_gray "  ⌀ (none)"
+        fi
+    else
+        print_gray "  ⌀ (none)"
+    fi
+}
+
 # Function to copy .claude folder
 copy_claude_folder() {
     # Check if CLAUDER_DIR environment variable is set
@@ -621,6 +1636,12 @@ copy_claude_folder() {
     
     echo "Successfully activated Claude configuration in $target_project"
     echo "You can now use Claude in this project with your custom configuration."
+    
+    # Display MCP servers if available
+    display_mcp_servers "$target_project"
+    
+    # Check for missing MCP servers
+    check_missing_mcp_servers "$target_project"
 }
 
 # Main script logic

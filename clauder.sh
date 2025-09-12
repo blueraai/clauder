@@ -26,6 +26,52 @@ clauder_footer() {
     fi
 }
 
+# Function to check if colors are supported
+colors_supported() {
+    # Check if we're in a terminal and colors are supported
+    if [[ -t 1 ]] && command -v tput >/dev/null 2>&1 && [[ $(tput colors 2>/dev/null) -ge 8 ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Function to print text in gray
+print_gray() {
+    if colors_supported; then
+        echo -n "$(tput setaf 8)$1$(tput sgr0)"
+    else
+        echo -n "$1"
+    fi
+}
+
+# Function to source shell configuration files
+source_shell_configs() {
+    # print_gray "Sourcing terminal configuration.."
+    # echo ""
+    
+    # Define shell configuration files
+    local shell_files=("$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.profile" "$HOME/.zshrc")
+    
+    for shell_file in "${shell_files[@]}"; do
+        if [ -f "$shell_file" ]; then
+            local display_path="${shell_file/#$HOME/~}"
+            if . "$shell_file" >/dev/null 2>&1; then
+                # Silently source successful files
+                :
+            else
+                print_gray "  ⚠ Failed to source $display_path"
+            fi
+        fi
+    done
+    
+    # Reset color to default
+    if colors_supported; then
+        echo -n "$(tput sgr0)"
+    fi
+    echo ""
+}
+
 # Check if required files exist
 if [[ ! -f "$BANNER_SCRIPT" ]]; then
     echo "Error: Banner script not found at $BANNER_SCRIPT"
@@ -47,8 +93,14 @@ if [[ -f "$BANNER_FILE" ]]; then
     bash "$BANNER_SCRIPT" "$BANNER_FILE"
 fi
 
+# Source shell configuration files before update check
+source_shell_configs
+
 # Run the update check script
 bash "$UPDATE_SCRIPT"
+
+# Source shell configuration files after update check
+source_shell_configs
 
 # Run the security check script and capture exit code
 bash "$SECURITY_SCRIPT"
@@ -62,6 +114,39 @@ fi
 
 # Display footer
 clauder_footer
+
+# Display active MCP servers
+display_mcp_servers() {
+    echo ""
+    print_gray "Active MCP servers:"
+    echo ""
+    if command -v claude >/dev/null 2>&1; then
+        local mcp_output=$(claude mcp list 2>/dev/null)
+        if [ $? -eq 0 ] && [ -n "$mcp_output" ]; then
+            local server_names=$(echo "$mcp_output" | grep -E '^[a-zA-Z0-9_-]+:' | sed 's/:.*$//' | tr '\n' ' ')
+            if [ -n "$server_names" ]; then
+                print_gray "⚭ $server_names"
+                echo ""
+                echo ""
+            else
+                print_gray "⌀ (none)"
+                echo ""
+                echo ""
+            fi
+        else
+            print_gray "⌀ (none)"
+            echo ""
+            echo ""
+        fi
+    else
+        print_gray "⌀ (none)"
+        echo ""
+        echo ""
+    fi
+    
+}
+
+display_mcp_servers
 
 # Finally, run Claude with all forwarded arguments
 claude "$@" 
