@@ -127,7 +127,13 @@ Required if using MCP servers (refer to `.mcp.json` for details):
 cd ~/ && git clone https://github.com/blueraai/clauder.git && cd clauder && bash ./clauder_install.sh
 ```
 
-In `.gitignore`, exclude the following paths for cleaner commits:
+Navigate to your project:
+```bash
+# Navigate to project root directory (must be a git repository)
+cd replace-with-project-root-path # && git init (if not already a repository)
+```
+
+In **your project's** `.gitignore`, exclude the following paths for cleaner commits:
 ```text
 .claude 
 .claude-backup
@@ -137,9 +143,6 @@ In `.gitignore`, exclude the following paths for cleaner commits:
 
 Activate & start **clauder** in any of your projects:
 ```bash
-# Navigate to project root directory (must be a git repository)
-cd replace-with-project-root-path # && git init (if not already a repository)
-
 # Start clauder
 clauder # (on initial load, choose to ** activate in project ** when prompted)
 ```
@@ -213,7 +216,7 @@ Clauder's configuration will automatically:
 cd replace-with-project-root-path # && git init (if not already a repository)
 ```
 
-In `.gitignore`, exclude the following paths for cleaner commits:
+In **your project's** `.gitignore`, exclude the following paths for cleaner commits:
 ```text
 .claude 
 .claude-backup
