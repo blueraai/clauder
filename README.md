@@ -141,9 +141,9 @@ In **your project's** `.gitignore`, exclude the following paths for cleaner comm
 .mcp.json
 ```
 
-Activate & start **clauder** in any of your projects:
+Activate & start **clauder** in your project:
 ```bash
-# Start clauder
+# Start clauder session
 clauder # (on initial load, choose to ** activate in project ** when prompted)
 ```
 > Check section below for detailed information on how to use `> CLAUDER`
