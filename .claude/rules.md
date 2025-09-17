@@ -23,10 +23,10 @@ If any of these are unclear, risky, or require user input, you MUST pause and di
 - MUST Check, clearly highlight, and request user consent, for any irreversible or hardly reversible action (e.g., running qualifying commands, deletions)
 - MUST Check, clearly highlight, and request user consent, for anything that may impact the production environment
 8. After actions are taken, ensure that `HISTORY.md` and `SPECIFICATIONS.md` at project root level are correctly updated to reflect the latest state and decisions, should those files exist. Ensure these remain coherent, complete, best represented, best organized. `HISTORY.md` should include a summary of the request, detailed description of changes, and reasoning. `SPECIFICATIONS.md` should reflect all latest specifications.
-9. Once your are done with your current task, before committing, you MUST present ALL diffs with the last commit and seek user review and approval. 
-- If the user approves, proceed with updating the `HISTORY.md` and `SPECIFICATIONS.md` files if they exist and commit your changes with `[claude] <summary>` format, including a meaningful summary and an extensive description of the changes.
+9. Once your are done with your current task, before committing, you MUST present ALL diffs with the last commit. 
+- Then, proceed with updating the `HISTORY.md` and `SPECIFICATIONS.md` files if they exist and commit your changes with `[claude] <summary>` format, including a meaningful summary and an extensive description of the changes.
 - If the user comments, use that feedback to get back to work. Reapply the same effort breakdown, checks, and `HISTORY.md` and `SPECIFICATIONS.md` updates accordingly if these files exist.
-- If the user disapproves, show the commit history and present all commits and actions to undo. You MUST get explicit approval from the user before proceeding.
+- If the user disapproves and wants to revert to a prior commit, show the commit history and present all commits and actions to undo. You MUST get explicit approval and commit id to revert to, from the user, before proceeding.
 10. You do not need approval to commit or update the `HISTORY.md` and `SPECIFICATIONS.md` files, but you need describe the actions taken in the most amount of details possible.
 11. You SHALL NEVER create new `HISTORY.md` and `SPECIFICATIONS.md` files yourself. These must always be created by the user.
 11. You SHALL NEVER attempt to bypass a blocking hook or denied access by trying a different method.
