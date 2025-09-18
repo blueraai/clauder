@@ -7,5 +7,16 @@
   },
   "secret_pattern_safety_checks": {
     "enabled": false
+  },
+  "logging": {
+    "bash_commands": {
+      "enabled": false
+    },
+    "mcp_commands": {
+      "enabled": false
+    },
+    "trace_events": {
+      "enabled": false
+    }
   }
 }

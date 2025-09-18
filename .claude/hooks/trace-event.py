@@ -63,9 +63,29 @@ def log_to_database(db_path, data):
     conn.close()
 
 
-def main():
-    """Main function to log bash commands."""
+def load_preferences():
+    """Load preferences from preferences.json file."""
     try:
+        prefs_path = '.claude/preferences.json'
+        if os.path.exists(prefs_path):
+            with open(prefs_path, 'r') as f:
+                return json.load(f)
+        return {}
+    except Exception:
+        return {}
+
+
+def main():
+    """Main function to log trace events."""
+    try:
+        # Check if trace event logging is enabled
+        preferences = load_preferences()
+        logging_enabled = preferences.get('logging', {}).get('trace_events', {}).get('enabled', False)
+        
+        if not logging_enabled:
+            # Exit early if logging is disabled
+            sys.exit(0)
+        
         # Read input from stdin
         data = json.load(sys.stdin)
         

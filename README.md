@@ -186,7 +186,7 @@ Clauder's configuration will automatically:
 
 - Create checkpoint commits before each session
 - Protect sensitive files and directories (see `.claude/.ignore` and `.claude/.immutable`)
-- Log all actions for live monitoring, or auditing purposes (see `.claude/logs`)
+- Log all actions for live monitoring, or auditing purposes (see `.claude/logs`); enabled in `.claude/preferences.md`
 - Enforce history and specifications tracking as you interact with Claude Code (see `HISTORY.md`, `SPECIFICATIONS.md`)
 - Provides general guidelines/rules to Claude (see `.claude/rules.md`; Never guaranteed, but does help steering it; Do not solely rely on instructions for policing or workflows)
 - Provide audio feedback on completion (optional, supports mac, linux experimental; enabled in `.claude/preferences.md`)
@@ -606,6 +606,8 @@ Clone `.claude-expansion-packs/example` to get started. The folder name is the n
 
 ### How to trace & audit Claude
 
+> Disabled by default, requires logging enabled in `.claude/preferences.md`
+
 Every event and automated **clauder** intervention is locally logged in a SQLite database for auditing and live monitoring Claude.
 
 That database is available at `.claude/logs/trace.sqlite`, once the first event has been logged.
@@ -613,6 +615,8 @@ That database is available at `.claude/logs/trace.sqlite`, once the first event 
 Additionally, all `bash` commands ran and MCP tool calls are duplicated as text logs for easy inspection at `.claude/logs/bash-logs.txt` and `.claude/logs/mcp-logs.txt`.
 
 #### Real-time monitoring with Clauder Tracer
+
+> Disabled by default, requires traces enabled in `.claude/preferences.md`
 
 You may use or build any monitoring app you'd like to inspect that SQLite database. For convenience, a lightweight tracer app is also shipped with **clauder**.
 
