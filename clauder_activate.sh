@@ -1025,9 +1025,12 @@ apply_previous_expansions() {
             
             # Add to required_vars and check for project name placeholder
             for req in "${requirements[@]}"; do
-                required_vars+=("$req")
-                if [[ "$req" == *"{{PROJECT_NAME}}"* ]]; then
-                    project_name_placeholder_found=true
+                # Skip "OAuth at runtime" as it's not an environment variable
+                if [ "$req" != "OAuth at runtime" ]; then
+                    required_vars+=("$req")
+                    if [[ "$req" == *"{{PROJECT_NAME}}"* ]]; then
+                        project_name_placeholder_found=true
+                    fi
                 fi
             done
         done
