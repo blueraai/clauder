@@ -1166,7 +1166,7 @@ apply_previous_expansions() {
         fi
         
         # Backup and merge .mcp.json file
-        backup_and_merge_mcp_file "$target_project" "${selected_servers[@]}"
+        PROJECT_NAME="$project_name" backup_and_merge_mcp_file "$target_project" "${selected_servers[@]}"
     else
         echo "No servers selected."
         echo ""
@@ -1221,6 +1221,13 @@ backup_and_merge_mcp_file() {
     local clauder_dir="${CLAUDER_DIR:-$(dirname "$(realpath "$0")")}"
     local source_mcp_file="$clauder_dir/.mcp.json"
     local target_mcp_file="$target_project/.mcp.json"
+    
+    # Get project name from the calling function's scope
+    local project_name=""
+    # Check if project_name was set in the calling function
+    if [ -n "${PROJECT_NAME:-}" ]; then
+        project_name="$PROJECT_NAME"
+    fi
     
     # Check if source .mcp.json exists
     if [ ! -f "$source_mcp_file" ]; then
@@ -1277,6 +1284,12 @@ backup_and_merge_mcp_file() {
             if [ -n "$server_config" ] && [ "$server_config" != "null" ]; then
                 # Remove metadata fields (_website, _category, _description, _requires) before adding to target
                 local clean_config=$(echo "$server_config" | jq 'del(._website, ._category, ._description, ._requires)' 2>/dev/null)
+                
+                # Replace PROJECT_NAME placeholder if project_name is provided
+                if [ -n "$project_name" ]; then
+                    clean_config=$(echo "$clean_config" | sed "s/{{PROJECT_NAME}}/$project_name/g")
+                fi
+                
                 selected_servers_json=$(echo "$selected_servers_json" | jq --arg server "$server" --argjson config "$clean_config" '. + {($server): $config}' 2>/dev/null)
             fi
         done
@@ -1300,8 +1313,9 @@ backup_and_merge_mcp_file() {
         if python3 -c "
 import json
 import sys
+import re
 
-def merge_mcp_servers(target_file, source_file, selected_servers):
+def merge_mcp_servers(target_file, source_file, selected_servers, project_name):
     try:
         # Read source and target files
         with open(source_file, 'r') as f:
@@ -1321,6 +1335,14 @@ def merge_mcp_servers(target_file, source_file, selected_servers):
                 metadata_fields = ['_website', '_category', '_description', '_requires']
                 for field in metadata_fields:
                     server_config.pop(field, None)
+                
+                # Replace PROJECT_NAME placeholder if project_name is provided
+                if project_name:
+                    # Convert to JSON string, replace, then parse back
+                    config_str = json.dumps(server_config)
+                    config_str = config_str.replace('{{PROJECT_NAME}}', project_name)
+                    server_config = json.loads(config_str)
+                
                 target_data['mcpServers'][server] = server_config
         
         # Write merged data to temp file
@@ -1331,7 +1353,7 @@ def merge_mcp_servers(target_file, source_file, selected_servers):
     except Exception as e:
         print(f'Error: {e}', file=sys.stderr)
         sys.exit(1)
-" "$target_mcp_file" "$source_mcp_file" "${selected_servers[@]}" 2>/dev/null; then
+" "$target_mcp_file" "$source_mcp_file" "${selected_servers[@]}" "$project_name" 2>/dev/null; then
             mv "$temp_file" "$target_mcp_file"
             echo "  ✓ Merged selected MCP servers into .mcp.json"
         else
