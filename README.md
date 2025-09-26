@@ -205,6 +205,8 @@ Clauder's configuration will automatically:
 
 ### How to..
 
+> Learn how to get the best of Clauder, at your own pace
+
 <details>
 <summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Start a Claude session</strong></summary>
 
@@ -701,6 +703,8 @@ Access the tracer app at `http://localhost:4441` in your browser.
 
 ### Exploring Clauder
 
+> Things you may eventually need
+
 <details>
 <summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Key Configuration Files</strong></summary>
 
@@ -875,6 +879,23 @@ clauder
 </details>
 
 ### Contributing to Clauder
+
+> Help improve Clauder
+
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Providing Feedback</strong></summary>
+
+### Feedback
+
+If you're not sure where to start, have an issue, or a question, just let us know what's on your mind, we're here to help.
+
+You may provide feedback by:
+
+- Opening an issue at the top of this page
+- Chatting with us on [Discord](https://discord.gg/7g9SrEc5yT)
+- Emailing us security concerns
+
+</details>
 
 <details>
 <summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">File Structure</strong></summary>
