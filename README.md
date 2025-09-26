@@ -203,7 +203,7 @@ Clauder's configuration will automatically:
 
 </details>
 
-### How to..
+### ⎈ How to..
 
 > Learn how to get the best of Clauder, at your own pace
 
@@ -701,7 +701,7 @@ Access the tracer app at `http://localhost:4441` in your browser.
 
 </details>
 
-### Exploring Clauder
+### ⎈ Exploring Clauder
 
 > Things you may eventually need
 
@@ -878,7 +878,7 @@ clauder
 
 </details>
 
-### Contributing to Clauder
+### ⎈ Contributing to Clauder
 
 > Help improve Clauder
 
