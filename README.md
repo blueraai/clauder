@@ -1,13 +1,17 @@
 ![clauder](https://fasplnlepuuumfjocrsu.supabase.co/storage/v1/object/public/web-assets//clauder-character.png)
 
-## `> CLAUDER` - a safer and supercharged configuration for Claude Code
+## `> CLAUDER` - a safer & supercharged toolkit for Claude Code
 
 <p align="left">
     <a href="https://github.com/blueraai/universal-intelligence/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/blueraai/universal-intelligence.svg?color=00bf48"></a>
     <a href="https://discord.gg/7g9SrEc5yT"><img alt="Discord" src="https://img.shields.io/badge/Join-Discord-7289DA?logo=discord&logoColor=white&color=4911ff"></a>
 </p>
 
-> Safer rules and smarter toolkit so Claude Code does not accidentally set the world on fire trying to help 🔥
+
+> [!TIP]
+> Would you rather [**chat with our docs**](https://githubchat.bluera.ai/#url=https%3A%2F%2Fgithub.com%2Fblueraai%2Fclauder)? 💬
+> 
+> *Note: AI responses may include mistakes. Refer to the documentation below for sample code.*
 
 Clauder is a **supercharged toolkit and a safety-first configuration for Claude Code**, designed to provide a robust foundation for AI-assisted development — while remaining *easily configurable and extensible to any project or workflow*.
 
@@ -19,23 +23,6 @@ It **auto-updates** so you always get the latest tools, and never have to think 
 **Bluera Inc.** https://bluera.ai
 
 ## Overview
-
-> [!TIP]
-> <details>
-> <summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">📻 Rather listen to it?</strong></summary>
-> <br>
-> 
-> https://github.com/user-attachments/assets/4de6c270-7b45-497a-80a2-3018d1217168
-> 
-> </details>
-> <details>
-> <summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">💬 Rather chat with our docs?</strong></summary>
-> 
-> #### [Chat with this page on GitHub Chat →](https://githubchat.bluera.ai/#url=https%3A%2F%2Fgithub.com%2Fblueraai%2Fclauder)
-> 
-> *Note: AI responses may include mistakes. Refer to the documentation below for sample code.*
-> </details>
-
 
 This repository contains a comprehensive Claude Code configuration that provides advanced toolkits, safety mechanisms, logging, and best practices for AI-assisted development. Clauder includes:
 
@@ -83,8 +70,12 @@ This repository contains a comprehensive Claude Code configuration that provides
 - Commands recommendations and active MCP servers list on start, project based
 - Status line with project name, branch, and active model, for easy monitoring (optionally, API costs per session)
 
-
 ## Requirements
+
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">View Requirements</strong></summary>
+
+> Also see `Troubleshooting` sections for further debugging tips
 
 Supported platforms:
 - macOS
@@ -115,6 +106,8 @@ Required if using MCP servers (refer to `.mcp.json` for details):
 - `pnpx`
 - `docker`
 
+</details>
+
 ## Quick Start
 
 > Ensure the requirements above are met
@@ -143,11 +136,21 @@ In **your project's** `.gitignore`, exclude the following paths for cleaner comm
 Activate & start **clauder** in your project:
 ```bash
 # Start clauder session
-clauder # (on initial load, choose to ** activate in project ** when prompted)
+clauder # (choose ** activate in project ** when prompted)
 ```
 > Check section below for detailed information on how to use `> CLAUDER`
 
-## Installation
+## Documentation
+
+> [!TIP]
+> 💬 You may also [**chat with this page on GitHub Chat →**](https://githubchat.bluera.ai/#url=https%3A%2F%2Fgithub.com%2Fblueraai%2Fclauder)
+> 
+> *Note: AI responses may include mistakes. Refer to the documentation below for sample code.*
+
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Installation</strong></summary>
+
+### Installation
 
 > Ensure the requirements above are met
 ```bash
@@ -158,11 +161,14 @@ cd ~/ && git clone https://github.com/blueraai/clauder.git
 cd clauder && bash ./clauder_install.sh
 ```
 
-## Usage
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Activate Clauder in your project</strong></summary>
 
 ### Activate Clauder in your project
 
-> [!IMPORTANT]
+> ***[ Important ]***
+> 
 > Activating Clauder may override any existing `.claude` configuration. Backups will automatically be created to save/restore your existing configurations. These can be found at `./.claude-backup/`, `./.claude-mcp-backup/` for MCP configurations.
 >
 > Notably, `.claude/settings.json` will be overriden for consistency and security purposes, upon every activation (including auto-updates).
@@ -195,9 +201,17 @@ Clauder's configuration will automatically:
 
 > **Domain specific *expansion packs* available** (including agents, commands, hooks and configurations - see below)
 
+</details>
+
+### How to..
+
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Start a Claude session</strong></summary>
+
 ### How to start a Claude session
 
-> [!IMPORTANT]
+> ***[ Important ]***
+> 
 > **Opening Claude without interacting is sufficient to index and learn all secrets in the directory. Never keep secrets such as `.env` in the project directory.**
 >
 > If secrets have been indexed or read by an AI such as Claude, you should consider removing them from the project, invalidating them and renewing them. Production secrets should be stored in a secure vault, unreadable by AI. Keeping secrets out of the working directory prevents auto-indexing, but does not prevent Claude from finding ways to access them through running commands or calling tools. 
@@ -237,7 +251,8 @@ In Claude, type:
 
 This will define the mandatory guidelines for Claude Code.
 
-> [!TIP]
+> ***[ Tip ]***
+> 
 > - If your project includes a `HISTORY.md` file at root level, **clauder** will enforce keeping a history of requests and actions taken, and use it to reason about the next action to take. Comprehensive history tracking may take time.
 > - If your project includes a `SPECIFICATIONS.md` file at root level, **clauder** will enforce keeping an updated list of specifications as it takes actions, and use it to reason about the next action to take. When writing code manually, you may ask **clauder** to read the git diffs and backfill the specifications file.  Comprehensive specifications tracking may take time.
 > - Define your secret files and folders in `.claude/.ignore` so **clauder** can guard them from being read/written.
@@ -248,6 +263,10 @@ This will define the mandatory guidelines for Claude Code.
 > - Define your custom settings in `.claude/settings.local.json` instead of `.claude/settings.json`, so they remain persisted when clauder auto-updates.
 > - Declare custom rules in `CLAUDE.md` at root level for persisted intructions when clauder auto-updates.
 
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Give Claude project-level instructions</strong></summary>
+
 ### How to give Claude project-level instructions
 
 Declare custom rules in `CLAUDE.md` at root level for persisted intructions when **clauder** auto-updates. 
@@ -257,6 +276,10 @@ Declare custom rules in `CLAUDE.md` at root level for persisted intructions when
 Make sure these instructions do not conflict with **clauder**'s rules (see `.claude/rules.md`).
 
 > Do not modify the **clauder** rules themselves as those will be reset when **clauder** auto-updates.
+
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Ask Claude for a general review</strong></summary>
 
 ### How to ask Claude for a general review
 
@@ -273,6 +296,10 @@ or about something specific:
 ```
 
 > Create custom commands or sub-agents for project specic-reviews.
+
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Ask Claude to consult a different model</strong></summary>
 
 ### How to ask Claude to consult a different model
 
@@ -293,6 +320,10 @@ e.g.
 > Note:
 > - Files and directories listed in `.claude/.ignore` will not be passed as context.
 > - Third party models consulted in the cloud do not have access to Claude Code's tools.
+
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Create specialized agents</strong></summary>
 
 ### How to create specialized agents
 
@@ -316,7 +347,8 @@ The resulting agent instructions will be define in `.claude/agents/<agent-name>.
 
 **New agents become available/unavailable on start of a new Claude Code session**. Creating or deleting an agent will not apply to current sessions. Start a new **clauder** session to use your newly created agent.
 
-> [!TIP]
+> ***[ Tip ]***
+> 
 > Best practices:
 > - **Tailor agents to your specific project and needs**, as you would when recruiting people.
 > - **Limit the number of agents, prefer smaller teams with clear separation of ownership/expertise.** Lesser communication and orchestration loss.
@@ -337,6 +369,10 @@ or about something specific:
 ```sh
 /recruit I want to make this web app..
 ```
+
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Add and manage MCP servers</strong></summary>
 
 ### Add and manage MCP servers
 
@@ -433,6 +469,10 @@ The following servers come pre-integrated for easy installation.
 | [Trello](https://github.com/delorenj/mcp-server-trello) | access and manage Trello |
 | [Vercel](https://vercel.com/docs/mcp/vercel-mcp) | access and manage deployments with Vercel |
 | [Youtube](https://github.com/ZubeidHendricks/youtube-mcp-server) | search about YouTube channels, videos, and playlists, and retrieve transcriptions |
+
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Add expansion packs</strong></summary>
 
 ### Expansion packs (beta)
 
@@ -605,6 +645,10 @@ Clone `.claude-expansion-packs/example` to get started. The folder name is the n
 
 > Disclaimer: Remember to be specific, to prevent conflicts with the base **clauder** setup.
 
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Trace & audit Claude</strong></summary>
+
 ### How to trace & audit Claude
 
 > Disabled by default, requires logging enabled in `.claude/preferences.md`
@@ -647,12 +691,195 @@ Access the tracer app at `http://localhost:4441` in your browser.
 
 ![tracer-preview](https://fasplnlepuuumfjocrsu.supabase.co/storage/v1/object/public/web-assets//tracer-preview@0.5x.png)
 
-> [!TIP]
+> ***[ Tip ]***
+> 
 > You may set any of the supported themes: `green`, `blue`, `gray`, `dark`
 > 
 > Run in browser console: `localStorage.setItem('clauder.tracer.theme', 'dark'); location.reload();`
 
-## File Structure
+</details>
+
+### Exploring Clauder
+
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Key Configuration Files</strong></summary>
+
+### Key Configuration Files
+
+#### **`.claude/settings.json`**
+
+Defines hooks and permissions. Will be overriden upon auto-updating to ensure a safe and working setup.
+
+For custom settings use `.claude/settings.local.json` instead, so they remain persisted when clauder auto-updates.
+
+#### **`.claude/.ignore`**
+
+Files and directories to ignore (forbidden read & write).
+
+> ***[ Note ]***
+> 
+> As of July 2025, there is no possible way to prevent Claude from automatically & silently learning every change made to the codebase, including secrets. These are only meant as a best effort to prevent retrieving them.
+
+#### **`.claude/.immutable`**
+
+Files and directories that cannot be modified (read-only).
+
+> ***[ Note ]***
+> 
+> The immutable file list is strictly enforced and cannot be overridden, even with explicit user permission.
+
+#### **`.claude/.exclude_security_checks`**
+
+Files and directories to skip in security scans.
+
+#### **`.claude/rules.md`**
+
+Behavioral guidelines.
+
+> ***[ Note ]***
+> 
+> Rules can never be enforced, they are used to steer the AI in a desired direction.
+
+#### **`.claude/preferences.md`**
+
+User preferences and customization settings.
+
+#### **`.claude/requirements.md`**
+
+Clauder dependencies and recommended MCP servers.
+
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Security Best Practices</strong></summary>
+
+### Security Best Practices
+
+#### **Environment Secrets**
+- **Never store in project**: Keep secrets outside the working directory
+- **Secure vaults**: Use dedicated secret management systems (e.g. doppler, hashicorp vault, unix pass)
+- **AI isolation**: Ensure AI cannot access production secrets
+- **Regular rotation**: Rotate secrets if accidentally exposed
+
+#### **Supervision Requirements**
+- **Human oversight**: Always supervise AI operations
+- **Backup systems**: Maintain regular backups of critical systems
+- **Sandboxing**: Use isolated environments for AI testing
+- **Access limits**: Restrict AI access to sensitive systems
+
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Troubleshooting</strong></summary>
+
+### Troubleshooting
+
+#### **Common Issues**
+
+**Clauder crashes my terminal**
+```bash
+# Clauder will exit for safety purposes when detecting potential secrets, so they do not get indexed by Claude.
+# For details about problematic files, run:
+
+clauder_security_check & echo done
+```
+
+**New agent not found**
+```bash
+# New agents become available/unavailable on start of a new Claude Code session.
+# Creating or deleting an agent will not apply to current sessions. 
+# Start a new session to use your newly created agent.
+
+clauder # (or) clauder --continue
+```
+
+**Missing required tools**
+```bash
+# Install required tools
+brew install git jq  # macOS
+sudo apt install git jq  # Ubuntu/Debian
+```
+
+**Git repository not initialized**
+```bash
+# Initialize git repository
+git init
+```
+
+**Permission denied errors**
+```bash
+# Make hooks executable
+chmod +x .claude/hooks/*.py
+chmod +x .claude/hooks/*.sh
+```
+
+**Audio not working**
+```bash
+# Check audio preferences
+cat .claude/preferences.json
+# Ensure "audio_summary.enabled" is true
+```
+
+**Safe commands blocked**
+```bash
+# You may choose to disable unsafe command detection in `.claude/preferences.json` at your own risk
+```
+
+**.claude/*: [Errno 2] No such file or directory**
+```bash
+# You may have an early legacy version of Clauder installed, which is no longer supported. 
+# Please pull the latest clauder and rerun 'bash ./clauder_install.sh'.
+# Newer versions of Clauder now auto-updates, so you never have to do it again.
+```
+
+#### **Configuration Issues**
+
+**Aliases not working**
+```bash
+# Re-run alias setup (Important: Run from the `clauder` directory)
+bash ./clauder_install.sh
+# Or restart your shell
+```
+
+**Security checks failing**
+```bash
+# Check exclusion patterns (Important: Do not exclude actual secrets)
+cat .claude/.exclude_security_checks
+
+# Alternatively, you may choose to disable secret pattern detection in `.claude/preferences.json`
+```
+
+**claude: command not found**
+```bash
+# clauder runs claude in a standard 'bash' shell, irrespective of where it was started (e.g. ZSH).
+# You may only have Claude Code installed in a ZSH terminal.
+
+# Please make sure the 'claude' command is also installed in bash terminals (run 'bash' and install Claude Code using these instructions: https://docs.anthropic.com/en/docs/claude-code/troubleshooting).
+
+# Once installed, confirm installation using:
+bash
+# Then, in bash terminal
+which claude # macOS, Linux
+where claude # windows
+
+# If claude's path is displayed, you may now run in any terminal (e.g. ZSH, bash):
+clauder
+# Else, please refer to troubleshooting link above to fix your Claude Code installation.
+```
+
+**Clauder does not auto-update, or 'clauder' fails unexpectedly after updating to the latest version**
+```bash
+# You may have an early legacy version of Clauder installed, which is no longer supported. 
+# Please pull the latest clauder and rerun 'bash ./clauder_install.sh'.
+# Newer versions of Clauder now auto-updates, so you never have to do it again.
+```
+
+</details>
+
+### Contributing to Clauder
+
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">File Structure</strong></summary>
+
+### File Structure
 
 ```
 clauder/
@@ -666,6 +893,7 @@ clauder/
 ├── clauder_update_check.sh               # Update checking and management script
 ├── clauder_trace.sh                      # Tracer app launcher script
 ├── clauder.sh                            # Main clauder launcher script
+├── .mcp.json                             # Pre-integrated MCP servers
 ├── assets/                               # Externalized assets and messages
 │   ├── clauder_banner.txt                # ASCII art banner displayed before clauder
 │   └── clauder_footer.txt                # Footer message with links and reminders
@@ -852,164 +1080,11 @@ clauder/
 │       └── requirements-example-expansion.md # Example requirements template
 ```
 
-### Key Configuration Files
+</details>
+<details>
+<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0;">Contributing</strong></summary>
 
-#### **`.claude/settings.json`**
-
-Defines hooks and permissions. Will be overriden upon auto-updating to ensure a safe and working setup.
-
-For custom settings use `.claude/settings.local.json` instead, so they remain persisted when clauder auto-updates.
-
-#### **`.claude/.ignore`**
-
-Files and directories to ignore (forbidden read & write).
-
-> [!NOTE]
-> As of July 2025, there is no possible way to prevent Claude from automatically & silently learning every change made to the codebase, including secrets. These are only meant as a best effort to prevent retrieving them.
-
-#### **`.claude/.immutable`**
-
-Files and directories that cannot be modified (read-only).
-
-> [!NOTE]
-> The immutable file list is strictly enforced and cannot be overridden, even with explicit user permission.
-
-#### **`.claude/.exclude_security_checks`**
-
-Files and directories to skip in security scans.
-
-#### **`.claude/rules.md`**
-
-Behavioral guidelines.
-
-> [!NOTE]
-> Rules can never be enforced, they are used to steer the AI in a desired direction.
-
-#### **`.claude/preferences.md`**
-
-User preferences and customization settings.
-
-#### **`.claude/requirements.md`**
-
-Clauder dependencies and recommended MCP servers.
-
-## Security Best Practices
-
-### **Environment Secrets**
-- **Never store in project**: Keep secrets outside the working directory
-- **Secure vaults**: Use dedicated secret management systems (e.g. doppler, hashicorp vault, unix pass)
-- **AI isolation**: Ensure AI cannot access production secrets
-- **Regular rotation**: Rotate secrets if accidentally exposed
-
-### **Supervision Requirements**
-- **Human oversight**: Always supervise AI operations
-- **Backup systems**: Maintain regular backups of critical systems
-- **Sandboxing**: Use isolated environments for AI testing
-- **Access limits**: Restrict AI access to sensitive systems
-
-## Troubleshooting
-
-### **Common Issues**
-
-**Clauder crashes my terminal**
-```bash
-# Clauder will exit for safety purposes when detecting potential secrets, so they do not get indexed by Claude.
-# For details about problematic files, run:
-
-clauder_security_check & echo done
-```
-
-**New agent not found**
-```bash
-# New agents become available/unavailable on start of a new Claude Code session.
-# Creating or deleting an agent will not apply to current sessions. 
-# Start a new session to use your newly created agent.
-
-clauder # (or) clauder --continue
-```
-
-**Missing required tools**
-```bash
-# Install required tools
-brew install git jq  # macOS
-sudo apt install git jq  # Ubuntu/Debian
-```
-
-**Git repository not initialized**
-```bash
-# Initialize git repository
-git init
-```
-
-**Permission denied errors**
-```bash
-# Make hooks executable
-chmod +x .claude/hooks/*.py
-chmod +x .claude/hooks/*.sh
-```
-
-**Audio not working**
-```bash
-# Check audio preferences
-cat .claude/preferences.json
-# Ensure "audio_summary.enabled" is true
-```
-
-**Safe commands blocked**
-```bash
-# You may choose to disable unsafe command detection in `.claude/preferences.json` at your own risk
-```
-
-**.claude/*: [Errno 2] No such file or directory**
-```bash
-# You may have an early legacy version of Clauder installed, which is no longer supported. 
-# Please pull the latest clauder and rerun 'bash ./clauder_install.sh'.
-# Newer versions of Clauder now auto-updates, so you never have to do it again.
-```
-
-### **Configuration Issues**
-
-**Aliases not working**
-```bash
-# Re-run alias setup (Important: Run from the `clauder` directory)
-bash ./clauder_install.sh
-# Or restart your shell
-```
-
-**Security checks failing**
-```bash
-# Check exclusion patterns (Important: Do not exclude actual secrets)
-cat .claude/.exclude_security_checks
-
-# Alternatively, you may choose to disable secret pattern detection in `.claude/preferences.json`
-```
-
-**claude: command not found**
-```bash
-# clauder runs claude in a standard 'bash' shell, irrespective of where it was started (e.g. ZSH).
-# You may only have Claude Code installed in a ZSH terminal.
-
-# Please make sure the 'claude' command is also installed in bash terminals (run 'bash' and install Claude Code using these instructions: https://docs.anthropic.com/en/docs/claude-code/troubleshooting).
-
-# Once installed, confirm installation using:
-bash
-# Then, in bash terminal
-which claude # macOS, Linux
-where claude # windows
-
-# If claude's path is displayed, you may now run in any terminal (e.g. ZSH, bash):
-clauder
-# Else, please refer to troubleshooting link above to fix your Claude Code installation.
-```
-
-**Clauder does not auto-update, or 'clauder' fails unexpectedly after updating to the latest version**
-```bash
-# You may have an early legacy version of Clauder installed, which is no longer supported. 
-# Please pull the latest clauder and rerun 'bash ./clauder_install.sh'.
-# Newer versions of Clauder now auto-updates, so you never have to do it again.
-```
-
-## Contributing
+### Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -1019,7 +1094,9 @@ clauder
 
 > Hooks documentation: https://docs.anthropic.com/en/docs/claude-code/hooks 
 >
-> **Tips:** Hooks are dedupped and run in parallel. They rely on strict interpretation from the console output for decision making. Make sure never to print anything other than the expected specifications for Claude Code to parse it correctly, any offset will cause Claude Code to omit the decision entirely. Beware of infinite loop, particularly when blocking a 'Stop' event to inject an extra step, as the 'Stop' event will retrigger once that step completes. By default, Claude Code will continue unless set to 'False'. A 'block' decision only blocks a given interaction with a 'reason', at which point Claude Code may decide to take a different action or find a way to bypass it. Use `claude --debug` to enable debug logs when working on hooks, as they are hidden by default. When developing, never test **clauder** changes on a real project as bugs may have irreparable consequences - use a test project instead.
+> **Tip:** Hooks are dedupped and run in parallel. They rely on strict interpretation from the console output for decision making. Make sure never to print anything other than the expected specifications for Claude Code to parse it correctly, any offset will cause Claude Code to omit the decision entirely. Beware of infinite loop, particularly when blocking a 'Stop' event to inject an extra step, as the 'Stop' event will retrigger once that step completes. By default, Claude Code will continue unless set to 'False'. A 'block' decision only blocks a given interaction with a 'reason', at which point Claude Code may decide to take a different action or find a way to bypass it. Use `claude --debug` to enable debug logs when working on hooks, as they are hidden by default. When developing, never test **clauder** changes on a real project as bugs may have irreparable consequences - use a test project instead.
+
+</details>
 
 ## Acknowledgements
 
@@ -1054,7 +1131,3 @@ If you'd like to support to `clauder` here are a few ways to do so:
 Apache 2.0 - Bluera Inc.
 
 > https://bluera.ai
-
----
-
-**Remember**: This is a safety-first configuration. Always review changes before applying them to production systems. The AI assistant is a tool that requires supervision and should not be trusted with critical systems without proper oversight.
