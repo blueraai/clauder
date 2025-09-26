@@ -37,6 +37,17 @@
       "command": "npx",
       "args": ["chrome-devtools-mcp@latest"]
     },
+    "ChromeDevtools_isolated_headless": {
+      "_website": "https://github.com/ChromeDevTools/chrome-devtools-mcp/?tab=readme-ov-file#chrome-devtools-mcp",
+      "_category": "Recommended",
+      "_description": "access Chrome Dev Tools to debug, automate, and monitor web applications (isolated headless mode)",
+      "command": "npx",
+      "args": [
+        "chrome-devtools-mcp@latest",
+        "--headless=true",
+        "--isolated=true"
+      ]
+    },
     "Github": {
       "_website": "https://github.com/github/github-mcp-server?tab=readme-ov-file",
       "_category": "Dangerous",

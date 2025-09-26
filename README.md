@@ -382,6 +382,7 @@ The following servers come pre-integrated for easy installation.
 | [Bitbucket](https://github.com/MatanYemini/bitbucket-mcp) | access and manage Bitbucket repositories |
 | [BrowserStack](https://github.com/browserstack/mcp-server) | test app across multiple browsers and devices with BrowserStack |
 | [ChromeDevtools](https://github.com/GoogleChrome/chrome-devtools-mcp) | access Chrome Dev Tools to debug, automate, and monitor web applications |
+| [ChromeDevtools_isolated_headless](https://github.com/GoogleChrome/chrome-devtools-mcp) | access Chrome Dev Tools to debug, automate, and monitor web applications (isolated headless mode) |
 | [CloudflareAIGateway](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | search your Cloudflare AI Gateway logs, get details about the prompts and responses |
 | [CloudflareAuditLogs](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | query Cloudflare audit logs and generate reports for review |
 | [CloudflareAutoRag](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | list and search documents on your Cloudflare AutoRAGs |
