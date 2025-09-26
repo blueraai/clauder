@@ -113,7 +113,6 @@ Required if using MCP servers (refer to `.mcp.json` for details):
 - `uv`
 - `pipx`
 - `pnpx`
-- `pnpx`
 - `docker`
 
 ## Quick Start
@@ -347,7 +346,7 @@ To easily add project specific MCP servers run in your project root:
 ```bash
 clauder_activate
 ```
-> ⚡ 65+ pre-integrated, hot-swappable, MCP servers for instant use. 
+> ⚡ 66+ pre-integrated, hot-swappable, MCP servers for instant use. 
 > 
 > - Configuration automatically backed up locally prior each activation. 
 > - MCP servers become active upon running `clauder`.
@@ -382,6 +381,7 @@ The following servers come pre-integrated for easy installation.
 | [Azure](https://learn.microsoft.com/en-us/azure/developer/azure-mcp-server/get-started/tools/cursor) | access and manage Azure |
 | [Bitbucket](https://github.com/MatanYemini/bitbucket-mcp) | access and manage Bitbucket repositories |
 | [BrowserStack](https://github.com/browserstack/mcp-server) | test app across multiple browsers and devices with BrowserStack |
+| [ChromeDevtools](https://github.com/GoogleChrome/chrome-devtools-mcp) | access Chrome Dev Tools to debug, automate, and monitor web applications |
 | [CloudflareAIGateway](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | search your Cloudflare AI Gateway logs, get details about the prompts and responses |
 | [CloudflareAuditLogs](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | query Cloudflare audit logs and generate reports for review |
 | [CloudflareAutoRag](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) | list and search documents on your Cloudflare AutoRAGs |

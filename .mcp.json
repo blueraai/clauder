@@ -30,6 +30,13 @@
       "command": "npx",
       "args": ["@playwright/mcp@latest"]
     },
+    "chrome-devtools": {
+      "_website": "https://github.com/ChromeDevTools/chrome-devtools-mcp/?tab=readme-ov-file#chrome-devtools-mcp",
+      "_category": "Recommended",
+      "_description": "access Chrome Dev Tools to debug, automate, and monitor web applications",
+      "command": "npx",
+      "args": ["chrome-devtools-mcp@latest"]
+    },
     "Github": {
       "_website": "https://github.com/github/github-mcp-server?tab=readme-ov-file",
       "_category": "Dangerous",
