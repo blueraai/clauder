@@ -148,7 +148,7 @@ clauder # (choose ** activate in project ** when prompted)
 > *Note: AI responses may include mistakes. Refer to the documentation below for sample code.*
 
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Installation</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Installation</code></summary>
 
 ### Installation
 
@@ -163,7 +163,7 @@ cd clauder && bash ./clauder_install.sh
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Activate Clauder in your project</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Activate Clauder in your project</code></summary>
 
 ### Activate Clauder in your project
 
@@ -208,7 +208,7 @@ Clauder's configuration will automatically:
 > Learn how to get the best of Clauder, at your own pace
 
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Start a Claude session</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Start a Claude session</code></summary>
 
 ### How to start a Claude session
 
@@ -267,7 +267,7 @@ This will define the mandatory guidelines for Claude Code.
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Give Claude project-level instructions</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Give Claude project-level instructions</code></summary>
 
 ### How to give Claude project-level instructions
 
@@ -281,7 +281,7 @@ Make sure these instructions do not conflict with **clauder**'s rules (see `.cla
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Ask Claude for a general review</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Ask Claude for a general review</code></summary>
 
 ### How to ask Claude for a general review
 
@@ -301,7 +301,7 @@ or about something specific:
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Ask Claude to consult a different model</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Ask Claude to consult a different model</code></summary>
 
 ### How to ask Claude to consult a different model
 
@@ -325,7 +325,7 @@ e.g.
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Create specialized agents</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Create specialized agents</code></summary>
 
 ### How to create specialized agents
 
@@ -374,7 +374,7 @@ or about something specific:
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Add and manage MCP servers</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Add and manage MCP servers</code></summary>
 
 ### Add and manage MCP servers
 
@@ -474,7 +474,7 @@ The following servers come pre-integrated for easy installation.
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Add expansion packs</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Add expansion packs</code></summary>
 
 ### Expansion packs (beta)
 
@@ -649,7 +649,7 @@ Clone `.claude-expansion-packs/example` to get started. The folder name is the n
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Trace & audit Claude</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Trace & audit Claude</code></summary>
 
 ### How to trace & audit Claude
 
@@ -706,7 +706,7 @@ Access the tracer app at `http://localhost:4441` in your browser.
 > Things you may eventually need
 
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Key Configuration Files</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Key Configuration Files</code></summary>
 
 ### Key Configuration Files
 
@@ -754,7 +754,7 @@ Clauder dependencies and recommended MCP servers.
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Security Best Practices</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Security Best Practices</code></summary>
 
 ### Security Best Practices
 
@@ -772,7 +772,7 @@ Clauder dependencies and recommended MCP servers.
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Troubleshooting</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Troubleshooting</code></summary>
 
 ### Troubleshooting
 
@@ -883,7 +883,7 @@ clauder
 > Help improve Clauder
 
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Providing Feedback</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Providing Feedback</code></summary>
 
 ### Feedback
 
@@ -898,7 +898,7 @@ You may provide feedback by:
 </details>
 
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">File Structure</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">File Structure</code></summary>
 
 ### File Structure
 
@@ -1103,7 +1103,7 @@ clauder/
 
 </details>
 <details>
-<summary><strong style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange;">Contributing</strong></summary>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Contributing</code></summary>
 
 ### Contributing
 
