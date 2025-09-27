@@ -18,5 +18,8 @@
     "trace_events": {
       "enabled": false
     }
+  },
+  "git_requirement_checks": {
+    "enabled": true
   }
 }

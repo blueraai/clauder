@@ -771,6 +771,20 @@ Clauder dependencies and recommended MCP servers.
 - **Access limits**: Restrict AI access to sensitive systems
 
 </details>
+
+<details>
+<summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Working with Monorepos</code></summary>
+
+### Working with Monorepos
+
+When working with monorepos, where packages may share git versionning with a parent folder, or where Clauder may need to navigate to different packages to operate, you'll need Clauder to be activated in each package. To do so, you'll need to:
+
+1. Run `clauder_activate` at root level **and** at package level
+2. (If sharing a parent git repository) disable `git_requirement_checks` in the `.claude/preferences.json` at package level
+3. Ensure your clauder configuration files (e.g. `.ignore`, `.immutable`, `.exclude_security_checks`) are accurate both at root level and at package level, depending what Clauder's current directory is.
+
+</details>
+
 <details>
 <summary><code style="display: inline; cursor: pointer; margin: 0; padding: 0; color: orange; background-color: transparent; font-weight: bold;">Troubleshooting</code></summary>
 
