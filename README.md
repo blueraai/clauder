@@ -40,7 +40,7 @@ This repository contains a comprehensive Claude Code configuration that provides
 - Pre and post-operation validation and logging
 
 **⚡ Workflow Automation**
-- Automatic git checkpoints before sessions
+- Automatic git checkpoints before/after each interaction
 - (optional) Context engineering through documentation enforcement (HISTORY.md, SPECIFICATIONS.md)
 - (optional) Audio feedback on task completion
 
