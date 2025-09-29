@@ -123,16 +123,41 @@ display_mcp_servers() {
     if command -v claude >/dev/null 2>&1; then
         local mcp_output=$(claude mcp list 2>/dev/null)
         if [ $? -eq 0 ] && [ -n "$mcp_output" ]; then
-            local server_names=$(echo "$mcp_output" | grep -E '^[a-zA-Z0-9_-]+:' | sed 's/:.*$//' | tr '\n' ' ')
-            if [ -n "$server_names" ]; then
-                print_gray "⚭ $server_names"
-                echo ""
-                echo ""
-            else
+            # Check if the output indicates no servers configured
+            if echo "$mcp_output" | grep -qi "no mcp servers configured"; then
                 print_gray "⌀ (none)"
-                echo ""
-                echo ""
+            else
+                # Filter out header lines and count servers
+                local server_lines=$(echo "$mcp_output" | grep -E '^[a-zA-Z0-9_-][a-zA-Z0-9_-]*:')
+                local server_count=$(echo "$server_lines" | wc -l)
+                
+                if [ "$server_count" -eq 0 ]; then
+                    print_gray "⌀ (none)"
+                else
+                    # Process each server line
+                    echo "$server_lines" | while IFS= read -r line; do
+                        local server_name=$(echo "$line" | sed 's/:.*$//')
+                        local server_status=$(echo "$line" | sed 's/^[^:]*: *//')
+                        
+                        # Check if the status contains "Connected" (case insensitive)
+                        if echo "$server_status" | grep -qi "connected"; then
+                            if colors_supported; then
+                                echo -e "$(tput setaf 2)✓$(tput sgr0) $(tput setaf 8)$server_name$(tput sgr0)"
+                            else
+                                echo "✓ $server_name"
+                            fi
+                        else
+                            if colors_supported; then
+                                echo -e "$(tput setaf 1)✗$(tput sgr0) $(tput setaf 8)$server_name$(tput sgr0)"
+                            else
+                                echo "✗ $server_name"
+                            fi
+                        fi
+                    done
+                fi
             fi
+            echo ""
+            echo ""
         else
             print_gray "⌀ (none)"
             echo ""
@@ -147,6 +172,13 @@ display_mcp_servers() {
 }
 
 display_mcp_servers
+
+echo ""
+echo ""
+# Pause and wait for user to press any key
+echo -n "Press any key to start... "
+read -n 1 -s
+echo ""
 
 # Finally, run Claude with all forwarded arguments
 claude "$@" 

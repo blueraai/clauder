@@ -147,6 +147,6 @@ main "$@"
 # keep the terminal open by waiting for user input
 if [[ "$INTERACTIVE" == "true" && "${BASH_SOURCE[0]}" == "${0}" ]]; then
     echo ""
-    echo "Press Enter to continue..."
+    echo "Security check complete. Press Enter to continue..."
     read -r
 fi
