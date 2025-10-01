@@ -378,6 +378,8 @@ or about something specific:
 
 ### Add and manage MCP servers
 
+> Ensure the requirements above are met.
+> 
 > About MCP: https://modelcontextprotocol.io/docs/getting-started/intro
 
 To easily add project specific MCP servers run in your project root:
