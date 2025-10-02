@@ -7,12 +7,33 @@ This script is called before user prompt submission to commit current changes.
 import subprocess
 import sys
 import os
+import json
 from datetime import datetime
+
+
+def load_preferences():
+    """Load preferences from preferences.json file."""
+    try:
+        prefs_path = '.claude/preferences.json'
+        if os.path.exists(prefs_path):
+            with open(prefs_path, 'r') as f:
+                return json.load(f)
+        return {}
+    except Exception:
+        return {}
 
 
 def main():
     """Main function to create git checkpoint."""
     try:
+        # Check if automated git commits are enabled
+        preferences = load_preferences()
+        automated_commits_enabled = preferences.get('automated_git_commits', {}).get('enabled', True)
+        
+        if not automated_commits_enabled:
+            print("Automated git commits disabled. Skipping git checkpoint.", file=sys.stderr)
+            sys.exit(0)
+        
         # Check if we're in a git repository
         if not os.path.exists('.git/'):
             print("Not in a git repository. Skipping git checkpoint.", file=sys.stderr)

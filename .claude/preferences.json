@@ -21,5 +21,11 @@
   },
   "git_requirement_checks": {
     "enabled": true
+  },
+  "completion_checks": {
+    "enabled": false
+  },
+  "automated_git_commits": {
+    "enabled": true
   }
 }

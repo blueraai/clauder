@@ -5,6 +5,17 @@ import subprocess
 import os
 from utils.trace_decision import log_decision
 
+def load_preferences():
+    """Load preferences from preferences.json file."""
+    try:
+        prefs_path = '.claude/preferences.json'
+        if os.path.exists(prefs_path):
+            with open(prefs_path, 'r') as f:
+                return json.load(f)
+        return {}
+    except Exception:
+        return {}
+
 # Helper function to check if file should be ignored
 def should_ignore_file(file_path):
     path_parts = file_path.split('/')
@@ -13,6 +24,15 @@ def should_ignore_file(file_path):
         if path_parts[i] == '.claude' and path_parts[i + 1] == 'logs':
             return True
     return False
+
+# Check if completion checks are enabled
+preferences = load_preferences()
+completion_checks_enabled = preferences.get('completion_checks', {}).get('enabled', True)
+automated_commits_enabled = preferences.get('automated_git_commits', {}).get('enabled', True)
+
+if not completion_checks_enabled:
+    # Exit early if completion checks are disabled
+    sys.exit(0)
 
 # Check if there are any uncommitted changes
 try:
@@ -71,17 +91,21 @@ try:
                 print(json.dumps(output))
                 sys.exit(2)
         
-        # If no documentation files to update, require commit
-        output = {
-            "continue": True,
-            "stopReason": "Commit required.",
-            "suppressOutput": True,
-            "decision": "block",
-            "reason": "Uncommitted changes detected. Please commit your changes with '[claude] <summary>' format before proceeding, including a meaningful summary and an extensive description of the changes."
-        }
-        log_decision(output, operation_type="commit_required_decision")
-        print(json.dumps(output))
-        sys.exit(2)
+        # If no documentation files to update, require commit (unless automated commits are disabled)
+        if automated_commits_enabled:
+            output = {
+                "continue": True,
+                "stopReason": "Commit required.",
+                "suppressOutput": True,
+                "decision": "block",
+                "reason": "Uncommitted changes detected. Please commit your changes with '[claude] <summary>' format before proceeding, including a meaningful summary and an extensive description of the changes."
+            }
+            log_decision(output, operation_type="commit_required_decision")
+            print(json.dumps(output))
+            sys.exit(2)
+        else:
+            # If automated commits are disabled, just continue
+            sys.exit(0)
     
 except subprocess.CalledProcessError as e:
     print(f"Error checking git status: {e}", file=sys.stderr)
