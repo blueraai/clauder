@@ -39,7 +39,7 @@
 
 \033[1;33mCompletion checks have been paused\033[0m due to an unresolved issue in Claude Code 2.0 
 (i.e. completion commits, audio summary, context tracking)
-\033[0;90mTrack resolution: https://github.com/anthropics/claude-code/issues/8004#issuecomment-3362572965 
+\033[0;90mTrack resolution: https://github.com/anthropics/claude-code/issues/8763 
 
 You may enable them at your own risk in '.claude/preference.json'.
 It may corrupt your session and require you to start a new conversation.\033[0m
