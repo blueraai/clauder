@@ -23,7 +23,7 @@
     "enabled": true
   },
   "completion_checks": {
-    "enabled": false
+    "enabled": true
   },
   "automated_git_commits": {
     "enabled": true
