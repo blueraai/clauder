@@ -98,7 +98,7 @@ try:
                 "stopReason": "Commit required.",
                 "suppressOutput": True,
                 "decision": "block",
-                "reason": "Uncommitted changes detected. Please commit your changes with '[claude] <summary>' format before proceeding, including a meaningful summary and an extensive description of the changes."
+                "reason": "Uncommitted changes detected. Please commit your changes with '<summary>' format before proceeding, including a meaningful summary and an extensive description of the changes."
             }
             log_decision(output, operation_type="commit_required_decision")
             print(json.dumps(output))

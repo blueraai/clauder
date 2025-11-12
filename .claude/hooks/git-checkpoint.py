@@ -57,7 +57,7 @@ def main():
             sys.exit(1)
         
         # Create commit message
-        commit_message = f"[claude][query] checkpoint"
+        commit_message = f"[claude] checkpoint"
         
         # Commit changes
         commit_result = subprocess.run(['git', 'commit', '-m', commit_message], capture_output=True, text=True)
